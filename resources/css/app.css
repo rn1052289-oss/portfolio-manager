@@ -2,6 +2,7 @@
 @import './pages/auth.css';
 @import './layouts/app-layout.css';
 @import './components/ui.css';
+@import './pages/dashboard.css';
 
 :root {
     --color-bg: #f4f7fb;
