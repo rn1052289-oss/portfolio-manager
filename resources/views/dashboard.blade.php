@@ -94,7 +94,7 @@
 
                         <div class="dashboard-progress">
                             <div class="dashboard-progress__bar">
-                                <span style="width: 72%;"></span>
+                                <span class="dashboard-progress__fill" style="--progress: 72%;"></span>
                             </div>
                             <p class="dashboard-progress__text">72%</p>
                         </div>
@@ -112,7 +112,7 @@
 
                         <div class="dashboard-progress">
                             <div class="dashboard-progress__bar">
-                                <span style="width: 48%;"></span>
+                                <span class="dashboard-progress__fill" style="--progress: 48%;"></span>
                             </div>
                             <p class="dashboard-progress__text">48%</p>
                         </div>
@@ -130,7 +130,7 @@
 
                         <div class="dashboard-progress">
                             <div class="dashboard-progress__bar">
-                                <span style="width: 24%;"></span>
+                                <span class="dashboard-progress__fill" style="--progress: 24%;"></span>
                             </div>
                             <p class="dashboard-progress__text">24%</p>
                         </div>
