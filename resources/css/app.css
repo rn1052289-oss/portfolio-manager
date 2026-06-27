@@ -1,5 +1,7 @@
 @import './foundation/base.css';
 @import './pages/auth.css';
+@import './layouts/app-layout.css';
+@import './components/ui.css';
 
 :root {
     --color-bg: #f4f7fb;
