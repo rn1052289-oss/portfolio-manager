@@ -8,7 +8,12 @@ class ProjectController extends Controller
 {
     public function index()
     {
-        return response('案件一覧ページは Step 2 で作成します。');
+        $projects = auth()->user()
+            ->projects()
+            ->latest()
+            ->get();
+
+        return view('projects.index', compact('projects'));
     }
 
     public function create()
