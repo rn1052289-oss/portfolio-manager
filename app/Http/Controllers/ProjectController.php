@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Project;
 
 class ProjectController extends Controller
 {
@@ -40,5 +41,45 @@ class ProjectController extends Controller
         return redirect()
             ->route('projects.index')
             ->with('success', '案件を登録しました。');
+    }
+
+    public function show(Project $project)
+    {
+        if ($project->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        return view('projects.show', compact('project'));
+    }
+
+    public function edit(Project $project)
+    {
+        if ($project->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        return '案件編集ページ（仮）：' . $project->title;
+    }
+
+    public function update(Request $request, Project $project)
+    {
+        if ($project->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        return redirect()
+            ->route('projects.index')
+            ->with('success', '案件更新処理の仮ルートです。');
+    }
+
+    public function destroy(Project $project)
+    {
+        if ($project->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        return redirect()
+            ->route('projects.index')
+            ->with('success', '案件削除処理の仮ルートです。');
     }
 }

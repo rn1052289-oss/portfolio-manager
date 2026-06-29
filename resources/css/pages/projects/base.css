@@ -1,0 +1,177 @@
+/* ==============================
+   Projects Page Common
+============================== */
+
+.page-section {
+    width: 100%;
+}
+
+.page-section__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 28px;
+}
+
+.page-section__header--compact {
+    margin-bottom: 22px;
+}
+
+.section-label {
+    margin: 0 0 10px;
+    color: #2563eb;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+}
+
+.section-title {
+    margin: 0;
+    color: #0f172a;
+    font-size: clamp(30px, 4vw, 44px);
+    font-weight: 900;
+    letter-spacing: -0.05em;
+}
+
+.section-description {
+    margin: 14px 0 0;
+    color: #64748b;
+    font-size: 15px;
+    line-height: 1.8;
+}
+
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 18px;
+    color: #64748b;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.breadcrumb a {
+    color: #2563eb;
+    text-decoration: none;
+}
+
+.breadcrumb a:hover {
+    text-decoration: underline;
+}
+
+.flash-message {
+    margin-bottom: 20px;
+    padding: 14px 16px;
+    border-radius: 14px;
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.flash-message--success {
+    border: 1px solid #bfdbfe;
+    background: #eff6ff;
+    color: #1d4ed8;
+}
+
+/* ==============================
+   Buttons
+============================== */
+
+.button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 0 18px;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 800;
+    line-height: 1;
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.button:hover {
+    transform: translateY(-1px);
+}
+
+.button--primary {
+    background: #2563eb;
+    color: #ffffff;
+    box-shadow: 0 16px 32px rgba(37, 99, 235, 0.24);
+}
+
+.button--primary:hover {
+    background: #1d4ed8;
+}
+
+.button--secondary {
+    border-color: #cbd5e1;
+    background: #ffffff;
+    color: #334155;
+}
+
+.button--secondary:hover {
+    background: #f8fafc;
+}
+
+.button--dark {
+    min-width: 88px;
+    background: #0f172a;
+    color: #ffffff;
+}
+
+.button:disabled {
+    cursor: not-allowed;
+    opacity: 0.85;
+}
+
+/* ==============================
+   Status Badge
+============================== */
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 78px;
+    padding: 7px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 900;
+    white-space: nowrap;
+}
+
+.status-badge--not_started {
+    background: #f1f5f9;
+    color: #475569;
+}
+
+.status-badge--in_progress {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+.status-badge--completed {
+    background: #dcfce7;
+    color: #15803d;
+}
+
+.status-badge--paused {
+    background: #fef3c7;
+    color: #b45309;
+}
+
+@media (max-width: 640px) {
+    .page-section__header {
+        flex-direction: column;
+    }
+
+    .button {
+        width: 100%;
+    }
+}
