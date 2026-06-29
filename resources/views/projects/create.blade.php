@@ -44,6 +44,10 @@
                             <input id="title" type="text" name="title" value="{{ old('title') }}"
                                 placeholder="例）Webサイト制作案件">
                             <p class="form-help">案件一覧で最も目立つ名前です。</p>
+
+                            @error('title')
+                                <p class="form-error">{{ $message }}</p>
+                            @enderror
                         </div>
 
                         <div class="form-field">
@@ -53,6 +57,10 @@
                             <input id="client_name" type="text" name="client_name" value="{{ old('client_name') }}"
                                 placeholder="例）株式会社サンプル">
                             <p class="form-help">正式名称で登録すると、あとから検索しやすくなります。</p>
+
+                            @error('client_name')
+                                <p class="form-error">{{ $message }}</p>
+                            @enderror
                         </div>
 
                         <div class="form-field">
@@ -62,6 +70,10 @@
                             <div class="form-help-row">
                                 <p class="form-help">案件内容を簡潔に入力してください。</p>
                                 <p class="form-count">0 / 500</p>
+
+                                @error('description')
+                                    <p class="form-error">{{ $message }}</p>
+                                @enderror
                             </div>
                         </div>
                     </div>
@@ -94,6 +106,10 @@
                                     </option>
                                 </select>
                                 <p class="form-help">現在の進行状況を選択してください。</p>
+
+                                @error('status')
+                                    <p class="form-error">{{ $message }}</p>
+                                @enderror
                             </div>
 
                             <div class="form-field">
@@ -104,18 +120,30 @@
                                     <span>円</span>
                                 </div>
                                 <p class="form-help">税込・税抜の管理方針は後で統一します。</p>
+
+                                @error('budget')
+                                    <p class="form-error">{{ $message }}</p>
+                                @enderror
                             </div>
 
                             <div class="form-field">
                                 <label for="start_date">開始日</label>
                                 <input id="start_date" type="date" name="start_date" value="{{ old('start_date') }}">
                                 <p class="form-help">着手予定日または実際の開始日を入力します。</p>
+
+                                @error('start_date')
+                                    <p class="form-error">{{ $message }}</p>
+                                @enderror
                             </div>
 
                             <div class="form-field">
                                 <label for="deadline">納期</label>
                                 <input id="deadline" type="date" name="deadline" value="{{ old('deadline') }}">
                                 <p class="form-help">納期がある場合は必ず入力しましょう。</p>
+
+                                @error('deadline')
+                                    <p class="form-error">{{ $message }}</p>
+                                @enderror
                             </div>
                         </div>
                     </div>

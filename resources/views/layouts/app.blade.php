@@ -23,12 +23,14 @@
             </div>
 
             <nav class="admin-sidebar__nav" aria-label="管理画面メニュー">
-                <a href="/dashboard" class="admin-sidebar__link {{ request()->is('dashboard') ? 'is-active' : '' }}">
+                <a href="{{ route('dashboard') }}"
+                    class="admin-sidebar__link {{ request()->routeIs('dashboard') ? 'is-active' : '' }}">
                     <span class="admin-sidebar__link-marker"></span>
                     <span>ダッシュボード</span>
                 </a>
 
-                <a href="#" class="admin-sidebar__link">
+                <a href="{{ route('projects.index') }}"
+                    class="admin-sidebar__link {{ request()->routeIs('projects.*') ? 'is-active' : '' }}">
                     <span class="admin-sidebar__link-marker"></span>
                     <span>案件管理</span>
                 </a>
