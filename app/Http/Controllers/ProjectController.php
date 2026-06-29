@@ -58,7 +58,7 @@ class ProjectController extends Controller
             abort(403);
         }
 
-        return '案件編集ページ（仮）：' . $project->title;
+        return view('projects.edit', compact('project'));
     }
 
     public function update(Request $request, Project $project)
