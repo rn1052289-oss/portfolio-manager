@@ -21,6 +21,11 @@ class Project extends Model
         'deadline',
     ];
 
+    protected $casts = [
+        'start_date' => 'date',
+        'deadline' => 'date',
+    ];
+
     public function user()
     {
         return $this->belongsTo(User::class);
