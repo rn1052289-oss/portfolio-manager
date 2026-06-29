@@ -67,9 +67,21 @@ class ProjectController extends Controller
             abort(403);
         }
 
+        $validated = $request->validate([
+            'title' => ['required', 'string', 'max:255'],
+            'client_name' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string', 'max:500'],
+            'status' => ['required', 'in:not_started,in_progress,completed,paused'],
+            'budget' => ['nullable', 'integer', 'min:0'],
+            'start_date' => ['nullable', 'date'],
+            'deadline' => ['nullable', 'date', 'after_or_equal:start_date'],
+        ]);
+
+        $project->update($validated);
+
         return redirect()
-            ->route('projects.index')
-            ->with('success', '案件更新処理の仮ルートです。');
+            ->route('projects.show', $project)
+            ->with('success', '案件を更新しました。');
     }
 
     public function destroy(Project $project)
