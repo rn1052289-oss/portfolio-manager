@@ -76,6 +76,10 @@
     margin-top: 22px;
 }
 
+.project-delete-form {
+    margin: 0;
+}
+
 .project-meta-pill {
     display: inline-flex;
     align-items: center;
@@ -365,6 +369,11 @@
 }
 
 @media (max-width: 640px) {
+    .project-delete-form,
+    .project-delete-form .button {
+        width: 100%;
+    }
+
     .project-show-actions {
         width: 100%;
         flex-direction: column;

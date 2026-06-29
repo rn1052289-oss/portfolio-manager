@@ -49,9 +49,15 @@
                                 編集
                             </a>
 
-                            <button type="button" class="button button--danger button--small" disabled>
-                                削除
-                            </button>
+                            <form action="{{ route('projects.destroy', $project) }}" method="POST"
+                                class="project-delete-form" onsubmit="return confirm('この案件を削除しますか？この操作は取り消せません。');">
+                                @csrf
+                                @method('DELETE')
+
+                                <button type="submit" class="button button--danger button--small">
+                                    削除
+                                </button>
+                            </form>
                         </div>
                     </div>
 

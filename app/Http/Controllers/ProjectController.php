@@ -90,8 +90,10 @@ class ProjectController extends Controller
             abort(403);
         }
 
+        $project->delete();
+
         return redirect()
             ->route('projects.index')
-            ->with('success', '案件削除処理の仮ルートです。');
+            ->with('success', '案件を削除しました。');
     }
 }
