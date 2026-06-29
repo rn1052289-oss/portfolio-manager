@@ -4,6 +4,11 @@
 
 @section('content')
     <section class="page-section">
+        @if (session('success'))
+            <div class="flash-message flash-message--success">
+                {{ session('success') }}
+            </div>
+        @endif
         <div class="page-section__header">
             <div>
                 <p class="section-label">Projects</p>
