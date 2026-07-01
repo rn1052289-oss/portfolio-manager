@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\Project;
 use App\Http\Requests\StoreProjectRequest;
 use App\Http\Requests\UpdateProjectRequest;
+use App\Models\Project;
 
 class ProjectController extends Controller
 {
@@ -37,27 +36,21 @@ class ProjectController extends Controller
 
     public function show(Project $project)
     {
-        if ($project->user_id !== auth()->id()) {
-            abort(403);
-        }
+        $this->authorize('view', $project);
 
         return view('projects.show', compact('project'));
     }
 
     public function edit(Project $project)
     {
-        if ($project->user_id !== auth()->id()) {
-            abort(403);
-        }
+        $this->authorize('update', $project);
 
         return view('projects.edit', compact('project'));
     }
 
     public function update(UpdateProjectRequest $request, Project $project)
     {
-        if ($project->user_id !== auth()->id()) {
-            abort(403);
-        }
+        $this->authorize('update', $project);
 
         $project->update($request->validated());
 
@@ -68,9 +61,7 @@ class ProjectController extends Controller
 
     public function destroy(Project $project)
     {
-        if ($project->user_id !== auth()->id()) {
-            abort(403);
-        }
+        $this->authorize('delete', $project);
 
         $project->delete();
 
