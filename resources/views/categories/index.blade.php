@@ -2,6 +2,11 @@
 
 @section('content')
     <div class="category-page">
+        @if (session('success'))
+            <div class="flash-message">
+                {{ session('success') }}
+            </div>
+        @endif
         <div class="category-page__header">
             <div>
                 <p class="category-page__label">Category</p>
@@ -17,13 +22,20 @@
                     <h2 class="category-panel__title">カテゴリ追加 / 編集</h2>
                 </div>
 
-                <form class="category-form" action="#" method="POST">
+                <form class="category-form" action="{{ route('categories.store') }}" method="POST">
+                    @csrf
+
                     <div class="form-group">
                         <label class="form-label" for="name">
                             カテゴリ名 <span class="form-label__required">必須</span>
                         </label>
 
-                        <input id="name" class="form-input" type="text" name="name" placeholder="例）Webサイト制作" disabled>
+                        <input id="name" class="form-input @error('name') is-invalid @enderror" type="text" name="name"
+                            value="{{ old('name') }}" placeholder="例）Webサイト制作">
+
+                        @error('name')
+                            <p class="form-error">{{ $message }}</p>
+                        @enderror
                     </div>
 
                     <div class="form-group">
@@ -31,17 +43,18 @@
                             説明
                         </label>
 
-                        <textarea id="description" class="form-textarea" name="description" rows="6"
-                            placeholder="例）Webサイトの企画・デザイン・コーディングなど" disabled></textarea>
+                        <textarea id="description" class="form-textarea @error('description') is-invalid @enderror"
+                            name="description" rows="6"
+                            placeholder="例）Webサイトの企画・デザイン・コーディングなど">{{ old('description') }}</textarea>
+
+                        @error('description')
+                            <p class="form-error">{{ $message }}</p>
+                        @enderror
                     </div>
 
-                    <button class="category-form__button" type="button">
+                    <button class="category-form__button" type="submit">
                         保存
                     </button>
-
-                    <p class="category-form__note">
-                        ※ 登録処理は次のStepで実装します。
-                    </p>
                 </form>
             </section>
 

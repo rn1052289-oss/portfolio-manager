@@ -203,6 +203,31 @@
     line-height: 1.6;
 }
 
+.form-error {
+    margin: 0;
+    color: #dc2626;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.6;
+}
+
+.form-input.is-invalid,
+.form-textarea.is-invalid {
+    border-color: #dc2626;
+    box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.1);
+}
+
+.flash-message {
+    margin-bottom: 20px;
+    padding: 14px 16px;
+    color: #166534;
+    font-size: 14px;
+    font-weight: 700;
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 12px;
+}
+
 /* ==============================
    Table
 ============================== */
