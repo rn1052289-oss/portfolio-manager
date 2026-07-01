@@ -24,60 +24,46 @@
             </a>
         </div>
 
-        <div class="project-filter">
+        <form method="GET" action="{{ route('projects.index') }}" class="project-filter">
             <div class="project-filter__field project-filter__field--keyword">
                 <label for="keyword">キーワード検索</label>
-                <input id="keyword" type="text" name="keyword" placeholder="案件名・クライアント名で検索" disabled>
-            </div>
-
-            <div class="project-filter__field">
-                <label for="category">カテゴリ</label>
-                <select id="category" name="category" disabled>
-                    <option>すべて</option>
-                    <option>Web制作</option>
-                    <option>システム開発</option>
-                    <option>デザイン</option>
-                </select>
+                <input id="keyword" type="text" name="keyword" value="{{ request('keyword') }}"
+                    placeholder="案件名・クライアント名で検索">
             </div>
 
             <div class="project-filter__field">
                 <label for="status">ステータス</label>
-                <select id="status" name="status" disabled>
-                    <option>すべて</option>
-                    <option>未着手</option>
-                    <option>進行中</option>
-                    <option>完了</option>
-                    <option>保留</option>
+                <select id="status" name="status">
+                    <option value="">すべて</option>
+                    <option value="not_started" @selected(request('status') === 'not_started')>
+                        未着手
+                    </option>
+                    <option value="in_progress" @selected(request('status') === 'in_progress')>
+                        進行中
+                    </option>
+                    <option value="completed" @selected(request('status') === 'completed')>
+                        完了
+                    </option>
+                    <option value="paused" @selected(request('status') === 'paused')>
+                        保留
+                    </option>
                 </select>
             </div>
 
-            <div class="project-filter__field">
-                <label for="priority">優先度</label>
-                <select id="priority" name="priority" disabled>
-                    <option>すべて</option>
-                    <option>高</option>
-                    <option>中</option>
-                    <option>低</option>
-                </select>
-            </div>
+            <div class="project-filter__actions">
+                <button type="submit" class="button button--dark">
+                    検索
+                </button>
 
-            <div class="project-filter__field">
-                <label for="sort">並び替え</label>
-                <select id="sort" name="sort" disabled>
-                    <option>納期が近い順</option>
-                    <option>新しい順</option>
-                    <option>予算が高い順</option>
-                </select>
+                <a href="{{ route('projects.index') }}" class="button button--secondary">
+                    リセット
+                </a>
             </div>
-
-            <button type="button" class="button button--dark" disabled>
-                検索
-            </button>
-        </div>
+        </form>
 
         <div class="project-list-head">
             <p class="project-count">
-                全 {{ $projects->count() }} 件
+                全 {{ $projects->total() }} 件
             </p>
             <p class="project-note">
                 PCではテーブル、スマホではカード表示に切り替わります。
@@ -223,18 +209,6 @@
                 </table>
             </div>
 
-            <div class="project-pagination">
-                <div class="project-pagination__buttons" aria-label="ページネーション">
-                    <span class="project-pagination__button project-pagination__button--disabled">←</span>
-                    <span class="project-pagination__button project-pagination__button--current">1</span>
-                    <span class="project-pagination__button project-pagination__button--disabled">→</span>
-                </div>
-
-                <p class="project-pagination__text">
-                    1 - {{ $projects->count() }} / {{ $projects->count() }} 件
-                </p>
-            </div>
-
             <div class="project-mobile-list">
                 @foreach ($projects as $project)
                     @php
@@ -326,6 +300,48 @@
                     </article>
                 @endforeach
             </div>
+
+            @if ($projects->hasPages())
+                <div class="project-pagination">
+                    <div class="project-pagination__buttons" aria-label="ページネーション">
+                        @if ($projects->onFirstPage())
+                            <span class="project-pagination__button project-pagination__button--disabled">
+                                ←
+                            </span>
+                        @else
+                            <a href="{{ $projects->previousPageUrl() }}" class="project-pagination__button">
+                                ←
+                            </a>
+                        @endif
+
+                        @foreach ($projects->getUrlRange(1, $projects->lastPage()) as $page => $url)
+                            @if ($page === $projects->currentPage())
+                                <span class="project-pagination__button project-pagination__button--current">
+                                    {{ $page }}
+                                </span>
+                            @else
+                                <a href="{{ $url }}" class="project-pagination__button">
+                                    {{ $page }}
+                                </a>
+                            @endif
+                        @endforeach
+
+                        @if ($projects->hasMorePages())
+                            <a href="{{ $projects->nextPageUrl() }}" class="project-pagination__button">
+                                →
+                            </a>
+                        @else
+                            <span class="project-pagination__button project-pagination__button--disabled">
+                                →
+                            </span>
+                        @endif
+                    </div>
+
+                    <p class="project-pagination__text">
+                        {{ $projects->firstItem() }} - {{ $projects->lastItem() }} / {{ $projects->total() }} 件
+                    </p>
+                </div>
+            @endif
         @endif
     </section>
 @endsection

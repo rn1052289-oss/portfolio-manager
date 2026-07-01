@@ -6,59 +6,82 @@
     max-width: 1120px;
 }
 
+/* ==============================
+   Project Filter
+============================== */
+
 .project-filter {
     display: grid;
-    grid-template-columns:
-        minmax(220px, 1.6fr)
-        minmax(120px, 0.8fr)
-        minmax(120px, 0.8fr)
-        minmax(120px, 0.8fr)
-        minmax(150px, 1fr)
-        auto;
+    grid-template-columns: minmax(320px, 1fr) 180px auto;
     align-items: end;
-    gap: 14px;
-    margin-bottom: 24px;
-    padding: 20px;
+    gap: 16px;
+    margin-bottom: 28px;
+    padding: 24px;
     border: 1px dashed #cbd5e1;
-    border-radius: 6px;
-    background: rgba(255, 255, 255, 0.72);
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.86);
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.04);
 }
 
 .project-filter__field {
     display: flex;
     flex-direction: column;
     gap: 8px;
+    min-width: 0;
+}
+
+.project-filter__field--keyword {
+    min-width: 0;
 }
 
 .project-filter__field label {
     color: #334155;
     font-size: 13px;
-    font-weight: 800;
+    font-weight: 900;
 }
 
 .project-filter__field input,
 .project-filter__field select {
     width: 100%;
-    height: 44px;
-    padding: 0 14px;
+    height: 48px;
+    padding: 0 16px;
     border: 1px solid #cbd5e1;
-    border-radius: 8px;
+    border-radius: 10px;
     background: #ffffff;
     color: #0f172a;
     font-size: 14px;
+    font-weight: 700;
     outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .project-filter__field input::placeholder {
     color: #94a3b8;
+    font-weight: 600;
 }
 
-.project-filter__field input:disabled,
-.project-filter__field select:disabled,
-.project-filter button:disabled {
-    cursor: not-allowed;
-    opacity: 1;
+.project-filter__field input:focus,
+.project-filter__field select:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
 }
+
+.project-filter__actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.project-filter__actions .button {
+    height: 48px;
+    padding: 0 22px;
+    white-space: nowrap;
+}
+
+/* ==============================
+   Project List Head
+============================== */
 
 .project-list-head {
     display: flex;
@@ -80,6 +103,10 @@
     color: #64748b;
     font-size: 13px;
 }
+
+/* ==============================
+   Project Table
+============================== */
 
 .project-table-wrap {
     overflow-x: auto;
@@ -132,6 +159,10 @@
 .project-table tbody tr:hover {
     background: #f8fafc;
 }
+
+/* ==============================
+   Project Table Parts
+============================== */
 
 .project-name {
     display: flex;
@@ -235,6 +266,10 @@
     white-space: nowrap;
 }
 
+/* ==============================
+   Project Actions
+============================== */
+
 .project-table-actions {
     display: flex;
     justify-content: center;
@@ -294,6 +329,10 @@
     background: #fee2e2;
 }
 
+/* ==============================
+   Project Pagination
+============================== */
+
 .project-pagination {
     display: grid;
     justify-items: center;
@@ -305,6 +344,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-wrap: wrap;
     gap: 8px;
 }
 
@@ -314,12 +354,21 @@
     justify-content: center;
     min-width: 36px;
     height: 36px;
+    padding: 0 10px;
     border: 1px solid #cbd5e1;
     border-radius: 8px;
     background: #ffffff;
     color: #334155;
     font-size: 14px;
     font-weight: 900;
+    line-height: 1;
+    text-decoration: none;
+}
+
+.project-pagination__button:hover {
+    border-color: #bfdbfe;
+    background: #eff6ff;
+    color: #1d4ed8;
 }
 
 .project-pagination__button--current {
@@ -328,7 +377,20 @@
     color: #ffffff;
 }
 
+.project-pagination__button--current:hover {
+    border-color: #0f172a;
+    background: #0f172a;
+    color: #ffffff;
+}
+
 .project-pagination__button--disabled {
+    color: #94a3b8;
+    cursor: not-allowed;
+}
+
+.project-pagination__button--disabled:hover {
+    border-color: #cbd5e1;
+    background: #ffffff;
     color: #94a3b8;
 }
 
@@ -338,6 +400,40 @@
     font-size: 13px;
     font-weight: 700;
 }
+
+/* Laravel Pagination 用：links() を使う場合の保険 */
+.project-pagination nav {
+    display: flex;
+    justify-content: center;
+}
+
+.project-pagination nav > div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.project-pagination svg {
+    width: 18px;
+    height: 18px;
+}
+
+.project-pagination p {
+    margin: 0;
+    color: #64748b;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.project-pagination a,
+.project-pagination span {
+    text-decoration: none;
+}
+
+/* ==============================
+   Mobile Project Cards
+============================== */
 
 .project-mobile-list {
     display: none;
@@ -447,6 +543,10 @@
     gap: 10px;
 }
 
+/* ==============================
+   Empty Card
+============================== */
+
 .empty-card {
     padding: 48px 32px;
     border: 1px dashed #cbd5e1;
@@ -477,17 +577,25 @@
 
 @media (max-width: 1180px) {
     .project-filter {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-columns: minmax(260px, 1fr) 180px auto;
     }
 
     .project-filter .button {
-        width: 100%;
+        width: auto;
     }
 }
 
 @media (max-width: 900px) {
-    .project-table-wrap,
-    .project-pagination {
+    .project-filter {
+        grid-template-columns: 1fr 180px;
+    }
+
+    .project-filter__actions {
+        grid-column: 1 / -1;
+        justify-content: flex-start;
+    }
+
+    .project-table-wrap {
         display: none;
     }
 
@@ -495,6 +603,10 @@
         display: grid;
         grid-template-columns: 1fr;
         gap: 16px;
+    }
+
+    .project-pagination {
+        display: grid;
     }
 
     .project-note {
@@ -505,6 +617,15 @@
 @media (max-width: 760px) {
     .project-filter {
         grid-template-columns: 1fr;
+        padding: 20px;
+    }
+
+    .project-filter__actions {
+        justify-content: stretch;
+    }
+
+    .project-filter__actions .button {
+        flex: 1;
     }
 }
 
@@ -515,6 +636,15 @@
 
     .project-filter {
         border-radius: 16px;
+    }
+
+    .project-filter__actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .project-filter__actions .button {
+        width: 100%;
     }
 
     .project-card {
@@ -538,6 +668,17 @@
     .project-card-delete-form,
     .project-card-delete-form .button {
         width: 100%;
+    }
+
+    .project-pagination {
+        margin-top: 20px;
+    }
+
+    .project-pagination__button {
+        min-width: 34px;
+        height: 34px;
+        padding: 0 9px;
+        font-size: 13px;
     }
 
     .empty-card {
