@@ -35,6 +35,12 @@
                     <span>案件管理</span>
                 </a>
 
+                <a href="{{ route('categories.index') }}"
+                    class="admin-sidebar__link {{ request()->routeIs('categories.*') ? 'is-active' : '' }}">
+                    <span class="admin-sidebar__link-marker"></span>
+                    <span>カテゴリ管理</span>
+                </a>
+
                 <a href="#" class="admin-sidebar__link">
                     <span class="admin-sidebar__link-marker"></span>
                     <span>顧客管理</span>

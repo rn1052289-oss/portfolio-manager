@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\CategoryController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -32,4 +33,7 @@ Route::middleware('auth')->group(function () {
 
     Route::delete('/projects/{project}', [ProjectController::class, 'destroy'])
         ->name('projects.destroy');
+
+    Route::get('/categories', [CategoryController::class, 'index'])
+        ->name('categories.index');
 });
