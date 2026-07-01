@@ -28,7 +28,7 @@ class ProjectController extends Controller
             $query->where('status', $request->input('status'));
         }
 
-        $projects = $query->paginate(10)->withQueryString();
+        $projects = $query->paginate(10)->appends($request->query());
 
         return view('projects.index', compact('projects'));
     }
