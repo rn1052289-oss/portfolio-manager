@@ -170,9 +170,23 @@
                 <section class="project-side-card">
                     <h3 class="project-side-card__title">カテゴリ</h3>
 
-                    <p class="project-empty-text">
-                        Coming Soon
-                    </p>
+                    @if ($project->category)
+                        <div class="project-tags">
+                            <span>{{ $project->category->name }}</span>
+                        </div>
+
+                        <p class="project-side-card__note">
+                            この案件に紐づいているカテゴリです。
+                        </p>
+                    @else
+                        <p class="project-empty-text">
+                            未分類
+                        </p>
+
+                        <p class="project-side-card__note">
+                            編集画面からカテゴリを設定できます。
+                        </p>
+                    @endif
                 </section>
 
                 <section class="project-side-card">

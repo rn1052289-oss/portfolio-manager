@@ -164,7 +164,7 @@
 
                                 <td>
                                     <span class="project-category">
-                                        Web制作
+                                        {{ $project->category?->name ?? '未分類' }}
                                     </span>
                                 </td>
 
@@ -263,6 +263,11 @@
                                     <div>
                                         <dt>納期</dt>
                                         <dd>{{ $deadlineText }}</dd>
+                                    </div>
+
+                                    <div>
+                                        <dt>カテゴリ</dt>
+                                        <dd>{{ $project->category?->name ?? '未分類' }}</dd>
                                     </div>
 
                                     <div>
