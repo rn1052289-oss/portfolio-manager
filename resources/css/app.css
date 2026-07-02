@@ -5,6 +5,7 @@
 @import './pages/dashboard.css';
 @import './pages/projects.css';
 @import './pages/categories.css';
+@import './pages/tags.css';
 
 :root {
     --color-bg: #f4f7fb;

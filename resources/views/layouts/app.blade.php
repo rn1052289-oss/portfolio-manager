@@ -46,7 +46,7 @@
                     <span>顧客管理</span>
                 </a>
 
-                <a href="#" class="admin-sidebar__link">
+                <a href="{{ route('tags.index') }}" class="admin-sidebar__link" {{ request()->routeIs('tags.*') ? 'is-active' : '' }}">
                     <span class="admin-sidebar__link-marker"></span>
                     <span>タグ管理</span>
                 </a>
