@@ -11,6 +11,11 @@ class ProjectController extends Controller
 {
     public function index(Request $request)
     {
+        $categories = auth()->user()
+            ->categories()
+            ->orderBy('name')
+            ->get();
+
         $query = auth()->user()
             ->projects()
             ->with('category')
@@ -25,13 +30,23 @@ class ProjectController extends Controller
             });
         }
 
+        if ($request->filled('category_id')) {
+            $categoryId = (int) $request->input('category_id');
+
+            if ($categories->contains('id', $categoryId)) {
+                $query->where('category_id', $categoryId);
+            } else {
+                $query->whereRaw('1 = 0');
+            }
+        }
+
         if ($request->filled('status')) {
             $query->where('status', $request->input('status'));
         }
 
         $projects = $query->paginate(10)->appends($request->query());
 
-        return view('projects.index', compact('projects'));
+        return view('projects.index', compact('projects', 'categories'));
     }
 
     public function create()

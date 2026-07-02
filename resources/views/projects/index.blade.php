@@ -32,6 +32,19 @@
             </div>
 
             <div class="project-filter__field">
+                <label for="category_id">カテゴリ</label>
+                <select id="category_id" name="category_id">
+                    <option value="">すべて</option>
+
+                    @foreach ($categories as $category)
+                        <option value="{{ $category->id }}" @selected((string) request('category_id') === (string) $category->id)>
+                            {{ $category->name }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="project-filter__field">
                 <label for="status">ステータス</label>
                 <select id="status" name="status">
                     <option value="">すべて</option>
