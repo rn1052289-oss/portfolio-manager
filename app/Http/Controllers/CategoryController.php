@@ -64,4 +64,15 @@ class CategoryController extends Controller
             ->route('categories.index')
             ->with('success', 'カテゴリを更新しました。');
     }
+
+    public function destroy(Category $category): RedirectResponse
+    {
+        abort_if($category->user_id !== auth()->id(), 403);
+
+        $category->delete();
+
+        return redirect()
+            ->route('categories.index')
+            ->with('success', 'カテゴリを削除しました。');
+    }
 }

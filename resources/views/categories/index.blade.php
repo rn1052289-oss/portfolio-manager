@@ -128,10 +128,16 @@
                                                     編集
                                                 </a>
 
-                                                <button class="category-actions__button category-actions__button--danger"
-                                                    type="button">
-                                                    削除
-                                                </button>
+                                                <form action="{{ route('categories.destroy', $category) }}" method="POST"
+                                                    onsubmit="return confirm('このカテゴリを削除しますか？案件自体は削除されません。');">
+                                                    @csrf
+                                                    @method('DELETE')
+
+                                                    <button class="category-actions__button category-actions__button--danger"
+                                                        type="submit">
+                                                        削除
+                                                    </button>
+                                                </form>
                                             </div>
                                         </td>
                                     </tr>
