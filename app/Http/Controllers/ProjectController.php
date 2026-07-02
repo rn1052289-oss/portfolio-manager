@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Http\Requests\StoreProjectRequest;
 use App\Http\Requests\UpdateProjectRequest;
 use App\Models\Project;
+use Illuminate\Http\Request;
 
 class ProjectController extends Controller
 {
@@ -13,6 +13,7 @@ class ProjectController extends Controller
     {
         $query = auth()->user()
             ->projects()
+            ->with('category')
             ->latest();
 
         if ($request->filled('keyword')) {
@@ -35,7 +36,12 @@ class ProjectController extends Controller
 
     public function create()
     {
-        return view('projects.create');
+        $categories = auth()->user()
+            ->categories()
+            ->orderBy('name')
+            ->get();
+
+        return view('projects.create', compact('categories'));
     }
 
     public function store(StoreProjectRequest $request)
@@ -53,6 +59,8 @@ class ProjectController extends Controller
     {
         $this->authorize('view', $project);
 
+        $project->load('category');
+
         return view('projects.show', compact('project'));
     }
 
@@ -60,7 +68,12 @@ class ProjectController extends Controller
     {
         $this->authorize('update', $project);
 
-        return view('projects.edit', compact('project'));
+        $categories = auth()->user()
+            ->categories()
+            ->orderBy('name')
+            ->get();
+
+        return view('projects.edit', compact('project', 'categories'));
     }
 
     public function update(UpdateProjectRequest $request, Project $project)

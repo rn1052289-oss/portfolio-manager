@@ -176,21 +176,47 @@
                     </div>
                 </section>
 
-                <section class="editor-section editor-section--disabled">
+                <section class="editor-section">
                     <div class="editor-section__side">
                         <span class="editor-section__number">3</span>
                         <div>
-                            <h2>カテゴリ・タグ</h2>
+                            <h2>カテゴリ</h2>
                         </div>
                     </div>
 
                     <div class="editor-section__body">
-                        <div class="coming-soon-box">
-                            <p class="coming-soon-box__label">Coming Soon</p>
-                            <h3>カテゴリ・タグ機能は今後追加予定です</h3>
-                            <p>
-                                案件を種類別に整理できるように、カテゴリ・タグ機能をあとで追加します。
+                        @php
+                            $selectedCategoryId = old('category_id', $project->category_id);
+                        @endphp
+
+                        <div class="form-field">
+                            <label for="category_id">カテゴリ</label>
+
+                            <select id="category_id" name="category_id">
+                                <option value="" @selected(blank($selectedCategoryId))>
+                                    未分類
+                                </option>
+
+                                @foreach ($categories as $category)
+                                    <option value="{{ $category->id }}" @selected((string) $selectedCategoryId === (string) $category->id)>
+                                        {{ $category->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+
+                            <p class="form-help">
+                                案件の分類を変更できます。未分類に戻すこともできます。
                             </p>
+
+                            @if ($categories->isEmpty())
+                                <p class="form-help">
+                                    まだカテゴリがありません。必要な場合はカテゴリ管理画面から追加してください。
+                                </p>
+                            @endif
+
+                            @error('category_id')
+                                <p class="form-error">{{ $message }}</p>
+                            @enderror
                         </div>
                     </div>
                 </section>
@@ -250,11 +276,11 @@
                     </p>
                 </section>
 
-                <section class="guide-step guide-step--muted">
+                <section class="guide-step">
                     <span>3</span>
-                    <h3>次のStepで更新処理</h3>
+                    <h3>カテゴリを整理</h3>
                     <p>
-                        この画面の保存処理は、次のStepでControllerに実装します。
+                        案件の種類を分類しておくと、一覧表示や検索機能を拡張しやすくなります。
                     </p>
                 </section>
             </aside>

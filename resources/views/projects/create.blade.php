@@ -149,36 +149,41 @@
                     </div>
                 </section>
 
-                <section class="editor-section editor-section--disabled">
+                <section class="editor-section">
                     <div class="editor-section__side">
                         <span class="editor-section__number">3</span>
-                        <h2>カテゴリ・タグ</h2>
+                        <h2>カテゴリ</h2>
                     </div>
 
                     <div class="editor-section__body">
-                        <div class="coming-soon-box">
-                            <p class="coming-soon-box__label">Coming Soon</p>
-                            <h3>カテゴリ・タグ機能は次の段階で追加します</h3>
-                            <p>
-                                今後、Web制作・デザイン・システム開発などで案件を分類できるようにします。
-                            </p>
-                        </div>
-                    </div>
-                </section>
+                        <div class="form-field">
+                            <label for="category_id">カテゴリ</label>
 
-                <section class="editor-section editor-section--disabled">
-                    <div class="editor-section__side">
-                        <span class="editor-section__number">4</span>
-                        <h2>画像・メモ</h2>
-                    </div>
+                            <select id="category_id" name="category_id">
+                                <option value="" @selected(old('category_id') === null || old('category_id') === '')>
+                                    未分類
+                                </option>
 
-                    <div class="editor-section__body">
-                        <div class="coming-soon-box">
-                            <p class="coming-soon-box__label">Coming Soon</p>
-                            <h3>画像アップロード・メモ機能は後で追加します</h3>
-                            <p>
-                                提案資料、参考画像、社内メモなどを案件に紐づける機能として拡張予定です。
+                                @foreach ($categories as $category)
+                                    <option value="{{ $category->id }}" @selected((string) old('category_id') === (string) $category->id)>
+                                        {{ $category->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+
+                            <p class="form-help">
+                                案件を種類別に整理できます。未分類のままでも登録できます。
                             </p>
+
+                            @if ($categories->isEmpty())
+                                <p class="form-help">
+                                    まだカテゴリがありません。必要な場合はカテゴリ管理画面から追加してください。
+                                </p>
+                            @endif
+
+                            @error('category_id')
+                                <p class="form-error">{{ $message }}</p>
+                            @enderror
                         </div>
                     </div>
                 </section>
@@ -219,11 +224,11 @@
                     </p>
                 </div>
 
-                <div class="guide-step guide-step--muted">
+                <div class="guide-step">
                     <span>3</span>
-                    <h3>カテゴリ・タグ</h3>
+                    <h3>カテゴリ</h3>
                     <p>
-                        今後、検索や絞り込みに使う情報として追加します。
+                        案件を種類別に分類できます。あとから検索や絞り込みにも使いやすくなります。
                     </p>
                 </div>
 
