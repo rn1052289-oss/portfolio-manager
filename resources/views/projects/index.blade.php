@@ -63,6 +63,30 @@
                 </select>
             </div>
 
+            <div class="project-filter__field">
+                <label for="sort">並び替え</label>
+                <select id="sort" name="sort">
+                    <option value="latest" @selected(request('sort', 'latest') === 'latest')>
+                        新しい順
+                    </option>
+                    <option value="deadline_asc" @selected(request('sort') === 'deadline_asc')>
+                        納期が近い順
+                    </option>
+                    <option value="deadline_desc" @selected(request('sort') === 'deadline_desc')>
+                        納期が遠い順
+                    </option>
+                    <option value="oldest" @selected(request('sort') === 'oldest')>
+                        古い順
+                    </option>
+                    <option value="budget_desc" @selected(request('sort') === 'budget_desc')>
+                        予算が高い順
+                    </option>
+                    <option value="budget_asc" @selected(request('sort') === 'budget_asc')>
+                        予算が低い順
+                    </option>
+                </select>
+            </div>
+
             <div class="project-filter__actions">
                 <button type="submit" class="button button--dark">
                     検索

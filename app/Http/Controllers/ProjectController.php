@@ -18,8 +18,7 @@ class ProjectController extends Controller
 
         $query = auth()->user()
             ->projects()
-            ->with('category')
-            ->latest();
+            ->with('category');
 
         if ($request->filled('keyword')) {
             $keyword = $request->input('keyword');
@@ -43,6 +42,34 @@ class ProjectController extends Controller
         if ($request->filled('status')) {
             $query->where('status', $request->input('status'));
         }
+
+        $sort = $request->input('sort', 'latest');
+
+        match ($sort) {
+            'deadline_asc' => $query
+                ->orderByRaw('deadline IS NULL')
+                ->orderBy('deadline', 'asc')
+                ->orderBy('created_at', 'desc'),
+
+            'deadline_desc' => $query
+                ->orderByRaw('deadline IS NULL')
+                ->orderBy('deadline', 'desc')
+                ->orderBy('created_at', 'desc'),
+
+            'oldest' => $query->orderBy('created_at', 'asc'),
+
+            'budget_desc' => $query
+                ->orderByRaw('budget IS NULL')
+                ->orderBy('budget', 'desc')
+                ->orderBy('created_at', 'desc'),
+
+            'budget_asc' => $query
+                ->orderByRaw('budget IS NULL')
+                ->orderBy('budget', 'asc')
+                ->orderBy('created_at', 'desc'),
+
+            default => $query->orderBy('created_at', 'desc'),
+        };
 
         $projects = $query->paginate(10)->appends($request->query());
 
