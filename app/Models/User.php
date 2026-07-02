@@ -53,4 +53,12 @@ class User extends Authenticatable
     {
         return $this->hasMany(Category::class);
     }
+
+    /**
+     * ユーザーが作成したタグ一覧
+     */
+    public function tags(): HasMany
+    {
+        return $this->hasMany(Tag::class);
+    }
 }
