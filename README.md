@@ -1,66 +1,587 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# ClientWork Manager
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+小規模事業者・フリーランス向けの案件管理アプリです。  
+案件、クライアント、カテゴリ、進行状況、納期などを整理し、日々の制作業務を見える化することを目的に制作しています。
 
-## About Laravel
+LaravelのCRUD、認証、バリデーション、リレーション、検索・絞り込み、ページネーション、認可処理を学びながら、ポートフォリオとして実務案件でも説明できる構成を目指しています。
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 制作背景
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Web制作や小規模な開発案件では、案件数が増えるほど以下のような問題が起きやすくなります。
 
-## Learning Laravel
+- どの案件が進行中なのか分かりにくい
+- 納期が近い案件をすぐ確認できない
+- クライアントごとの案件管理が散らばる
+- 案件の種類や状態で絞り込みたい
+- メモ、タスク、ファイルなどを案件単位で整理したい
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+ClientWork Managerは、こうした課題を解決するための「案件管理ダッシュボード」として設計しました。
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+---
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## ターゲットユーザー
 
-## Laravel Sponsors
+- Web制作を行うフリーランス
+- 小規模制作会社
+- 個人事業主
+- 複数のクライアント案件を管理する人
+- Notionやスプレッドシートだけでは案件管理が複雑になってきた人
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+---
 
-### Premium Partners
+## 使用技術
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+| 分類           | 技術                         |
+| -------------- | ---------------------------- |
+| バックエンド   | PHP / Laravel 10.x           |
+| フロントエンド | Blade / HTML / CSS           |
+| 認証           | Laravel Fortify              |
+| データベース   | MySQL                        |
+| 開発環境       | Laravel Sail / Docker / WSL2 |
+| ビルド         | Vite / npm                   |
+| バージョン管理 | Git / GitHub                 |
 
-## Contributing
+---
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## 主な機能
 
-## Code of Conduct
+### 認証機能
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Laravel Fortifyを使用して、ログイン・ユーザー登録・ログアウト機能を実装しています。
 
-## Security Vulnerabilities
+実装内容：
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+- ユーザー登録
+- ログイン
+- ログアウト
+- 認証済みユーザーのみダッシュボード・案件管理画面へアクセス可能
+- 未ログイン時はログイン画面へリダイレクト
 
-## License
+実務でのポイント：
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+- 認証が必要な管理画面を `auth` ミドルウェアで保護
+- ユーザーごとに管理データを分離
+- ログインユーザー本人のデータだけを扱う設計
+
+---
+
+### 共通レイアウト・管理画面UI
+
+管理画面として使いやすいように、共通レイアウトを作成しています。
+
+実装内容：
+
+- サイドバー付き管理画面
+- ヘッダー
+- ダッシュボード
+- 案件管理画面
+- カテゴリ管理画面
+- レスポンシブ対応
+- PCではテーブル表示、スマホではカード表示
+
+デザイン方針：
+
+- ダークネイビーのサイドバー
+- 白背景を基調とした管理画面
+- カードUI
+- 角丸と余白を使った現代的な画面
+- 情報を探しやすい一覧レイアウト
+
+実務でのポイント：
+
+- 画面ごとのBladeを分け、保守しやすい構成にしています
+- CSSもページ単位で分割し、修正範囲を分かりやすくしています
+- PCとスマホで表示形式を切り替え、実案件でも使いやすいUIを意識しています
+
+---
+
+### 案件管理機能
+
+案件の登録・一覧表示・詳細表示・編集・削除ができます。
+
+実装内容：
+
+- 案件一覧
+- 案件登録
+- 案件詳細
+- 案件編集
+- 案件削除
+- ステータス管理
+- 予算管理
+- 開始日・納期管理
+- クライアント名の登録
+- 案件概要の登録
+- ページネーション
+
+主な項目：
+
+- 案件名
+- クライアント名
+- 案件概要
+- ステータス
+- 予算
+- 開始日
+- 納期
+- カテゴリ
+
+実務でのポイント：
+
+- Route Model Bindingを使い、URLの案件IDから自動的にProjectモデルを取得
+- Policyを使い、他ユーザーの案件を閲覧・編集・削除できないように制御
+- FormRequestを使い、登録・更新時のバリデーションをControllerから分離
+- Controllerを太らせすぎない構成を意識
+
+---
+
+### 案件検索・絞り込み・並び替え
+
+案件一覧では、条件を組み合わせて案件を探せます。
+
+実装内容：
+
+- キーワード検索
+- ステータス絞り込み
+- カテゴリ絞り込み
+- 並び替え
+- ページネーション時の検索条件維持
+
+対応している並び替え：
+
+- 新しい順
+- 古い順
+- 納期が近い順
+- 納期が遠い順
+- 予算が高い順
+- 予算が低い順
+
+実務でのポイント：
+
+- `where` と `orWhere` をグループ化し、検索条件が崩れないように実装
+- `category_id` がログインユーザー本人のカテゴリか確認してから絞り込み
+- `paginate()` と `appends($request->query())` を使い、ページ移動後も検索条件を保持
+- 一覧表示でカテゴリを表示するため、Eager LoadingでN+1問題を防止
+
+---
+
+### カテゴリ管理機能
+
+案件を分類するためのカテゴリを管理できます。
+
+実装内容：
+
+- カテゴリ一覧
+- カテゴリ登録
+- カテゴリ編集
+- カテゴリ削除
+- ユーザーごとのカテゴリ管理
+- 同じユーザー内でのカテゴリ名重複防止
+- 案件登録・編集時のカテゴリ選択
+- 案件一覧・詳細画面でのカテゴリ表示
+- カテゴリによる案件絞り込み
+
+設計のポイント：
+
+- `users` と `categories` は 1対多
+- `categories` と `projects` は 1対多
+- `projects.category_id` は nullable
+- カテゴリ削除時も案件自体は削除しない
+- `nullOnDelete()` により、カテゴリ削除時は案件の `category_id` を `null` にする
+
+実務でのポイント：
+
+カテゴリを削除したときに案件まで消えてしまうと、重要な業務データを失う可能性があります。  
+そのため、カテゴリ削除時は案件を残し、未分類に戻す設計にしています。
+
+また、案件登録・更新時には、選択されたカテゴリがログインユーザー本人のカテゴリかをFormRequestでチェックしています。  
+これにより、他ユーザーのカテゴリIDを不正に送信されても保存できないようにしています。
+
+---
+
+## ER設計の概要
+
+主なリレーションは以下です。
+
+```txt
+User
+ ├── hasMany Project
+ └── hasMany Category
+
+Category
+ ├── belongsTo User
+ └── hasMany Project
+
+Project
+ ├── belongsTo User
+ └── belongsTo Category
+```
+
+---
+
+## 主なテーブル設計
+
+### users
+
+Laravel標準のユーザーテーブルです。
+
+主な役割：
+
+- ログインユーザー情報の管理
+- 案件・カテゴリの所有者として使用
+
+---
+
+### projects
+
+案件情報を管理します。
+
+主なカラム：
+
+| カラム                  | 内容             |
+| ----------------------- | ---------------- |
+| id                      | 案件ID           |
+| user_id                 | 作成ユーザーID   |
+| category_id             | 紐づくカテゴリID |
+| title                   | 案件名           |
+| client_name             | クライアント名   |
+| description             | 案件概要         |
+| status                  | ステータス       |
+| budget                  | 予算             |
+| start_date              | 開始日           |
+| deadline                | 納期             |
+| created_at / updated_at | 作成日・更新日   |
+
+---
+
+### categories
+
+カテゴリ情報を管理します。
+
+主なカラム：
+
+| カラム                  | 内容           |
+| ----------------------- | -------------- |
+| id                      | カテゴリID     |
+| user_id                 | 作成ユーザーID |
+| name                    | カテゴリ名     |
+| created_at / updated_at | 作成日・更新日 |
+
+---
+
+## バリデーション
+
+案件登録・更新、カテゴリ登録・更新ではFormRequestを使用しています。
+
+実装している主なバリデーション：
+
+- 必須入力
+- 文字数制限
+- ステータスの許可値チェック
+- 予算の数値チェック
+- 日付チェック
+- 納期が開始日以降であること
+- カテゴリ名の重複禁止
+- 選択されたカテゴリがログインユーザー本人のものかチェック
+
+実務でのポイント：
+
+Controllerに直接バリデーションを書かず、FormRequestに分離することで、Controllerの責務を軽くし、保守しやすい構成にしています。
+
+---
+
+## 認可・セキュリティ
+
+このアプリでは、ログインユーザーごとにデータを分離しています。
+
+実装している対策：
+
+- ログインユーザー本人の案件のみ取得
+- ログインユーザー本人のカテゴリのみ取得
+- 他ユーザーの案件詳細・編集・削除を禁止
+- 他ユーザーのカテゴリIDを案件に紐づけられないよう制御
+- カテゴリ絞り込み時も本人のカテゴリか確認
+- FormRequestで不正な入力値を検証
+
+実務でのポイント：
+
+管理画面では、URLを直接変更して他人のデータにアクセスされる可能性があります。  
+そのため、画面に表示しないだけでなく、Controller・Policy・FormRequest側でも必ず制御しています。
+
+---
+
+## パフォーマンス面で意識したこと
+
+案件一覧ではカテゴリ名を表示するため、関連するカテゴリデータも必要になります。  
+そのため、Eager Loadingを使ってカテゴリを事前に読み込み、N+1問題を防いでいます。
+
+例：
+
+```php
+$query = auth()->user()
+    ->projects()
+    ->with('category');
+```
+
+実務でのポイント：
+
+一覧画面で関連データを表示する場合、データ件数が増えるほどSQLの回数が増えやすくなります。  
+`with()` を使うことで、無駄なSQLを減らし、パフォーマンスを保ちやすくしています。
+
+---
+
+## UI・デザインで意識したこと
+
+このアプリはポートフォリオ掲載を前提に、学習用の簡素な画面ではなく、実務案件に近い管理画面を意識して制作しています。
+
+意識したポイント：
+
+- 情報の優先順位が分かりやすい画面構成
+- 一覧画面では検索・絞り込み・並び替えを上部に配置
+- PCではテーブル、スマホではカードで表示
+- 詳細画面ではメイン情報と補助情報を2カラムで分離
+- 登録・編集画面では入力項目をセクション分け
+- ボタン・フォーム・カードの見た目を統一
+- 余白を広めに取り、管理画面らしい落ち着いた印象に調整
+
+---
+
+## 画面一覧
+
+| 画面             | 内容                           |
+| ---------------- | ------------------------------ |
+| ログイン画面     | ユーザー認証                   |
+| ユーザー登録画面 | 新規ユーザー登録               |
+| ダッシュボード   | 管理画面トップ                 |
+| 案件一覧         | 案件の検索・絞り込み・並び替え |
+| 案件登録         | 新規案件作成                   |
+| 案件詳細         | 案件情報の確認                 |
+| 案件編集         | 案件情報の更新                 |
+| カテゴリ管理     | カテゴリの登録・編集・削除     |
+
+---
+
+## セットアップ方法
+
+### 1. リポジトリをクローン
+
+```bash
+git clone リポジトリURL
+cd portfolio-manager
+```
+
+### 2. 依存関係をインストール
+
+```bash
+composer install
+npm install
+```
+
+### 3. 環境ファイルを作成
+
+```bash
+cp .env.example .env
+```
+
+### 4. Sailを起動
+
+```bash
+./vendor/bin/sail up -d
+```
+
+### 5. アプリケーションキーを生成
+
+```bash
+./vendor/bin/sail artisan key:generate
+```
+
+### 6. マイグレーションを実行
+
+```bash
+./vendor/bin/sail artisan migrate
+```
+
+### 7. フロントエンドを起動
+
+```bash
+./vendor/bin/sail npm run dev
+```
+
+### 8. ブラウザで確認
+
+```txt
+http://localhost
+```
+
+---
+
+## 開発時によく使うコマンド
+
+```bash
+# Sail起動
+./vendor/bin/sail up -d
+
+# Sail停止
+./vendor/bin/sail down
+
+# マイグレーション実行
+./vendor/bin/sail artisan migrate
+
+# マイグレーションを作り直す
+./vendor/bin/sail artisan migrate:fresh
+
+# Vite起動
+./vendor/bin/sail npm run dev
+
+# ルート確認
+./vendor/bin/sail artisan route:list
+
+# Tinker起動
+./vendor/bin/sail artisan tinker
+```
+
+---
+
+## こだわった実装
+
+### 1. ユーザーごとのデータ分離
+
+案件・カテゴリはログインユーザーに紐づけています。  
+他ユーザーのデータを表示・操作できないように、ControllerやPolicyで制御しています。
+
+---
+
+### 2. 他ユーザーのカテゴリIDを使わせない設計
+
+案件登録・更新時に、送信された `category_id` がログインユーザー本人のカテゴリか確認しています。
+
+```php
+Rule::exists('categories', 'id')->where(function ($query) {
+    $query->where('user_id', $this->user()->id);
+})
+```
+
+これにより、フォームを改ざんして他ユーザーのカテゴリIDを送信しても保存できません。
+
+---
+
+### 3. カテゴリ削除時に案件を消さない設計
+
+カテゴリを削除しても案件自体は残るようにしています。
+
+```php
+$table->foreignId('category_id')
+    ->nullable()
+    ->constrained()
+    ->nullOnDelete();
+```
+
+実務では案件データの方が重要なため、カテゴリ削除で案件まで消えないようにしています。
+
+---
+
+### 4. N+1問題を防ぐ一覧表示
+
+案件一覧でカテゴリを表示するため、`with('category')` を使ってカテゴリをまとめて取得しています。
+
+---
+
+### 5. 検索条件を維持したページネーション
+
+ページネーションで2ページ目に移動しても、検索条件・絞り込み条件・並び替え条件が維持されるようにしています。
+
+```php
+$projects = $query->paginate(10)->appends($request->query());
+```
+
+---
+
+## 今後追加したい機能
+
+今後は以下の機能を追加予定です。
+
+- タグ管理機能
+- 案件とタグの多対多リレーション
+- タスク管理機能
+- 顧客管理機能
+- 画像アップロード
+- 添付ファイル管理
+- 活動履歴・メモ機能
+- 請求管理
+- レポート機能
+- README用スクリーンショット追加
+- デプロイ
+
+---
+
+## このアプリで学んだこと
+
+- LaravelのMVCの流れ
+- Route / Controller / Model / View の役割
+- Bladeテンプレートの使い方
+- Laravel Fortifyによる認証
+- FormRequestによるバリデーション分離
+- Policyによる認可
+- Route Model Binding
+- Eloquentリレーション
+- hasMany / belongsTo
+- 外部キー制約
+- nullableなリレーション設計
+- Eager Loading
+- N+1問題
+- 検索・絞り込み
+- ページネーション
+- 並び替え
+- レスポンシブデザイン
+- Gitでの段階的な開発管理
+
+---
+
+## ポートフォリオで伝えたいポイント
+
+このアプリでは、単にCRUD機能を作るだけでなく、実務で必要になる以下の点を意識して実装しています。
+
+- 認証ユーザーごとのデータ管理
+- 不正アクセスを防ぐ認可処理
+- FormRequestによる入力値検証
+- リレーションを使ったDB設計
+- カテゴリ削除時に案件を残す安全な設計
+- N+1問題を意識したデータ取得
+- 検索・絞り込み・並び替えを備えた実用的な一覧画面
+- PC・スマホ両方で使いやすいレスポンシブUI
+- ポートフォリオとして見せられる管理画面デザイン
+
+---
+
+## 制作ステータス
+
+現在実装済み：
+
+- 認証機能
+- 共通レイアウト
+- ダッシュボード
+- 案件CRUD
+- 案件検索
+- ステータス絞り込み
+- カテゴリ管理CRUD
+- 案件カテゴリ紐づけ
+- カテゴリ絞り込み
+- 並び替え
+- ページネーション
+- レスポンシブ対応
+
+今後実装予定：
+
+- タグ機能
+- タスク管理
+- 顧客管理
+- ファイル管理
+- レポート
+- 請求管理
+
+---
+
+## 作者
+
+Web制作・Laravel学習のポートフォリオとして制作しています。  
+フロントエンドだけでなく、LaravelによるDB設計・認証・認可・検索機能まで含めた実務レベルのWebアプリ制作を目指しています。
