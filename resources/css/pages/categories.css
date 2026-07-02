@@ -193,7 +193,7 @@
     border: 0;
     border-radius: 10px;
     background: linear-gradient(135deg, #64748b, #334155);
-    cursor: not-allowed;
+    cursor: pointer;
 }
 
 .category-form__note {
@@ -226,6 +226,28 @@
     background: #f0fdf4;
     border: 1px solid #bbf7d0;
     border-radius: 12px;
+}
+
+.category-form__cancel {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 42px;
+    color: #475569;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.category-form__cancel:hover {
+    background: #eef2f7;
+    border-color: #94a3b8;
 }
 
 /* ==============================
@@ -340,11 +362,12 @@
     color: #334155;
     font-size: 13px;
     font-weight: 700;
+    text-decoration: none;
     white-space: nowrap;
     background: #ffffff;
     border: 1px solid #cbd5e1;
     border-radius: 8px;
-    cursor: not-allowed;
+    cursor: pointer;
 }
 
 .category-actions__button--danger {

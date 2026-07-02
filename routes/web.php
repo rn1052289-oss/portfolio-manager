@@ -39,4 +39,10 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/categories', [CategoryController::class, 'store'])
         ->name('categories.store');
+
+    Route::get('/categories/{category}/edit', [CategoryController::class, 'edit'])
+        ->name('categories.edit');
+
+    Route::put('/categories/{category}', [CategoryController::class, 'update'])
+        ->name('categories.update');
 });

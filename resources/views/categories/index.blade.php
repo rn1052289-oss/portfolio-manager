@@ -19,11 +19,19 @@
         <div class="category-layout">
             <section class="category-panel category-panel--form">
                 <div class="category-panel__header">
-                    <h2 class="category-panel__title">カテゴリ追加 / 編集</h2>
+                    <h2 class="category-panel__title">
+                        {{ $editingCategory ? 'カテゴリ編集' : 'カテゴリ追加' }}
+                    </h2>
                 </div>
 
-                <form class="category-form" action="{{ route('categories.store') }}" method="POST">
+                <form class="category-form"
+                    action="{{ $editingCategory ? route('categories.update', $editingCategory) : route('categories.store') }}"
+                    method="POST">
                     @csrf
+
+                    @if ($editingCategory)
+                        @method('PUT')
+                    @endif
 
                     <div class="form-group">
                         <label class="form-label" for="name">
@@ -31,7 +39,7 @@
                         </label>
 
                         <input id="name" class="form-input @error('name') is-invalid @enderror" type="text" name="name"
-                            value="{{ old('name') }}" placeholder="例）Webサイト制作">
+                            value="{{ old('name', $editingCategory?->name) }}" placeholder="例）Webサイト制作">
 
                         @error('name')
                             <p class="form-error">{{ $message }}</p>
@@ -45,7 +53,7 @@
 
                         <textarea id="description" class="form-textarea @error('description') is-invalid @enderror"
                             name="description" rows="6"
-                            placeholder="例）Webサイトの企画・デザイン・コーディングなど">{{ old('description') }}</textarea>
+                            placeholder="例）Webサイトの企画・デザイン・コーディングなど">{{ old('description', $editingCategory?->description) }}</textarea>
 
                         @error('description')
                             <p class="form-error">{{ $message }}</p>
@@ -53,8 +61,14 @@
                     </div>
 
                     <button class="category-form__button" type="submit">
-                        保存
+                        {{ $editingCategory ? '更新する' : '保存する' }}
                     </button>
+
+                    @if ($editingCategory)
+                        <a href="{{ route('categories.index') }}" class="category-form__cancel">
+                            編集をキャンセル
+                        </a>
+                    @endif
                 </form>
             </section>
 
@@ -109,9 +123,10 @@
 
                                         <td>
                                             <div class="category-actions">
-                                                <button class="category-actions__button" type="button">
+                                                <a href="{{ route('categories.edit', $category) }}"
+                                                    class="category-actions__button">
                                                     編集
-                                                </button>
+                                                </a>
 
                                                 <button class="category-actions__button category-actions__button--danger"
                                                     type="button">
