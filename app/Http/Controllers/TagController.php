@@ -10,9 +10,6 @@ use Illuminate\View\View;
 
 class TagController extends Controller
 {
-    /**
-     * タグ管理画面を表示する
-     */
     public function index(): View
     {
         $tags = auth()->user()
@@ -25,10 +22,6 @@ class TagController extends Controller
 
         return view('tags.index', compact('tags', 'editingTag'));
     }
-
-    /**
-     * タグを登録する
-     */
     public function store(StoreTagRequest $request): RedirectResponse
     {
         auth()->user()
@@ -39,10 +32,6 @@ class TagController extends Controller
             ->route('tags.index')
             ->with('success', 'タグを登録しました。');
     }
-
-    /**
-     * タグ編集画面を表示する
-     */
     public function edit(Tag $tag): View
     {
         abort_if($tag->user_id !== auth()->id(), 403);
@@ -57,10 +46,6 @@ class TagController extends Controller
 
         return view('tags.index', compact('tags', 'editingTag'));
     }
-
-    /**
-     * タグを更新する
-     */
     public function update(UpdateTagRequest $request, Tag $tag): RedirectResponse
     {
         abort_if($tag->user_id !== auth()->id(), 403);
@@ -70,5 +55,15 @@ class TagController extends Controller
         return redirect()
             ->route('tags.index')
             ->with('success', 'タグを更新しました。');
+    }
+    public function destroy(Tag $tag): RedirectResponse
+    {
+        abort_if($tag->user_id !== auth()->id(), 403);
+
+        $tag->delete();
+
+        return redirect()
+            ->route('tags.index')
+            ->with('success', 'タグを削除しました。');
     }
 }

@@ -316,6 +316,16 @@
     border-color: #fca5a5;
 }
 
+.tag-table__button--danger:hover {
+    border-color: #ef4444;
+    background: #fef2f2;
+    color: #b91c1c;
+}
+
+.tag-table__delete-form {
+    margin: 0;
+}
+
 .tag-list-card__chips {
     margin-top: 18px;
     padding-top: 16px;

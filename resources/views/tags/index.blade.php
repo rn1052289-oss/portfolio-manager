@@ -113,10 +113,16 @@
                                                     <a href="{{ route('tags.edit', $tag) }}" class="tag-table__button">
                                                         編集
                                                     </a>
-                                                    <button type="button" class="tag-table__button tag-table__button--danger"
-                                                        disabled>
-                                                        削除
-                                                    </button>
+                                                    <form action="{{ route('tags.destroy', $tag) }}" method="post"
+                                                        class="tag-table__delete-form"
+                                                        onsubmit="return confirm('このタグを削除しますか？案件からもこのタグの紐づきが解除されます。');">
+                                                        @csrf
+                                                        @method('DELETE')
+
+                                                        <button type="submit" class="tag-table__button tag-table__button--danger">
+                                                            削除
+                                                        </button>
+                                                    </form>
                                                 </div>
                                             </td>
                                         </tr>
