@@ -27,8 +27,13 @@
         <form method="GET" action="{{ route('projects.index') }}" class="project-filter">
             <div class="project-filter__field project-filter__field--keyword">
                 <label for="keyword">キーワード検索</label>
-                <input id="keyword" type="text" name="keyword" value="{{ request('keyword') }}"
-                    placeholder="案件名・クライアント名で検索">
+                <input
+                    id="keyword"
+                    type="text"
+                    name="keyword"
+                    value="{{ request('keyword') }}"
+                    placeholder="案件名・クライアント名で検索"
+                >
             </div>
 
             <div class="project-filter__field">
@@ -48,42 +53,22 @@
                 <label for="status">ステータス</label>
                 <select id="status" name="status">
                     <option value="">すべて</option>
-                    <option value="not_started" @selected(request('status') === 'not_started')>
-                        未着手
-                    </option>
-                    <option value="in_progress" @selected(request('status') === 'in_progress')>
-                        進行中
-                    </option>
-                    <option value="completed" @selected(request('status') === 'completed')>
-                        完了
-                    </option>
-                    <option value="paused" @selected(request('status') === 'paused')>
-                        保留
-                    </option>
+                    <option value="not_started" @selected(request('status') === 'not_started')>未着手</option>
+                    <option value="in_progress" @selected(request('status') === 'in_progress')>進行中</option>
+                    <option value="completed" @selected(request('status') === 'completed')>完了</option>
+                    <option value="paused" @selected(request('status') === 'paused')>保留</option>
                 </select>
             </div>
 
             <div class="project-filter__field">
                 <label for="sort">並び替え</label>
                 <select id="sort" name="sort">
-                    <option value="latest" @selected(request('sort', 'latest') === 'latest')>
-                        新しい順
-                    </option>
-                    <option value="deadline_asc" @selected(request('sort') === 'deadline_asc')>
-                        納期が近い順
-                    </option>
-                    <option value="deadline_desc" @selected(request('sort') === 'deadline_desc')>
-                        納期が遠い順
-                    </option>
-                    <option value="oldest" @selected(request('sort') === 'oldest')>
-                        古い順
-                    </option>
-                    <option value="budget_desc" @selected(request('sort') === 'budget_desc')>
-                        予算が高い順
-                    </option>
-                    <option value="budget_asc" @selected(request('sort') === 'budget_asc')>
-                        予算が低い順
-                    </option>
+                    <option value="latest" @selected(request('sort', 'latest') === 'latest')>新しい順</option>
+                    <option value="deadline_asc" @selected(request('sort') === 'deadline_asc')>納期が近い順</option>
+                    <option value="deadline_desc" @selected(request('sort') === 'deadline_desc')>納期が遠い順</option>
+                    <option value="oldest" @selected(request('sort') === 'oldest')>古い順</option>
+                    <option value="budget_desc" @selected(request('sort') === 'budget_desc')>予算が高い順</option>
+                    <option value="budget_asc" @selected(request('sort') === 'budget_asc')>予算が低い順</option>
                 </select>
             </div>
 
@@ -102,6 +87,7 @@
             <p class="project-count">
                 全 {{ $projects->total() }} 件
             </p>
+
             <p class="project-note">
                 PCではテーブル、スマホではカード表示に切り替わります。
             </p>
@@ -168,6 +154,7 @@
                                 <td>
                                     <div class="project-name">
                                         <span class="project-name__icon"></span>
+
                                         <div>
                                             <strong>{{ $project->title }}</strong>
                                             <p>WEB-{{ str_pad($project->id, 4, '0', STR_PAD_LEFT) }}</p>
@@ -207,8 +194,11 @@
 
                                 <td>
                                     <div class="project-tags-mini">
-                                        <span>Web</span>
-                                        <span>Laravel</span>
+                                        @forelse ($project->tags as $tag)
+                                            <span>{{ $tag->name }}</span>
+                                        @empty
+                                            <span class="project-tags-mini__empty">未設定</span>
+                                        @endforelse
                                     </div>
                                 </td>
 
@@ -218,26 +208,39 @@
                                     </span>
                                 </td>
 
-                                <td>
-                                    <div class="project-table-actions">
-                                        <a href="{{ route('projects.show', $project) }}" class="table-action-link">
-                                            詳細
-                                        </a>
+                                <td class="project-table__action-cell">
+                                    <div class="project-row-menu">
+                                        <details class="project-action-menu">
+                                            <summary class="project-action-menu__trigger" aria-label="操作メニューを開く">
+                                                <span></span>
+                                                <span></span>
+                                                <span></span>
+                                            </summary>
 
-                                        <a href="{{ route('projects.edit', $project) }}" class="table-action-link">
-                                            編集
-                                        </a>
+                                            <div class="project-action-menu__content">
+                                                <a href="{{ route('projects.show', $project) }}" class="project-action-menu__link">
+                                                    詳細を見る
+                                                </a>
 
-                                        <form action="{{ route('projects.destroy', $project) }}" method="POST"
-                                            class="project-inline-delete-form"
-                                            onsubmit="return confirm('この案件を削除しますか？この操作は取り消せません。');">
-                                            @csrf
-                                            @method('DELETE')
+                                                <a href="{{ route('projects.edit', $project) }}" class="project-action-menu__link">
+                                                    編集する
+                                                </a>
 
-                                            <button type="submit" class="table-action-link table-action-link--danger">
-                                                削除
-                                            </button>
-                                        </form>
+                                                <form
+                                                    action="{{ route('projects.destroy', $project) }}"
+                                                    method="POST"
+                                                    class="project-action-menu__form"
+                                                    onsubmit="return confirm('この案件を削除しますか？この操作は取り消せません。');"
+                                                >
+                                                    @csrf
+                                                    @method('DELETE')
+
+                                                    <button type="submit" class="project-action-menu__button project-action-menu__button--danger">
+                                                        削除する
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </details>
                                     </div>
                                 </td>
                             </tr>
@@ -276,6 +279,7 @@
                                         <h2 class="project-card__title">
                                             {{ $project->title }}
                                         </h2>
+
                                         <p class="project-card__client">
                                             {{ $project->client_name }}
                                         </p>
@@ -314,8 +318,11 @@
                                 </dl>
 
                                 <div class="project-tags-mini">
-                                    <span>Web</span>
-                                    <span>Laravel</span>
+                                    @forelse ($project->tags as $tag)
+                                        <span>{{ $tag->name }}</span>
+                                    @empty
+                                        <span class="project-tags-mini__empty">未設定</span>
+                                    @endforelse
                                 </div>
                             </div>
                         </div>
@@ -325,12 +332,16 @@
                                 詳細
                             </a>
 
-                            <a href="{{ route('projects.edit', $project) }}" class="button button--primary">
+                            <a href="{{ route('projects.edit', $project) }}" class="button button--secondary">
                                 編集
                             </a>
 
-                            <form action="{{ route('projects.destroy', $project) }}" method="POST" class="project-card-delete-form"
-                                onsubmit="return confirm('この案件を削除しますか？この操作は取り消せません。');">
+                            <form
+                                action="{{ route('projects.destroy', $project) }}"
+                                method="POST"
+                                class="project-card-delete-form"
+                                onsubmit="return confirm('この案件を削除しますか？この操作は取り消せません。');"
+                            >
                                 @csrf
                                 @method('DELETE')
 

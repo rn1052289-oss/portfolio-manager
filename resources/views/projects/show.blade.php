@@ -192,15 +192,25 @@
                 <section class="project-side-card">
                     <h3 class="project-side-card__title">タグ</h3>
 
-                    <div class="project-tags">
-                        <span>Web制作</span>
-                        <span>Laravel</span>
-                        <span>管理画面</span>
-                    </div>
+                    @if ($project->tags->isNotEmpty())
+                        <div class="project-tags">
+                            @foreach ($project->tags as $tag)
+                                <span>{{ $tag->name }}</span>
+                            @endforeach
+                        </div>
 
-                    <p class="project-side-card__note">
-                        タグ機能は今後DB化します。
-                    </p>
+                        <p class="project-side-card__note">
+                            この案件に紐づいているタグです。
+                        </p>
+                    @else
+                        <p class="project-empty-text">
+                            タグはまだ設定されていません。
+                        </p>
+
+                        <p class="project-side-card__note">
+                            編集画面からタグを設定できます。
+                        </p>
+                    @endif
                 </section>
 
                 <section class="project-side-card">

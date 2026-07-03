@@ -17,13 +17,9 @@
 
 .project-show-main,
 .project-show-side {
-    min-width: 0;
-}
-
-.project-show-main,
-.project-show-side {
     display: grid;
     gap: 16px;
+    min-width: 0;
 }
 
 .project-hero-card,
@@ -71,8 +67,8 @@
 .project-hero-card__meta {
     display: flex;
     flex-wrap: wrap;
-    gap: 12px;
     align-items: center;
+    gap: 12px;
     margin-top: 22px;
 }
 
@@ -175,8 +171,8 @@
 .project-progress__text {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
     align-items: center;
+    gap: 8px;
     margin: 0;
     color: #64748b;
     font-size: 13px;
@@ -208,6 +204,10 @@
 
 .project-side-card {
     padding: 18px;
+}
+
+.project-side-card .project-empty-text {
+    margin-top: 12px;
 }
 
 .project-thumbnail-placeholder {

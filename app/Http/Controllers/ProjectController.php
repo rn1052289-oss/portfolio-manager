@@ -19,7 +19,10 @@ class ProjectController extends Controller
 
         $query = auth()->user()
             ->projects()
-            ->with('category');
+            ->with([
+                'category',
+                'tags' => fn($query) => $query->orderBy('name'),
+            ]);
 
         if ($request->filled('keyword')) {
             $keyword = $request->input('keyword');
@@ -117,7 +120,10 @@ class ProjectController extends Controller
     {
         $this->authorize('view', $project);
 
-        $project->load('category');
+        $project->load([
+            'category',
+            'tags' => fn($query) => $query->orderBy('name'),
+        ]);
 
         return view('projects.show', compact('project'));
     }
