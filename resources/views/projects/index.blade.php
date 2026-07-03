@@ -24,6 +24,19 @@
             </a>
         </div>
 
+        @php
+            $selectedCategoryId = request('category_id');
+            $selectedTagId = request('tag_id');
+            $selectedStatus = request('status');
+            $selectedSort = request('sort', 'latest');
+
+            $hasActiveFilters = request()->filled('keyword')
+                || request()->filled('category_id')
+                || request()->filled('tag_id')
+                || request()->filled('status')
+                || request('sort', 'latest') !== 'latest';
+        @endphp
+
         <form method="GET" action="{{ route('projects.index') }}" class="project-filter">
             <div class="project-filter__field project-filter__field--keyword">
                 <label for="keyword">キーワード検索</label>
@@ -36,39 +49,58 @@
                 >
             </div>
 
-            <div class="project-filter__field">
+            <div class="project-filter__field project-filter__field--category">
                 <label for="category_id">カテゴリ</label>
                 <select id="category_id" name="category_id">
                     <option value="">すべて</option>
 
                     @foreach ($categories as $category)
-                        <option value="{{ $category->id }}" @selected((string) request('category_id') === (string) $category->id)>
+                        <option
+                            value="{{ $category->id }}"
+                            {{ (string) $selectedCategoryId === (string) $category->id ? 'selected' : '' }}
+                        >
                             {{ $category->name }}
                         </option>
                     @endforeach
                 </select>
             </div>
 
-            <div class="project-filter__field">
-                <label for="status">ステータス</label>
-                <select id="status" name="status">
+            <div class="project-filter__field project-filter__field--tag">
+                <label for="tag_id">タグ</label>
+                <select id="tag_id" name="tag_id">
                     <option value="">すべて</option>
-                    <option value="not_started" @selected(request('status') === 'not_started')>未着手</option>
-                    <option value="in_progress" @selected(request('status') === 'in_progress')>進行中</option>
-                    <option value="completed" @selected(request('status') === 'completed')>完了</option>
-                    <option value="paused" @selected(request('status') === 'paused')>保留</option>
+
+                    @foreach ($tags as $tag)
+                        <option
+                            value="{{ $tag->id }}"
+                            {{ (string) $selectedTagId === (string) $tag->id ? 'selected' : '' }}
+                        >
+                            {{ $tag->name }}
+                        </option>
+                    @endforeach
                 </select>
             </div>
 
-            <div class="project-filter__field">
+            <div class="project-filter__field project-filter__field--status">
+                <label for="status">ステータス</label>
+                <select id="status" name="status">
+                    <option value="">すべて</option>
+                    <option value="not_started" {{ $selectedStatus === 'not_started' ? 'selected' : '' }}>未着手</option>
+                    <option value="in_progress" {{ $selectedStatus === 'in_progress' ? 'selected' : '' }}>進行中</option>
+                    <option value="completed" {{ $selectedStatus === 'completed' ? 'selected' : '' }}>完了</option>
+                    <option value="paused" {{ $selectedStatus === 'paused' ? 'selected' : '' }}>保留</option>
+                </select>
+            </div>
+
+            <div class="project-filter__field project-filter__field--sort">
                 <label for="sort">並び替え</label>
                 <select id="sort" name="sort">
-                    <option value="latest" @selected(request('sort', 'latest') === 'latest')>新しい順</option>
-                    <option value="deadline_asc" @selected(request('sort') === 'deadline_asc')>納期が近い順</option>
-                    <option value="deadline_desc" @selected(request('sort') === 'deadline_desc')>納期が遠い順</option>
-                    <option value="oldest" @selected(request('sort') === 'oldest')>古い順</option>
-                    <option value="budget_desc" @selected(request('sort') === 'budget_desc')>予算が高い順</option>
-                    <option value="budget_asc" @selected(request('sort') === 'budget_asc')>予算が低い順</option>
+                    <option value="latest" {{ $selectedSort === 'latest' ? 'selected' : '' }}>新しい順</option>
+                    <option value="deadline_asc" {{ $selectedSort === 'deadline_asc' ? 'selected' : '' }}>納期が近い順</option>
+                    <option value="deadline_desc" {{ $selectedSort === 'deadline_desc' ? 'selected' : '' }}>納期が遠い順</option>
+                    <option value="oldest" {{ $selectedSort === 'oldest' ? 'selected' : '' }}>古い順</option>
+                    <option value="budget_desc" {{ $selectedSort === 'budget_desc' ? 'selected' : '' }}>予算が高い順</option>
+                    <option value="budget_asc" {{ $selectedSort === 'budget_asc' ? 'selected' : '' }}>予算が低い順</option>
                 </select>
             </div>
 
@@ -95,14 +127,25 @@
 
         @if ($projects->isEmpty())
             <div class="empty-card">
-                <h2 class="empty-card__title">まだ案件が登録されていません</h2>
-                <p class="empty-card__text">
-                    最初の案件を登録して、クライアントワークの管理を始めましょう。
-                </p>
+                @if ($hasActiveFilters)
+                    <h2 class="empty-card__title">条件に一致する案件が見つかりません</h2>
+                    <p class="empty-card__text">
+                        キーワード・カテゴリ・タグ・ステータスの条件を変更するか、検索条件をリセットしてください。
+                    </p>
 
-                <a href="{{ route('projects.create') }}" class="button button--primary">
-                    案件を登録する
-                </a>
+                    <a href="{{ route('projects.index') }}" class="button button--primary">
+                        検索条件をリセットする
+                    </a>
+                @else
+                    <h2 class="empty-card__title">まだ案件が登録されていません</h2>
+                    <p class="empty-card__text">
+                        最初の案件を登録して、クライアントワークの管理を始めましょう。
+                    </p>
+
+                    <a href="{{ route('projects.create') }}" class="button button--primary">
+                        案件を登録する
+                    </a>
+                @endif
             </div>
         @else
             @php

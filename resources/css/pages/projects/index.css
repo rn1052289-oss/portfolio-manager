@@ -3,7 +3,9 @@
 ============================== */
 
 .project-index-page {
+    width: 100%;
     max-width: 1120px;
+    min-width: 0;
 }
 
 /* ==============================
@@ -11,9 +13,17 @@
 ============================== */
 
 .project-filter {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-end;
+    display: grid;
+    grid-template-columns:
+        minmax(260px, 1.45fr)
+        minmax(130px, 0.75fr)
+        minmax(130px, 0.75fr)
+        minmax(130px, 0.75fr)
+        minmax(150px, 0.85fr);
+    grid-template-areas:
+        "keyword category tag status sort"
+        ". . . actions actions";
+    align-items: end;
     gap: 16px;
     width: 100%;
     max-width: 100%;
@@ -26,17 +36,41 @@
     box-shadow: 0 18px 40px rgba(15, 23, 42, 0.04);
 }
 
-.project-filter__field {
-    display: flex;
-    flex: 0 1 170px;
-    flex-direction: column;
-    gap: 8px;
-    min-width: 140px;
+.project-filter > * {
+    min-width: 0;
 }
 
-.project-filter__field--keyword {
-    flex: 1 1 280px;
-    min-width: 240px;
+.project-filter__field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+    min-width: 0;
+}
+
+.project-filter__field--keyword,
+.project-filter > .project-filter__field:nth-of-type(1) {
+    grid-area: keyword;
+}
+
+.project-filter__field--category,
+.project-filter > .project-filter__field:nth-of-type(2) {
+    grid-area: category;
+}
+
+.project-filter__field--tag,
+.project-filter > .project-filter__field:nth-of-type(3) {
+    grid-area: tag;
+}
+
+.project-filter__field--status,
+.project-filter > .project-filter__field:nth-of-type(4) {
+    grid-area: status;
+}
+
+.project-filter__field--sort,
+.project-filter > .project-filter__field:nth-of-type(5) {
+    grid-area: sort;
 }
 
 .project-filter__field label {
@@ -48,6 +82,7 @@
 .project-filter__field input,
 .project-filter__field select {
     width: 100%;
+    min-width: 0;
     height: 48px;
     box-sizing: border-box;
     padding: 0 16px;
@@ -73,17 +108,23 @@
 }
 
 .project-filter__actions {
+    grid-area: actions;
     display: flex;
-    flex: 0 0 auto;
     align-items: center;
     justify-content: flex-end;
     gap: 10px;
-    margin-left: auto;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    margin-left: 0;
+    justify-self: end;
 }
 
 .project-filter__actions .button {
+    flex: 0 0 auto;
     width: auto;
-    min-width: 86px;
+    min-width: 92px;
+    max-width: 100%;
     height: 48px;
     box-sizing: border-box;
     padding: 0 18px;
@@ -120,6 +161,8 @@
 ============================== */
 
 .project-table-wrap {
+    width: 100%;
+    max-width: 100%;
     overflow-x: auto;
     border: 1px solid #cbd5e1;
     border-radius: 8px;
@@ -161,6 +204,12 @@
 
 .project-table td:last-child {
     border-right: none;
+}
+
+.project-table th:nth-child(8),
+.project-table td:nth-child(8) {
+    width: 84px;
+    text-align: center;
 }
 
 .project-table th:nth-child(9),
@@ -532,6 +581,7 @@
     font-weight: 900;
     letter-spacing: -0.02em;
     line-height: 1.5;
+    overflow-wrap: anywhere;
 }
 
 .project-card__client {
@@ -539,6 +589,7 @@
     color: #475569;
     font-size: 12px;
     font-weight: 800;
+    overflow-wrap: anywhere;
 }
 
 .project-card__arrow {
@@ -589,6 +640,11 @@
     font-weight: 900;
 }
 
+/* タグ行をカード内で暴れさせない */
+.project-card .project-tags-mini {
+    margin-top: 12px;
+}
+
 .project-card__actions {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -627,26 +683,43 @@
    Projects Index Responsive
 ============================== */
 
-@media (max-width: 1180px) {
-    .project-filter__field {
-        flex: 1 1 calc(50% - 8px);
-    }
-
-    .project-filter__field--keyword {
-        flex-basis: 100%;
+/* 広い画面だけ、ワイヤーフレームに近い1行配置 */
+@media (min-width: 1680px) {
+    .project-filter {
+        grid-template-columns:
+            minmax(280px, 1.5fr)
+            minmax(130px, 0.75fr)
+            minmax(130px, 0.75fr)
+            minmax(130px, 0.75fr)
+            minmax(150px, 0.85fr)
+            auto;
+        grid-template-areas:
+            "keyword category tag status sort actions";
     }
 
     .project-filter__actions {
-        width: 100%;
-        margin-left: 0;
-        justify-content: flex-start;
-    }
-
-    .project-filter__actions .button {
         width: auto;
+        justify-self: end;
     }
 }
 
+/* ノートPCより狭い幅：2列で安定させる */
+@media (max-width: 1100px) {
+    .project-filter {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-areas:
+            "keyword keyword"
+            "category tag"
+            "status sort"
+            "actions actions";
+    }
+
+    .project-filter__actions {
+        justify-content: flex-start;
+    }
+}
+
+/* テーブルからカード表示へ切り替え */
 @media (max-width: 900px) {
     .project-table-wrap {
         display: none;
@@ -663,21 +736,29 @@
     }
 }
 
+/* スマホ幅：フォームを縦積みにする */
 @media (max-width: 760px) {
     .project-filter {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+            "keyword"
+            "category"
+            "tag"
+            "status"
+            "sort"
+            "actions";
+        gap: 14px;
         padding: 20px;
     }
 
-    .project-filter__field {
-        flex-basis: 100%;
-    }
-
     .project-filter__actions {
-        justify-content: stretch;
+        flex-direction: column;
+        align-items: stretch;
+        justify-content: flex-start;
     }
 
     .project-filter__actions .button {
-        flex: 1;
+        width: 100%;
     }
 }
 
@@ -688,15 +769,6 @@
 
     .project-filter {
         border-radius: 16px;
-    }
-
-    .project-filter__actions {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .project-filter__actions .button {
-        width: 100%;
     }
 
     .project-card {
@@ -711,6 +783,10 @@
     .project-card__icon {
         width: 52px;
         height: 52px;
+    }
+
+    .project-card__meta {
+        grid-template-columns: 1fr;
     }
 
     .project-card__actions {
@@ -736,5 +812,13 @@
     .empty-card {
         padding: 36px 20px;
         border-radius: 18px;
+    }
+
+    .empty-card__title {
+        font-size: 21px;
+    }
+
+    .empty-card__text {
+        font-size: 14px;
     }
 }

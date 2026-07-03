@@ -17,6 +17,11 @@ class ProjectController extends Controller
             ->orderBy('name')
             ->get();
 
+        $tags = auth()->user()
+            ->tags()
+            ->orderBy('name')
+            ->get();
+
         $query = auth()->user()
             ->projects()
             ->with([
@@ -38,6 +43,18 @@ class ProjectController extends Controller
 
             if ($categories->contains('id', $categoryId)) {
                 $query->where('category_id', $categoryId);
+            } else {
+                $query->whereRaw('1 = 0');
+            }
+        }
+
+        if ($request->filled('tag_id')) {
+            $tagId = (int) $request->input('tag_id');
+
+            if ($tags->contains('id', $tagId)) {
+                $query->whereHas('tags', function ($tagQuery) use ($tagId) {
+                    $tagQuery->where('tags.id', $tagId);
+                });
             } else {
                 $query->whereRaw('1 = 0');
             }
@@ -77,7 +94,7 @@ class ProjectController extends Controller
 
         $projects = $query->paginate(10)->appends($request->query());
 
-        return view('projects.index', compact('projects', 'categories'));
+        return view('projects.index', compact('projects', 'categories', 'tags'));
     }
 
     public function create()
