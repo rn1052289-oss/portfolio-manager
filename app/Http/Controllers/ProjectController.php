@@ -6,6 +6,7 @@ use App\Http\Requests\StoreProjectRequest;
 use App\Http\Requests\UpdateProjectRequest;
 use App\Models\Project;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ProjectController extends Controller
 {
@@ -83,14 +84,29 @@ class ProjectController extends Controller
             ->orderBy('name')
             ->get();
 
-        return view('projects.create', compact('categories'));
+        $tags = auth()->user()
+            ->tags()
+            ->orderBy('name')
+            ->get();
+
+        return view('projects.create', compact('categories', 'tags'));
     }
 
     public function store(StoreProjectRequest $request)
     {
-        auth()->user()
-            ->projects()
-            ->create($request->validated());
+        $validated = $request->validated();
+
+        $tagIds = $validated['tag_ids'] ?? [];
+
+        unset($validated['tag_ids']);
+
+        DB::transaction(function () use ($validated, $tagIds) {
+            $project = auth()->user()
+                ->projects()
+                ->create($validated);
+
+            $project->tags()->sync($tagIds);
+        });
 
         return redirect()
             ->route('projects.index')

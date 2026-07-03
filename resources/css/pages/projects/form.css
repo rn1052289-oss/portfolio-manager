@@ -20,13 +20,13 @@
     font-weight: 900;
 }
 
-.form-field label span {
+.form-field > label span {
     margin-left: 6px;
     color: #2563eb;
     font-size: 11px;
 }
 
-.form-field input,
+.form-field input:not([type="checkbox"]):not([type="radio"]),
 .form-field select,
 .form-field textarea {
     width: 100%;
@@ -39,7 +39,7 @@
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.form-field input,
+.form-field input:not([type="checkbox"]):not([type="radio"]),
 .form-field select {
     height: 46px;
     padding: 0 14px;
@@ -51,7 +51,7 @@
     resize: vertical;
 }
 
-.form-field input:focus,
+.form-field input:not([type="checkbox"]):not([type="radio"]):focus,
 .form-field select:focus,
 .form-field textarea:focus {
     border-color: #2563eb;
@@ -208,6 +208,151 @@
     margin-top: 8px;
 }
 
+/* ==============================
+   Category / Tag Select
+============================== */
+
+.form-field--tags {
+    margin-top: 24px;
+    padding-top: 22px;
+    border-top: 1px solid #e2e8f0;
+}
+
+.form-label-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.form-label-row label {
+    margin: 0;
+}
+
+.form-label-badge {
+    display: inline-flex;
+    align-items: center;
+    height: 22px;
+    padding: 0 8px;
+    border-radius: 999px;
+    background: #eff6ff;
+    color: #2563eb;
+    font-size: 11px;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.tag-check-list {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.tag-check {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 38px;
+    padding: 8px 10px;
+    border: 1px solid #d7e0ea;
+    border-radius: 10px;
+    background: #ffffff;
+    color: #111827;
+    font-size: 13px;
+    font-weight: 800;
+    line-height: 1.4;
+    cursor: pointer;
+    user-select: none;
+    transition:
+        border-color 0.2s ease,
+        background-color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
+}
+
+.tag-check:hover {
+    border-color: #93c5fd;
+    background: #f8fbff;
+    transform: translateY(-1px);
+}
+
+.tag-check__input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.tag-check__box {
+    position: relative;
+    flex: 0 0 16px;
+    width: 16px;
+    height: 16px;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 4px;
+    background: #ffffff;
+}
+
+.tag-check__text {
+    min-width: 0;
+    color: #334155;
+    font-size: 12px;
+    font-weight: 900;
+    line-height: 1.4;
+    word-break: break-word;
+}
+
+.tag-check__input:checked + .tag-check__box {
+    border-color: #2563eb;
+    background: #2563eb;
+}
+
+.tag-check__input:checked + .tag-check__box::after {
+    content: "";
+    position: absolute;
+    left: 4px;
+    top: 1px;
+    width: 5px;
+    height: 9px;
+    border: solid #ffffff;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.tag-check:has(.tag-check__input:checked) {
+    border-color: #2563eb;
+    background: #eff6ff;
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.12);
+}
+
+.tag-check:has(.tag-check__input:checked) .tag-check__text {
+    color: #1d4ed8;
+}
+
+.empty-inline {
+    padding: 14px 16px;
+    border: 1px dashed #cbd5e1;
+    border-radius: 12px;
+    background: #f8fafc;
+}
+
+.empty-inline__title {
+    margin: 0;
+    color: #111827;
+    font-size: 13px;
+    font-weight: 900;
+}
+
+.empty-inline__text {
+    margin: 6px 0 0;
+    color: #64748b;
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+/* ==============================
+   Project Editor Guide
+============================== */
+
 .project-editor-guide {
     display: flex;
     flex-direction: column;
@@ -284,6 +429,10 @@
     opacity: 0.72;
 }
 
+/* ==============================
+   Project Create / Edit Responsive
+============================== */
+
 @media (max-width: 1180px) {
     .project-editor-layout {
         grid-template-columns: 1fr;
@@ -321,6 +470,28 @@
     }
 
     .editor-actions {
+        grid-template-columns: 1fr;
+    }
+
+    .tag-check-list {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 520px) {
+    .form-help-row {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .form-label-row {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .tag-check-list {
         grid-template-columns: 1fr;
     }
 }
