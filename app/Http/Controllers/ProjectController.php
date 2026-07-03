@@ -131,14 +131,31 @@ class ProjectController extends Controller
             ->orderBy('name')
             ->get();
 
-        return view('projects.edit', compact('project', 'categories'));
+        $tags = auth()->user()
+            ->tags()
+            ->orderBy('name')
+            ->get();
+
+        $project->load('tags');
+
+        return view('projects.edit', compact('project', 'categories', 'tags'));
     }
 
     public function update(UpdateProjectRequest $request, Project $project)
     {
         $this->authorize('update', $project);
 
-        $project->update($request->validated());
+        $validated = $request->validated();
+
+        $tagIds = $validated['tag_ids'] ?? [];
+
+        unset($validated['tag_ids']);
+
+        DB::transaction(function () use ($project, $validated, $tagIds) {
+            $project->update($validated);
+
+            $project->tags()->sync($tagIds);
+        });
 
         return redirect()
             ->route('projects.show', $project)

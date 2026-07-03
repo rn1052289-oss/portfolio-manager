@@ -27,6 +27,10 @@ class UpdateProjectRequest extends FormRequest
             'client_name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:500'],
             'status' => ['required', 'in:not_started,in_progress,completed,paused'],
+            'budget' => ['nullable', 'integer', 'min:0'],
+            'start_date' => ['nullable', 'date'],
+            'deadline' => ['nullable', 'date', 'after_or_equal:start_date'],
+
             'category_id' => [
                 'nullable',
                 'integer',
@@ -34,9 +38,15 @@ class UpdateProjectRequest extends FormRequest
                     $query->where('user_id', $this->user()->id);
                 }),
             ],
-            'budget' => ['nullable', 'integer', 'min:0'],
-            'start_date' => ['nullable', 'date'],
-            'deadline' => ['nullable', 'date', 'after_or_equal:start_date'],
+
+            'tag_ids' => ['nullable', 'array'],
+
+            'tag_ids.*' => [
+                'integer',
+                Rule::exists('tags', 'id')->where(function ($query) {
+                    $query->where('user_id', $this->user()->id);
+                }),
+            ],
         ];
     }
 
@@ -72,6 +82,9 @@ class UpdateProjectRequest extends FormRequest
             'category_id.exists' => '選択されたカテゴリが正しくありません。',
             'category_id.integer' => 'カテゴリの値が正しくありません。',
             'budget.min' => '予算は0円以上で入力してください。',
+            'tag_ids.array' => 'タグの形式が正しくありません。',
+            'tag_ids.*.integer' => 'タグの値が正しくありません。',
+            'tag_ids.*.exists' => '選択されたタグが見つからないか、使用できないタグです。',
         ];
     }
 }
