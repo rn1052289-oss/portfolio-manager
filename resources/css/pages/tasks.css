@@ -1,0 +1,841 @@
+/* ==============================
+   Tasks Index
+============================== */
+
+.task-index-page {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 280px;
+    grid-template-areas:
+        "project progress"
+        "main progress";
+    align-items: start;
+    gap: 18px 24px;
+    width: 100%;
+    max-width: 1180px;
+    min-width: 0;
+}
+
+
+/* ==============================
+   Related Project Card
+============================== */
+
+.task-project-card {
+    grid-area: project;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    min-width: 0;
+    padding: 18px 20px;
+    border: 1px solid #dbe3ef;
+    border-radius: 16px;
+    background: #ffffff;
+    box-shadow: 0 14px 34px rgba(15, 23, 42, 0.05);
+}
+
+.task-project-card__content {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    min-width: 0;
+}
+
+.task-project-card__label {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    min-height: 34px;
+    padding: 6px 12px;
+    border: 1px solid #bfdbfe;
+    border-radius: 999px;
+    background: #eff6ff;
+    color: #1d4ed8;
+    font-size: 12px;
+    font-weight: 900;
+    white-space: nowrap;
+}
+
+.task-project-card__title {
+    margin: 0;
+    color: #0f172a;
+    font-size: 18px;
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+}
+
+.task-project-card__client {
+    margin: 4px 0 0;
+    color: #64748b;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+.task-project-card > .button {
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
+
+/* ==============================
+   Main Layout
+============================== */
+
+.task-index-layout {
+    display: contents;
+}
+
+.task-index-main {
+    grid-area: main;
+    min-width: 0;
+}
+
+
+/* ==============================
+   Task List Card
+============================== */
+
+.task-list-card {
+    overflow: hidden;
+    min-width: 0;
+    border: 1px solid #dbe3ef;
+    border-radius: 18px;
+    background: #ffffff;
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.06);
+}
+
+.task-list-card__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 20px 22px;
+    border-bottom: 1px solid #e2e8f0;
+    background:
+        linear-gradient(
+            180deg,
+            rgba(248, 250, 252, 0.96) 0%,
+            rgba(255, 255, 255, 1) 100%
+        );
+}
+
+.task-list-card__header .section-label {
+    margin-bottom: 6px;
+}
+
+.task-list-card__header .section-title {
+    margin: 0;
+    font-size: 22px;
+    line-height: 1.35;
+}
+
+.task-count-badge {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    min-width: 58px;
+    min-height: 34px;
+    padding: 6px 12px;
+    border: 1px solid #dbeafe;
+    border-radius: 999px;
+    background: #eff6ff;
+    color: #1d4ed8;
+    font-size: 13px;
+    font-weight: 900;
+    white-space: nowrap;
+}
+
+
+/* ==============================
+   Task Table
+============================== */
+
+.task-table-wrap {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+
+    /*
+     * テーブルがカード内に収まらない場合のみ
+     * 横スクロールを許可する
+     */
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    background: #ffffff;
+
+    /*
+     * スマホ・トラックパッドでの
+     * スクロール操作を滑らかにする
+     */
+    -webkit-overflow-scrolling: touch;
+}
+
+.task-table {
+    width: 100%;
+
+    /*
+     * タスク列を無理に潰さないための最低幅
+     * 大画面では100%に広がり、
+     * 狭い場合のみ横スクロールになる
+     */
+    min-width: 760px;
+
+    border-collapse: collapse;
+    table-layout: fixed;
+    font-size: 13px;
+}
+
+.task-table th {
+    padding: 13px 14px;
+    border-right: 1px solid #e2e8f0;
+    border-bottom: 1px solid #cbd5e1;
+    background: #f8fafc;
+    color: #475569;
+    font-size: 12px;
+    font-weight: 900;
+    line-height: 1.4;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.task-table td {
+    padding: 15px 14px;
+    border-right: 1px solid #eef2f7;
+    border-bottom: 1px solid #e2e8f0;
+    color: #1e293b;
+    vertical-align: middle;
+}
+
+.task-table th:last-child,
+.task-table td:last-child {
+    border-right: none;
+}
+
+.task-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.task-table tbody tr {
+    transition:
+        background-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.task-table tbody tr:hover {
+    background: #f8fafc;
+}
+
+
+/* ==============================
+   Task Table Column Width
+============================== */
+
+.task-table th:nth-child(1),
+.task-table td:nth-child(1) {
+    width: 31%;
+}
+
+.task-table th:nth-child(2),
+.task-table td:nth-child(2) {
+    width: 16%;
+}
+
+.task-table th:nth-child(3),
+.task-table td:nth-child(3) {
+    width: 13%;
+    text-align: center;
+}
+
+.task-table th:nth-child(4),
+.task-table td:nth-child(4) {
+    width: 18%;
+    text-align: center;
+}
+
+.task-table th:nth-child(5),
+.task-table td:nth-child(5) {
+    width: 22%;
+}
+
+
+/* ==============================
+   Task Table Parts
+============================== */
+
+.task-table__title {
+    display: block;
+    min-width: 0;
+    color: #0f172a;
+    font-size: 13px;
+    font-weight: 900;
+    line-height: 1.55;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+.task-table__date {
+    display: inline-block;
+    color: #334155;
+    font-size: 13px;
+    font-weight: 800;
+    line-height: 1.45;
+    white-space: nowrap;
+}
+
+.task-table__memo {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    overflow: hidden;
+    color: #64748b;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.55;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+/* ==============================
+   Priority Badge
+============================== */
+
+.task-index-page .priority-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    min-height: 30px;
+    padding: 5px 10px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 900;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.task-index-page .priority-badge--high {
+    border: 1px solid #fecaca;
+    background: #fef2f2;
+    color: #dc2626;
+}
+
+.task-index-page .priority-badge--middle {
+    border: 1px solid #fde68a;
+    background: #fffbeb;
+    color: #b45309;
+}
+
+.task-index-page .priority-badge--low {
+    border: 1px solid #bbf7d0;
+    background: #f0fdf4;
+    color: #15803d;
+}
+
+
+/* ==============================
+   Status Badge
+============================== */
+
+.task-status-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 76px;
+    min-height: 30px;
+    padding: 5px 10px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 900;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.task-status-badge--not-started {
+    border: 1px solid #cbd5e1;
+    background: #f8fafc;
+    color: #475569;
+}
+
+.task-status-badge--in-progress {
+    border: 1px solid #bfdbfe;
+    background: #eff6ff;
+    color: #1d4ed8;
+}
+
+.task-status-badge--completed {
+    border: 1px solid #bbf7d0;
+    background: #f0fdf4;
+    color: #15803d;
+}
+
+
+/* ==============================
+   Empty State
+============================== */
+
+.task-empty {
+    display: grid;
+    place-items: center;
+    min-height: 260px;
+    padding: 48px 24px;
+    text-align: center;
+}
+
+.task-empty__title {
+    margin: 0;
+    color: #0f172a;
+    font-size: 20px;
+    font-weight: 900;
+    letter-spacing: -0.02em;
+}
+
+.task-empty__text {
+    margin: 10px 0 0;
+    color: #64748b;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.7;
+}
+
+
+/* ==============================
+   Progress Card
+============================== */
+
+.task-progress-card {
+    grid-area: progress;
+    position: sticky;
+    top: 24px;
+    min-width: 0;
+    padding: 22px;
+    border: 1px solid #dbe3ef;
+    border-radius: 18px;
+    background: #ffffff;
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.07);
+}
+
+.task-progress-card .section-label {
+    margin-bottom: 6px;
+}
+
+.task-progress-card__title {
+    margin: 0;
+    color: #0f172a;
+    font-size: 18px;
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    line-height: 1.4;
+}
+
+
+/* ==============================
+   Progress Circle
+============================== */
+
+.task-progress-circle {
+    position: relative;
+    display: grid;
+    place-items: center;
+    align-content: center;
+    gap: 4px;
+    width: 158px;
+    aspect-ratio: 1;
+    margin: 28px auto;
+    border-radius: 50%;
+    background:
+        conic-gradient(
+            #2563eb 0 var(--progress-rate, 0%),
+            #e2e8f0 var(--progress-rate, 0%) 100%
+        );
+    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
+}
+
+.task-progress-circle::before {
+    content: "";
+    position: absolute;
+    inset: 13px;
+    border-radius: inherit;
+    background: #ffffff;
+    box-shadow:
+        inset 0 0 0 1px #e2e8f0,
+        0 6px 18px rgba(15, 23, 42, 0.04);
+}
+
+.task-progress-circle strong,
+.task-progress-circle span {
+    position: relative;
+    z-index: 1;
+}
+
+.task-progress-circle strong {
+    color: #0f172a;
+    font-size: 30px;
+    font-weight: 900;
+    letter-spacing: -0.04em;
+    line-height: 1;
+}
+
+.task-progress-circle span {
+    color: #64748b;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+
+/* ==============================
+   Progress Summary
+============================== */
+
+.task-progress-summary {
+    display: grid;
+    gap: 0;
+    margin: 0;
+    padding-top: 14px;
+    border-top: 1px solid #e2e8f0;
+}
+
+.task-progress-summary div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 12px 2px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.task-progress-summary div:last-child {
+    border-bottom: none;
+}
+
+.task-progress-summary dt {
+    position: relative;
+    padding-left: 20px;
+    color: #475569;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.task-progress-summary dt::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 10px;
+    height: 10px;
+    border: 2px solid #94a3b8;
+    border-radius: 50%;
+    transform: translateY(-50%);
+}
+
+.task-progress-summary div:first-child dt::before {
+    border-color: #22c55e;
+    background: #22c55e;
+}
+
+.task-progress-summary dd {
+    margin: 0;
+    color: #0f172a;
+    font-size: 15px;
+    font-weight: 900;
+}
+
+
+/* ==============================
+   Tasks Responsive
+============================== */
+
+/*
+ * ノートPC幅
+ * 補助情報である進捗カードを下へ移動し、
+ * 主役であるタスク一覧の横幅を優先する
+ */
+@media (max-width: 1280px) {
+    .task-index-page {
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-areas:
+            "project"
+            "main"
+            "progress";
+        gap: 18px;
+        max-width: none;
+    }
+
+    .task-progress-card {
+        position: static;
+        display: grid;
+        grid-template-columns:
+            minmax(0, 1fr)
+            160px
+            minmax(220px, 0.8fr);
+        grid-template-areas:
+            "label circle summary"
+            "title circle summary";
+        align-items: center;
+        column-gap: 24px;
+        row-gap: 4px;
+    }
+
+    .task-progress-card .section-label {
+        grid-area: label;
+        align-self: end;
+        margin-bottom: 0;
+    }
+
+    .task-progress-card__title {
+        grid-area: title;
+        align-self: start;
+    }
+
+    .task-progress-circle {
+        grid-area: circle;
+        width: 142px;
+        margin: 0 auto;
+    }
+
+    .task-progress-summary {
+        grid-area: summary;
+        margin: 0;
+        padding-top: 0;
+        padding-left: 24px;
+        border-top: none;
+        border-left: 1px solid #e2e8f0;
+    }
+
+    /*
+     * ノートPCでは一覧領域が広がるため、
+     * 横スクロールは必要な場合だけ発生する
+     */
+    .task-table {
+        min-width: 760px;
+    }
+}
+
+
+/*
+ * 小型ノートPC・タブレット横幅
+ */
+@media (max-width: 960px) {
+    .task-project-card {
+        align-items: flex-start;
+    }
+
+    .task-project-card__content {
+        align-items: flex-start;
+    }
+
+    .task-progress-card {
+        grid-template-columns:
+            minmax(0, 1fr)
+            150px;
+        grid-template-areas:
+            "label circle"
+            "title circle"
+            "summary summary";
+        row-gap: 20px;
+    }
+
+    .task-progress-summary {
+        padding-top: 14px;
+        padding-left: 0;
+        border-top: 1px solid #e2e8f0;
+        border-left: none;
+    }
+
+    .task-table {
+        min-width: 740px;
+    }
+}
+
+
+/*
+ * タブレット・大きめスマホ
+ */
+@media (max-width: 760px) {
+    .task-index-page {
+        gap: 16px;
+    }
+
+    .task-project-card {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 18px;
+    }
+
+    .task-project-card__content {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .task-project-card > .button {
+        width: 100%;
+    }
+
+    .task-list-card {
+        overflow: visible;
+        border-radius: 16px;
+    }
+
+    .task-list-card__header {
+        padding: 18px;
+    }
+
+    /*
+     * 760px以下ではテーブルをカードUIへ変更
+     * 横スクロールに頼らない
+     */
+    .task-table-wrap {
+        overflow: visible;
+        background: transparent;
+    }
+
+    .task-table {
+        display: block;
+        min-width: 0;
+        table-layout: auto;
+    }
+
+    .task-table thead {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        clip-path: inset(50%);
+        white-space: nowrap;
+    }
+
+    .task-table tbody {
+        display: grid;
+        gap: 12px;
+        padding: 14px;
+    }
+
+    .task-table tr {
+        display: grid;
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+        gap: 14px 16px;
+        padding: 16px;
+        border: 1px solid #dbe3ef;
+        border-radius: 14px;
+        background: #ffffff;
+        box-shadow: 0 10px 24px rgba(15, 23, 42, 0.05);
+    }
+
+    .task-table tbody tr:hover {
+        background: #ffffff;
+    }
+
+    .task-table td {
+        display: block;
+        width: auto !important;
+        padding: 0;
+        border: none;
+        text-align: left !important;
+    }
+
+    .task-table td::before {
+        display: block;
+        margin-bottom: 5px;
+        color: #94a3b8;
+        font-size: 11px;
+        font-weight: 900;
+        line-height: 1.3;
+    }
+
+    .task-table td:nth-child(1),
+    .task-table td:nth-child(5) {
+        grid-column: 1 / -1;
+    }
+
+    .task-table td:nth-child(1)::before {
+        content: "タスク名";
+    }
+
+    .task-table td:nth-child(2)::before {
+        content: "期限";
+    }
+
+    .task-table td:nth-child(3)::before {
+        content: "優先度";
+    }
+
+    .task-table td:nth-child(4)::before {
+        content: "ステータス";
+    }
+
+    .task-table td:nth-child(5)::before {
+        content: "メモ";
+    }
+
+    .task-table__memo {
+        max-width: none;
+        overflow: visible;
+        text-overflow: clip;
+        white-space: normal;
+    }
+
+    .task-progress-card {
+        display: block;
+        padding: 20px;
+    }
+
+    .task-progress-circle {
+        width: 150px;
+        margin: 24px auto;
+    }
+
+    .task-progress-summary {
+        padding-top: 14px;
+        padding-left: 0;
+        border-top: 1px solid #e2e8f0;
+        border-left: none;
+    }
+}
+
+
+/*
+ * スマホ
+ */
+@media (max-width: 520px) {
+    .task-list-card__header {
+        align-items: flex-start;
+    }
+
+    .task-list-card__header .section-title {
+        font-size: 20px;
+    }
+
+    .task-table tbody {
+        padding: 12px;
+    }
+
+    .task-table tr {
+        grid-template-columns: 1fr;
+    }
+
+    .task-table td:nth-child(1),
+    .task-table td:nth-child(5) {
+        grid-column: auto;
+    }
+
+    .task-project-card__title {
+        font-size: 17px;
+    }
+
+    .task-progress-circle {
+        width: 138px;
+    }
+
+    .task-progress-circle strong {
+        font-size: 27px;
+    }
+}

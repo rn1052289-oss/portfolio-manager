@@ -1,8 +1,9 @@
 <?php
 
-use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\TagController;
+use App\Http\Controllers\TaskController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -22,6 +23,9 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/projects', [ProjectController::class, 'store'])
         ->name('projects.store');
+
+    Route::get('/projects/{project}/tasks', [TaskController::class, 'index'])
+        ->name('projects.tasks.index');
 
     Route::get('/projects/{project}', [ProjectController::class, 'show'])
         ->name('projects.show');
