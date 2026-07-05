@@ -4,10 +4,10 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class User extends Authenticatable
 {
@@ -54,11 +54,12 @@ class User extends Authenticatable
         return $this->hasMany(Category::class);
     }
 
-    /**
-     * ユーザーが作成したタグ一覧
-     */
     public function tags(): HasMany
     {
         return $this->hasMany(Tag::class);
+    }
+    public function tasks(): HasMany
+    {
+        return $this->hasMany(Task::class);
     }
 }

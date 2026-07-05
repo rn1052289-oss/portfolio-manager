@@ -2,11 +2,12 @@
 
 namespace App\Models;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\User;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Project extends Model
 {
@@ -29,11 +30,17 @@ class Project extends Model
         'deadline' => 'date',
     ];
 
-    public function user()
+    /**
+     * 案件を所有するユーザー
+     */
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * 案件に紐づくカテゴリ
+     */
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
@@ -45,5 +52,13 @@ class Project extends Model
     public function tags(): BelongsToMany
     {
         return $this->belongsToMany(Tag::class)->withTimestamps();
+    }
+
+    /**
+     * 案件に紐づくタスク一覧
+     */
+    public function tasks(): HasMany
+    {
+        return $this->hasMany(Task::class);
     }
 }
