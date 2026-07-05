@@ -1,0 +1,182 @@
+/* ==============================
+   Task Shared Components
+============================== */
+
+
+/* ==============================
+   Related Project Card
+============================== */
+
+.task-project-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    min-width: 0;
+    padding: 18px 20px;
+    border: 1px solid #dbe3ef;
+    border-radius: 16px;
+    background: #ffffff;
+    box-shadow: 0 14px 34px rgba(15, 23, 42, 0.05);
+}
+
+.task-project-card__content {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    min-width: 0;
+}
+
+.task-project-card__body {
+    min-width: 0;
+}
+
+.task-project-card__label {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    min-height: 34px;
+    padding: 6px 12px;
+    border: 1px solid #bfdbfe;
+    border-radius: 999px;
+    background: #eff6ff;
+    color: #1d4ed8;
+    font-size: 12px;
+    font-weight: 900;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.task-project-card__title {
+    margin: 0;
+    color: #0f172a;
+    font-size: 18px;
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+}
+
+.task-project-card__client {
+    margin: 4px 0 0;
+    color: #64748b;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+
+/* ==============================
+   Project Card Actions
+============================== */
+
+.task-project-card__actions {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.task-project-card__actions .button {
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
+
+/* ==============================
+   Add Task Button
+============================== */
+
+.task-add-button {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    min-height: 42px;
+    padding: 10px 16px;
+    border: 1px solid #1d4ed8;
+    border-radius: 10px;
+    background: #2563eb;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 900;
+    line-height: 1;
+    text-decoration: none;
+    white-space: nowrap;
+    box-shadow: 0 8px 18px rgba(37, 99, 235, 0.18);
+    transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
+}
+
+.task-add-button:hover {
+    border-color: #1d4ed8;
+    background: #1d4ed8;
+    color: #ffffff;
+    box-shadow: 0 10px 22px rgba(37, 99, 235, 0.24);
+    transform: translateY(-1px);
+}
+
+.task-add-button:focus-visible {
+    outline: 3px solid rgba(59, 130, 246, 0.28);
+    outline-offset: 3px;
+}
+
+
+/* ==============================
+   Shared Responsive
+============================== */
+
+@media (max-width: 960px) {
+    .task-project-card {
+        align-items: flex-start;
+    }
+
+    .task-project-card__content {
+        align-items: flex-start;
+    }
+}
+
+
+@media (max-width: 760px) {
+    .task-project-card {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 18px;
+    }
+
+    .task-project-card__content {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .task-project-card__actions {
+        width: 100%;
+    }
+
+    .task-project-card__actions .button,
+    .task-project-card__actions .task-add-button {
+        flex: 1 1 0;
+    }
+}
+
+
+@media (max-width: 520px) {
+    .task-project-card__title {
+        font-size: 17px;
+    }
+
+    .task-project-card__actions {
+        flex-direction: column;
+    }
+
+    .task-project-card__actions .button,
+    .task-project-card__actions .task-add-button {
+        width: 100%;
+    }
+}

@@ -10,6 +10,17 @@
 
 @section('content')
     <section class="page-section task-index-page">
+        @if (session('success'))
+            <div class="task-flash task-flash--success" role="status">
+                <span class="task-flash__icon" aria-hidden="true">
+                    ✓
+                </span>
+
+                <p class="task-flash__message">
+                    {{ session('success') }}
+                </p>
+            </div>
+        @endif
         {{-- 関連案件 --}}
         <section class="task-project-card">
             <div class="task-project-card__content">
@@ -17,7 +28,7 @@
                     関連案件
                 </span>
 
-                <div>
+                <div class="task-project-card__body">
                     <h2 class="task-project-card__title">
                         {{ $project->title }}
                     </h2>
@@ -28,14 +39,22 @@
                 </div>
             </div>
 
-            <a href="{{ route('projects.show', $project) }}" class="button button--secondary">
-                案件詳細へ
-            </a>
+            <div class="task-project-card__actions">
+                <a href="{{ route('projects.show', $project) }}" class="button button--secondary">
+                    案件詳細へ
+                </a>
+
+                @if (auth()->user()->can('update', $project))
+                    <a href="{{ route('projects.tasks.create', $project) }}" class="task-add-button">
+                        ＋ タスクを追加
+                    </a>
+                @endif
+            </div>
         </section>
 
         {{-- タスク管理メインエリア --}}
         <div class="task-index-layout">
-            <div class="task-index-main">
+            <main class="task-index-main">
                 <section class="task-list-card">
                     <div class="task-list-card__header">
                         <div>
@@ -68,59 +87,57 @@
 
                                 <tbody>
                                     @foreach ($tasks as $task)
-                                                        <tr>
-                                                            <td>
-                                                                <strong class="task-table__title">
-                                                                    {{ $task->title }}
-                                                                </strong>
-                                                            </td>
+                                        <tr>
+                                            <td>
+                                                <strong class="task-table__title">
+                                                    {{ $task->title }}
+                                                </strong>
+                                            </td>
 
-                                                            <td>
-                                                                <span class="task-table__date">
-                                                                    {{ $task->due_date
-                                        ? $task->due_date->format('Y/m/d')
-                                        : '未設定' }}
-                                                                </span>
-                                                            </td>
+                                            <td>
+                                                <span class="task-table__date">
+                                                    {{ $task->due_date?->format('Y/m/d') ?? '未設定' }}
+                                                </span>
+                                            </td>
 
-                                                            <td>
-                                                                @if ($task->priority === 'high')
-                                                                    <span class="priority-badge priority-badge--high">
-                                                                        高
-                                                                    </span>
-                                                                @elseif ($task->priority === 'medium')
-                                                                    <span class="priority-badge priority-badge--middle">
-                                                                        中
-                                                                    </span>
-                                                                @else
-                                                                    <span class="priority-badge priority-badge--low">
-                                                                        低
-                                                                    </span>
-                                                                @endif
-                                                            </td>
+                                            <td>
+                                                @if ($task->priority === 'high')
+                                                    <span class="priority-badge priority-badge--high">
+                                                        高
+                                                    </span>
+                                                @elseif ($task->priority === 'medium')
+                                                    <span class="priority-badge priority-badge--middle">
+                                                        中
+                                                    </span>
+                                                @else
+                                                    <span class="priority-badge priority-badge--low">
+                                                        低
+                                                    </span>
+                                                @endif
+                                            </td>
 
-                                                            <td>
-                                                                @if ($task->status === 'not_started')
-                                                                    <span class="task-status-badge task-status-badge--not-started">
-                                                                        未着手
-                                                                    </span>
-                                                                @elseif ($task->status === 'in_progress')
-                                                                    <span class="task-status-badge task-status-badge--in-progress">
-                                                                        進行中
-                                                                    </span>
-                                                                @else
-                                                                    <span class="task-status-badge task-status-badge--completed">
-                                                                        完了
-                                                                    </span>
-                                                                @endif
-                                                            </td>
+                                            <td>
+                                                @if ($task->status === 'not_started')
+                                                    <span class="task-status-badge task-status-badge--not-started">
+                                                        未着手
+                                                    </span>
+                                                @elseif ($task->status === 'in_progress')
+                                                    <span class="task-status-badge task-status-badge--in-progress">
+                                                        進行中
+                                                    </span>
+                                                @else
+                                                    <span class="task-status-badge task-status-badge--completed">
+                                                        完了
+                                                    </span>
+                                                @endif
+                                            </td>
 
-                                                            <td>
-                                                                <span class="task-table__memo">
-                                                                    {{ $task->memo ?: '未設定' }}
-                                                                </span>
-                                                            </td>
-                                                        </tr>
+                                            <td>
+                                                <span class="task-table__memo">
+                                                    {{ $task->memo ?: '未設定' }}
+                                                </span>
+                                            </td>
+                                        </tr>
                                     @endforeach
                                 </tbody>
                             </table>
@@ -132,12 +149,20 @@
                             </h3>
 
                             <p class="task-empty__text">
-                                タスク登録機能は次のステップで追加します。
+                                「＋ タスクを追加」から最初のタスクを登録できます。
                             </p>
+
+                            @if (auth()->user()->can('update', $project))
+                                <div class="task-empty__actions">
+                                    <a href="{{ route('projects.tasks.create', $project) }}" class="task-add-button">
+                                        ＋ タスクを追加
+                                    </a>
+                                </div>
+                            @endif
                         </div>
                     @endif
                 </section>
-            </div>
+            </main>
 
             {{-- 進捗率 --}}
             <aside class="task-progress-card">

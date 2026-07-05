@@ -15,6 +15,12 @@ Route::middleware('auth')->group(function () {
         return view('dashboard');
     })->name('dashboard');
 
+    /*
+    |--------------------------------------------------------------------------
+    | Projects
+    |--------------------------------------------------------------------------
+    */
+
     Route::get('/projects', [ProjectController::class, 'index'])
         ->name('projects.index');
 
@@ -24,8 +30,26 @@ Route::middleware('auth')->group(function () {
     Route::post('/projects', [ProjectController::class, 'store'])
         ->name('projects.store');
 
+    /*
+    |--------------------------------------------------------------------------
+    | Project Tasks
+    |--------------------------------------------------------------------------
+    */
+
     Route::get('/projects/{project}/tasks', [TaskController::class, 'index'])
         ->name('projects.tasks.index');
+
+    Route::get('/projects/{project}/tasks/create', [TaskController::class, 'create'])
+        ->name('projects.tasks.create');
+
+    Route::post('/projects/{project}/tasks', [TaskController::class, 'store'])
+        ->name('projects.tasks.store');
+
+    /*
+    |--------------------------------------------------------------------------
+    | Project Detail / Edit / Delete
+    |--------------------------------------------------------------------------
+    */
 
     Route::get('/projects/{project}', [ProjectController::class, 'show'])
         ->name('projects.show');
@@ -38,6 +62,12 @@ Route::middleware('auth')->group(function () {
 
     Route::delete('/projects/{project}', [ProjectController::class, 'destroy'])
         ->name('projects.destroy');
+
+    /*
+    |--------------------------------------------------------------------------
+    | Categories
+    |--------------------------------------------------------------------------
+    */
 
     Route::get('/categories', [CategoryController::class, 'index'])
         ->name('categories.index');
@@ -53,6 +83,12 @@ Route::middleware('auth')->group(function () {
 
     Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])
         ->name('categories.destroy');
+
+    /*
+    |--------------------------------------------------------------------------
+    | Tags
+    |--------------------------------------------------------------------------
+    */
 
     Route::get('/tags', [TagController::class, 'index'])
         ->name('tags.index');

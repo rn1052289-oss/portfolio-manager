@@ -6,7 +6,9 @@
 @import './pages/projects.css';
 @import './pages/categories.css';
 @import './pages/tags.css';
-@import './pages/tasks.css';
+@import './pages/tasks/common.css';
+@import './pages/tasks/index.css';
+@import './pages/tasks/create.css';
 
 :root {
     --color-bg: #f4f7fb;

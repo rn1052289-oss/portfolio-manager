@@ -15,70 +15,72 @@
     min-width: 0;
 }
 
+/*
+ * 成功メッセージが存在する場合だけ
+ * 最上段に専用行を追加する
+ *
+ * これにより、フラッシュメッセージ消滅後に
+ * 不要な空白行が残らない
+ */
+.task-index-page:has(> .task-flash) {
+    grid-template-areas:
+        "flash flash"
+        "project progress"
+        "main progress";
+}
+
+.task-index-page > .task-project-card {
+    grid-area: project;
+}
+
 
 /* ==============================
-   Related Project Card
+   Flash Message
 ============================== */
 
-.task-project-card {
-    grid-area: project;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 24px;
-    min-width: 0;
-    padding: 18px 20px;
-    border: 1px solid #dbe3ef;
-    border-radius: 16px;
-    background: #ffffff;
-    box-shadow: 0 14px 34px rgba(15, 23, 42, 0.05);
+.task-index-page > .task-flash {
+    grid-area: flash;
 }
 
-.task-project-card__content {
+.task-flash {
     display: flex;
     align-items: center;
-    gap: 18px;
+    gap: 12px;
     min-width: 0;
+    padding: 14px 16px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 800;
+    line-height: 1.6;
 }
 
-.task-project-card__label {
+.task-flash--success {
+    border: 1px solid #bbf7d0;
+    background: #f0fdf4;
+    color: #166534;
+    box-shadow:
+        0 10px 24px rgba(22, 101, 52, 0.06);
+}
+
+.task-flash__icon {
     display: inline-flex;
-    flex-shrink: 0;
+    flex: 0 0 auto;
     align-items: center;
     justify-content: center;
-    min-height: 34px;
-    padding: 6px 12px;
-    border: 1px solid #bfdbfe;
-    border-radius: 999px;
-    background: #eff6ff;
-    color: #1d4ed8;
-    font-size: 12px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #22c55e;
+    color: #ffffff;
+    font-size: 14px;
     font-weight: 900;
-    white-space: nowrap;
+    line-height: 1;
 }
 
-.task-project-card__title {
+.task-flash__message {
+    min-width: 0;
     margin: 0;
-    color: #0f172a;
-    font-size: 18px;
-    font-weight: 900;
-    letter-spacing: -0.02em;
-    line-height: 1.45;
     overflow-wrap: anywhere;
-}
-
-.task-project-card__client {
-    margin: 4px 0 0;
-    color: #64748b;
-    font-size: 13px;
-    font-weight: 700;
-    line-height: 1.5;
-    overflow-wrap: anywhere;
-}
-
-.task-project-card > .button {
-    flex-shrink: 0;
-    white-space: nowrap;
 }
 
 
@@ -106,7 +108,8 @@
     border: 1px solid #dbe3ef;
     border-radius: 18px;
     background: #ffffff;
-    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.06);
+    box-shadow:
+        0 18px 40px rgba(15, 23, 42, 0.06);
 }
 
 .task-list-card__header {
@@ -133,6 +136,11 @@
     font-size: 22px;
     line-height: 1.35;
 }
+
+
+/* ==============================
+   Task Count Badge
+============================== */
 
 .task-count-badge {
     display: inline-flex;
@@ -162,7 +170,7 @@
     min-width: 0;
 
     /*
-     * テーブルがカード内に収まらない場合のみ
+     * カード内に収まらない場合だけ
      * 横スクロールを許可する
      */
     overflow-x: auto;
@@ -171,8 +179,8 @@
     background: #ffffff;
 
     /*
-     * スマホ・トラックパッドでの
-     * スクロール操作を滑らかにする
+     * スマホ・トラックパッドで
+     * 滑らかにスクロールする
      */
     -webkit-overflow-scrolling: touch;
 }
@@ -181,8 +189,7 @@
     width: 100%;
 
     /*
-     * タスク列を無理に潰さないための最低幅
-     * 大画面では100%に広がり、
+     * 各列を無理に潰さない最低幅
      * 狭い場合のみ横スクロールになる
      */
     min-width: 760px;
@@ -405,6 +412,12 @@
     line-height: 1.7;
 }
 
+.task-empty__actions {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
 
 /* ==============================
    Progress Card
@@ -419,7 +432,8 @@
     border: 1px solid #dbe3ef;
     border-radius: 18px;
     background: #ffffff;
-    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.07);
+    box-shadow:
+        0 18px 40px rgba(15, 23, 42, 0.07);
 }
 
 .task-progress-card .section-label {
@@ -455,7 +469,8 @@
             #2563eb 0 var(--progress-rate, 0%),
             #e2e8f0 var(--progress-rate, 0%) 100%
         );
-    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
+    box-shadow:
+        0 10px 28px rgba(15, 23, 42, 0.08);
 }
 
 .task-progress-circle::before {
@@ -549,12 +564,13 @@
 
 
 /* ==============================
-   Tasks Responsive
+   Tasks Index Responsive
 ============================== */
 
 /*
  * ノートPC幅
- * 補助情報である進捗カードを下へ移動し、
+ *
+ * 進捗カードを下へ移動し、
  * 主役であるタスク一覧の横幅を優先する
  */
 @media (max-width: 1280px) {
@@ -566,6 +582,18 @@
             "progress";
         gap: 18px;
         max-width: none;
+    }
+
+    /*
+     * 成功メッセージがある場合だけ
+     * 最上段へ追加する
+     */
+    .task-index-page:has(> .task-flash) {
+        grid-template-areas:
+            "flash"
+            "project"
+            "main"
+            "progress";
     }
 
     .task-progress-card {
@@ -610,8 +638,8 @@
     }
 
     /*
-     * ノートPCでは一覧領域が広がるため、
-     * 横スクロールは必要な場合だけ発生する
+     * 一覧領域は広がるが、
+     * 必要な場合だけ横スクロールする
      */
     .task-table {
         min-width: 760px;
@@ -623,14 +651,6 @@
  * 小型ノートPC・タブレット横幅
  */
 @media (max-width: 960px) {
-    .task-project-card {
-        align-items: flex-start;
-    }
-
-    .task-project-card__content {
-        align-items: flex-start;
-    }
-
     .task-progress-card {
         grid-template-columns:
             minmax(0, 1fr)
@@ -663,21 +683,6 @@
         gap: 16px;
     }
 
-    .task-project-card {
-        flex-direction: column;
-        align-items: stretch;
-        padding: 18px;
-    }
-
-    .task-project-card__content {
-        flex-direction: column;
-        gap: 12px;
-    }
-
-    .task-project-card > .button {
-        width: 100%;
-    }
-
     .task-list-card {
         overflow: visible;
         border-radius: 16px;
@@ -688,7 +693,7 @@
     }
 
     /*
-     * 760px以下ではテーブルをカードUIへ変更
+     * 760px以下ではテーブルをカードUI化
      * 横スクロールに頼らない
      */
     .task-table-wrap {
@@ -727,7 +732,8 @@
         border: 1px solid #dbe3ef;
         border-radius: 14px;
         background: #ffffff;
-        box-shadow: 0 10px 24px rgba(15, 23, 42, 0.05);
+        box-shadow:
+            0 10px 24px rgba(15, 23, 42, 0.05);
     }
 
     .task-table tbody tr:hover {
@@ -806,6 +812,16 @@
  * スマホ
  */
 @media (max-width: 520px) {
+    .task-flash {
+        align-items: flex-start;
+        padding: 13px 14px;
+    }
+
+    .task-flash__icon {
+        width: 26px;
+        height: 26px;
+    }
+
     .task-list-card__header {
         align-items: flex-start;
     }
@@ -825,10 +841,6 @@
     .task-table td:nth-child(1),
     .task-table td:nth-child(5) {
         grid-column: auto;
-    }
-
-    .task-project-card__title {
-        font-size: 17px;
     }
 
     .task-progress-circle {

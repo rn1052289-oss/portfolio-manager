@@ -1,0 +1,456 @@
+/* ==============================
+   Task Create Page
+============================== */
+
+.task-create-page {
+    display: grid;
+    gap: 18px;
+    width: 100%;
+    max-width: 920px;
+    min-width: 0;
+}
+
+
+/* ==============================
+   Create Card
+============================== */
+
+.task-create-card {
+    overflow: hidden;
+    min-width: 0;
+    border: 1px solid #dbe3ef;
+    border-radius: 18px;
+    background: #ffffff;
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.06);
+}
+
+.task-create-card__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 20px 22px;
+    border-bottom: 1px solid #e2e8f0;
+    background:
+        linear-gradient(
+            180deg,
+            rgba(248, 250, 252, 0.96) 0%,
+            rgba(255, 255, 255, 1) 100%
+        );
+}
+
+.task-create-card__header .section-label {
+    margin-bottom: 6px;
+}
+
+.task-create-card__header .section-title {
+    margin: 0;
+    font-size: 22px;
+    line-height: 1.35;
+}
+
+.task-create-card__required-note {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: 4px;
+    color: #64748b;
+    font-size: 12px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.task-create-card__required-note span {
+    color: #dc2626;
+}
+
+
+/* ==============================
+   Form
+============================== */
+
+.task-form {
+    min-width: 0;
+}
+
+.task-form__body {
+    display: grid;
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+    gap: 24px 20px;
+    padding: 26px 24px 28px;
+}
+
+
+/* ==============================
+   Form Group
+============================== */
+
+.task-form-group {
+    min-width: 0;
+}
+
+.task-form-group--full {
+    grid-column: 1 / -1;
+}
+
+
+/* ==============================
+   Form Label
+============================== */
+
+.task-form-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 9px;
+    color: #1e293b;
+    font-size: 13px;
+    font-weight: 900;
+    line-height: 1.4;
+}
+
+.task-form-label__required {
+    color: #dc2626;
+    font-size: 13px;
+    font-weight: 900;
+}
+
+
+/* ==============================
+   Form Controls
+============================== */
+
+.task-form-control {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    min-height: 46px;
+    padding: 11px 13px;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    outline: none;
+    background: #ffffff;
+    color: #0f172a;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.5;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        background-color 0.2s ease;
+}
+
+.task-form-control::placeholder {
+    color: #94a3b8;
+    opacity: 1;
+}
+
+.task-form-control:hover {
+    border-color: #94a3b8;
+}
+
+.task-form-control:focus {
+    border-color: #2563eb;
+    box-shadow:
+        0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.task-form-control--error {
+    border-color: #ef4444;
+    background: #fffafa;
+}
+
+.task-form-control--error:focus {
+    border-color: #dc2626;
+    box-shadow:
+        0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+
+/* ==============================
+   Select
+============================== */
+
+.task-form-select-wrap {
+    position: relative;
+}
+
+.task-form-select-wrap::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: 15px;
+    width: 8px;
+    height: 8px;
+    border-right: 2px solid #64748b;
+    border-bottom: 2px solid #64748b;
+    pointer-events: none;
+    transform:
+        translateY(-70%)
+        rotate(45deg);
+}
+
+.task-form-select {
+    padding-right: 42px;
+    appearance: none;
+    cursor: pointer;
+}
+
+
+/* ==============================
+   Date
+============================== */
+
+.task-form-control--date {
+    cursor: pointer;
+}
+
+
+/* ==============================
+   Textarea
+============================== */
+
+.task-form-textarea {
+    min-height: 150px;
+    resize: vertical;
+}
+
+
+/* ==============================
+   Form Help / Meta
+============================== */
+
+.task-form-meta {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 7px;
+}
+
+.task-form-help {
+    margin: 7px 0 0;
+    color: #64748b;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.6;
+}
+
+.task-form-meta .task-form-help {
+    margin: 0;
+}
+
+.task-form-limit {
+    flex-shrink: 0;
+    color: #94a3b8;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1.6;
+    white-space: nowrap;
+}
+
+
+/* ==============================
+   Field Error
+============================== */
+
+.task-form-error {
+    margin: 7px 0 0;
+    color: #dc2626;
+    font-size: 12px;
+    font-weight: 800;
+    line-height: 1.55;
+}
+
+
+/* ==============================
+   Error Alert
+============================== */
+
+.task-form-alert {
+    margin: 24px 24px 0;
+    padding: 16px 18px;
+    border: 1px solid #fecaca;
+    border-radius: 12px;
+    background: #fef2f2;
+}
+
+.task-form-alert__title {
+    margin: 0;
+    color: #b91c1c;
+    font-size: 14px;
+    font-weight: 900;
+    line-height: 1.5;
+}
+
+.task-form-alert__list {
+    display: grid;
+    gap: 5px;
+    margin: 10px 0 0;
+    padding-left: 20px;
+    color: #dc2626;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.6;
+}
+
+
+/* ==============================
+   Form Actions
+============================== */
+
+.task-form__actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 20px 24px;
+    border-top: 1px solid #e2e8f0;
+    background: #f8fafc;
+}
+
+.task-form-cancel,
+.task-form-submit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 10px 18px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 900;
+    line-height: 1;
+    text-decoration: none;
+    white-space: nowrap;
+    transition:
+        border-color 0.2s ease,
+        background-color 0.2s ease,
+        color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
+}
+
+.task-form-cancel {
+    border: 1px solid #cbd5e1;
+    background: #ffffff;
+    color: #475569;
+}
+
+.task-form-cancel:hover {
+    border-color: #94a3b8;
+    background: #f8fafc;
+    color: #0f172a;
+}
+
+.task-form-submit {
+    border: 1px solid #1d4ed8;
+    background: #2563eb;
+    color: #ffffff;
+    box-shadow:
+        0 8px 18px rgba(37, 99, 235, 0.18);
+    cursor: pointer;
+}
+
+.task-form-submit:hover {
+    border-color: #1d4ed8;
+    background: #1d4ed8;
+    box-shadow:
+        0 10px 22px rgba(37, 99, 235, 0.24);
+    transform: translateY(-1px);
+}
+
+.task-form-cancel:focus-visible,
+.task-form-submit:focus-visible {
+    outline: 3px solid rgba(59, 130, 246, 0.28);
+    outline-offset: 3px;
+}
+
+
+/* ==============================
+   Task Create Responsive
+============================== */
+
+@media (max-width: 760px) {
+    .task-create-page {
+        gap: 16px;
+    }
+
+    .task-create-card {
+        border-radius: 16px;
+    }
+
+    .task-create-card__header {
+        padding: 18px;
+    }
+
+    .task-form__body {
+        grid-template-columns: 1fr;
+        gap: 22px;
+        padding: 22px 18px 24px;
+    }
+
+    .task-form-group--full {
+        grid-column: auto;
+    }
+
+    .task-form-alert {
+        margin:
+            20px
+            18px
+            0;
+    }
+
+    .task-form__actions {
+        padding: 18px;
+    }
+}
+
+
+@media (max-width: 520px) {
+    .task-create-card__header {
+        align-items: flex-start;
+    }
+
+    .task-create-card__header .section-title {
+        font-size: 20px;
+    }
+
+    .task-create-card__required-note {
+        margin-top: 3px;
+    }
+
+    .task-form__body {
+        padding:
+            20px
+            16px
+            22px;
+    }
+
+    .task-form-meta {
+        display: block;
+    }
+
+    .task-form-limit {
+        display: block;
+        margin-top: 4px;
+    }
+
+    .task-form-alert {
+        margin:
+            18px
+            16px
+            0;
+    }
+
+    .task-form__actions {
+        flex-direction: column-reverse;
+        padding: 16px;
+    }
+
+    .task-form-cancel,
+    .task-form-submit {
+        width: 100%;
+    }
+}
