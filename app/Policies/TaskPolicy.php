@@ -14,4 +14,12 @@ class TaskPolicy
     {
         return $user->id === $task->user_id;
     }
+
+    /**
+     * タスクを削除できるか判定する。
+     */
+    public function delete(User $user, Task $task): bool
+    {
+        return $user->id === $task->user_id;
+    }
 }

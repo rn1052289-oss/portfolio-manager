@@ -125,4 +125,19 @@ class TaskController extends Controller
             ->route('projects.tasks.index', $project)
             ->with('success', 'タスクを更新しました。');
     }
+
+    /**
+     * タスクを削除する。
+     */
+    public function destroy(Project $project, Task $task)
+    {
+        $this->authorize('view', $project);
+        $this->authorize('delete', $task);
+
+        $task->delete();
+
+        return redirect()
+            ->route('projects.tasks.index', $project)
+            ->with('success', 'タスクを削除しました。');
+    }
 }

@@ -31,10 +31,10 @@ Route::middleware('auth')->group(function () {
         ->name('projects.store');
 
     /*
-    |--------------------------------------------------------------------------
-    | Project Tasks
-    |--------------------------------------------------------------------------
-    */
+|--------------------------------------------------------------------------
+| Project Tasks
+|--------------------------------------------------------------------------
+*/
 
     Route::get('/projects/{project}/tasks', [TaskController::class, 'index'])
         ->name('projects.tasks.index');
@@ -52,6 +52,10 @@ Route::middleware('auth')->group(function () {
     Route::patch('/projects/{project}/tasks/{task}', [TaskController::class, 'update'])
         ->scopeBindings()
         ->name('projects.tasks.update');
+
+    Route::delete('/projects/{project}/tasks/{task}', [TaskController::class, 'destroy'])
+        ->scopeBindings()
+        ->name('projects.tasks.destroy');
 
     /*
     |--------------------------------------------------------------------------

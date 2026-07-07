@@ -21,6 +21,7 @@
                 </p>
             </div>
         @endif
+
         {{-- 関連案件 --}}
         <section class="task-project-card">
             <div class="task-project-card__content">
@@ -140,13 +141,29 @@
                                             </td>
 
                                             <td>
-    @can('update', $task)
-        <a href="{{ route('projects.tasks.edit', [$project, $task]) }}"
-            class="task-edit-link">
-            編集
-        </a>
-    @endcan
-</td>
+                                                <div class="task-actions">
+                                                    @can('update', $task)
+                                                        <a href="{{ route('projects.tasks.edit', [$project, $task]) }}"
+                                                            class="task-edit-link">
+                                                            編集
+                                                        </a>
+                                                    @endcan
+
+                                                    @can('delete', $task)
+                                                        <form action="{{ route('projects.tasks.destroy', [$project, $task]) }}"
+                                                            method="POST" class="task-delete-form"
+                                                            onsubmit="return confirm('このタスクを削除しますか？削除後は元に戻せません。');">
+                                                            @csrf
+                                                            @method('DELETE')
+
+                                                            <button type="submit" class="task-delete-button"
+                                                                aria-label="「{{ $task->title }}」を削除">
+                                                                削除
+                                                            </button>
+                                                        </form>
+                                                    @endcan
+                                                </div>
+                                            </td>
                                         </tr>
                                     @endforeach
                                 </tbody>

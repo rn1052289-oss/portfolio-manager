@@ -249,7 +249,7 @@
  */
 .task-table th:nth-child(1),
 .task-table td:nth-child(1) {
-    width: 26%;
+    width: 24%;
 }
 
 /*
@@ -257,7 +257,7 @@
  */
 .task-table th:nth-child(2),
 .task-table td:nth-child(2) {
-    width: 14%;
+    width: 13%;
 }
 
 /*
@@ -265,7 +265,7 @@
  */
 .task-table th:nth-child(3),
 .task-table td:nth-child(3) {
-    width: 11%;
+    width: 10%;
     text-align: center;
 }
 
@@ -274,7 +274,7 @@
  */
 .task-table th:nth-child(4),
 .task-table td:nth-child(4) {
-    width: 16%;
+    width: 15%;
     text-align: center;
 }
 
@@ -283,15 +283,18 @@
  */
 .task-table th:nth-child(5),
 .task-table td:nth-child(5) {
-    width: 23%;
+    width: 22%;
 }
 
 /*
  * 6. 操作
+ *
+ * 編集・削除の2操作を置くため
+ * 既存より少し広く確保する
  */
 .task-table th:nth-child(6),
 .task-table td:nth-child(6) {
-    width: 10%;
+    width: 16%;
     text-align: center;
 }
 
@@ -331,6 +334,24 @@
     line-height: 1.55;
     text-overflow: ellipsis;
     white-space: nowrap;
+}
+
+
+/* ==============================
+   Task Actions
+============================== */
+
+.task-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    min-width: 0;
+}
+
+.task-delete-form {
+    margin: 0;
 }
 
 
@@ -379,6 +400,57 @@
 }
 
 .task-edit-link:active {
+    transform: translateY(0);
+}
+
+
+/* ==============================
+   Task Delete Button
+============================== */
+
+.task-delete-button {
+    appearance: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 58px;
+    min-height: 34px;
+    padding: 7px 12px;
+    border: 1px solid #fecaca;
+    border-radius: 9px;
+    background: #ffffff;
+    color: #dc2626;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 900;
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+    box-shadow:
+        0 3px 8px rgba(220, 38, 38, 0.04);
+    transition:
+        color 0.2s ease,
+        background-color 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
+}
+
+.task-delete-button:hover {
+    border-color: #fca5a5;
+    background: #fef2f2;
+    color: #b91c1c;
+    box-shadow:
+        0 6px 14px rgba(220, 38, 38, 0.12);
+    transform: translateY(-1px);
+}
+
+.task-delete-button:focus-visible {
+    outline: 3px solid rgba(239, 68, 68, 0.22);
+    outline-offset: 3px;
+}
+
+.task-delete-button:active {
     transform: translateY(0);
 }
 
@@ -873,22 +945,51 @@
 
     /*
      * スマホカードでは
-     * 編集ボタンを押しやすい全幅UIにする
+     * 編集・削除を2列で並べる
      */
-    .task-edit-link {
+    .task-actions {
+        display: grid;
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+        gap: 10px;
         width: 100%;
+    }
+
+    .task-actions .task-edit-link,
+    .task-actions .task-delete-form,
+    .task-actions .task-delete-button {
+        width: 100%;
+    }
+
+    .task-edit-link,
+    .task-delete-button {
         min-height: 42px;
         padding: 10px 14px;
+        font-size: 13px;
+    }
+
+    .task-edit-link {
         border-color: #bfdbfe;
         background: #eff6ff;
         color: #1d4ed8;
-        font-size: 13px;
     }
 
     .task-edit-link:hover {
         border-color: #93c5fd;
         background: #dbeafe;
         color: #1d4ed8;
+    }
+
+    .task-delete-button {
+        border-color: #fecaca;
+        background: #fff7f7;
+        color: #dc2626;
+    }
+
+    .task-delete-button:hover {
+        border-color: #fca5a5;
+        background: #fee2e2;
+        color: #b91c1c;
     }
 
     .task-progress-card {
@@ -946,7 +1047,16 @@
         grid-column: auto;
     }
 
-    .task-edit-link {
+    /*
+     * 小さいスマホでは
+     * 誤タップ防止のため縦並びにする
+     */
+    .task-actions {
+        grid-template-columns: 1fr;
+    }
+
+    .task-edit-link,
+    .task-delete-button {
         min-height: 44px;
     }
 
