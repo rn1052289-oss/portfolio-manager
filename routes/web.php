@@ -45,6 +45,14 @@ Route::middleware('auth')->group(function () {
     Route::post('/projects/{project}/tasks', [TaskController::class, 'store'])
         ->name('projects.tasks.store');
 
+    Route::get('/projects/{project}/tasks/{task}/edit', [TaskController::class, 'edit'])
+        ->scopeBindings()
+        ->name('projects.tasks.edit');
+
+    Route::patch('/projects/{project}/tasks/{task}', [TaskController::class, 'update'])
+        ->scopeBindings()
+        ->name('projects.tasks.update');
+
     /*
     |--------------------------------------------------------------------------
     | Project Detail / Edit / Delete

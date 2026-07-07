@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreTaskRequest;
+use App\Http\Requests\UpdateTaskRequest;
 use App\Models\Project;
 use App\Models\Task;
 
@@ -82,5 +83,46 @@ class TaskController extends Controller
         return redirect()
             ->route('projects.tasks.index', $project)
             ->with('success', 'タスクを登録しました。');
+    }
+
+    /**
+     * タスク編集画面を表示する。
+     */
+    public function edit(Project $project, Task $task)
+    {
+        $this->authorize('view', $project);
+        $this->authorize('update', $task);
+
+        return view('tasks.edit', compact('project', 'task'));
+    }
+
+    /**
+     * タスクを更新する。
+     */
+    public function update(UpdateTaskRequest $request, Project $project, Task $task)
+    {
+        $this->authorize('view', $project);
+
+        $validated = $request->validated();
+
+        if ($validated['status'] === 'completed') {
+            if ($task->status !== 'completed' || $task->completed_at === null) {
+                $task->completed_at = now();
+            }
+        } else {
+            $task->completed_at = null;
+        }
+
+        $task->title = $validated['title'];
+        $task->memo = $validated['memo'] ?? null;
+        $task->status = $validated['status'];
+        $task->priority = $validated['priority'];
+        $task->due_date = $validated['due_date'] ?? null;
+
+        $task->save();
+
+        return redirect()
+            ->route('projects.tasks.index', $project)
+            ->with('success', 'タスクを更新しました。');
     }
 }

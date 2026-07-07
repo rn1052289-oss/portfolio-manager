@@ -82,6 +82,7 @@
                                         <th>優先度</th>
                                         <th>ステータス</th>
                                         <th>メモ</th>
+                                        <th>操作</th>
                                     </tr>
                                 </thead>
 
@@ -137,6 +138,15 @@
                                                     {{ $task->memo ?: '未設定' }}
                                                 </span>
                                             </td>
+
+                                            <td>
+    @can('update', $task)
+        <a href="{{ route('projects.tasks.edit', [$project, $task]) }}"
+            class="task-edit-link">
+            編集
+        </a>
+    @endcan
+</td>
                                         </tr>
                                     @endforeach
                                 </tbody>
