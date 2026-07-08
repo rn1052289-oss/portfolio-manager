@@ -137,6 +137,61 @@
     line-height: 1.35;
 }
 
+/* ==============================
+   Task List Header Meta
+============================== */
+
+.task-list-card__meta {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    min-width: 0;
+}
+
+
+/* ==============================
+   Task Order Status
+============================== */
+
+.task-order-status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 32px;
+    margin: 0;
+    padding: 6px 10px;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 900;
+    line-height: 1.3;
+    white-space: nowrap;
+}
+
+.task-order-status[hidden] {
+    display: none;
+}
+
+.task-order-status--saving {
+    border-color: #bfdbfe;
+    background: #eff6ff;
+    color: #1d4ed8;
+}
+
+.task-order-status--success {
+    border-color: #bbf7d0;
+    background: #f0fdf4;
+    color: #15803d;
+}
+
+.task-order-status--error {
+    border-color: #fecaca;
+    background: #fef2f2;
+    color: #dc2626;
+}
+
 
 /* ==============================
    Task Count Badge
@@ -300,11 +355,69 @@
 
 
 /* ==============================
+   Task Title Cell / Drag Handle
+============================== */
+
+.task-table__title-cell {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+}
+
+.task-drag-handle {
+    appearance: none;
+    display: inline-grid;
+    flex: 0 0 auto;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #64748b;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 900;
+    line-height: 1;
+    cursor: grab;
+    touch-action: none;
+    box-shadow:
+        0 2px 6px rgba(15, 23, 42, 0.04);
+    transition:
+        color 0.2s ease,
+        background-color 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
+}
+
+.task-drag-handle:hover {
+    border-color: #93c5fd;
+    background: #eff6ff;
+    color: #2563eb;
+    box-shadow:
+        0 5px 12px rgba(37, 99, 235, 0.12);
+}
+
+.task-drag-handle:focus-visible {
+    outline: 3px solid rgba(59, 130, 246, 0.28);
+    outline-offset: 3px;
+}
+
+.task-drag-handle:active {
+    cursor: grabbing;
+    transform: scale(0.96);
+}
+
+/* ==============================
    Task Table Parts
 ============================== */
 
 .task-table__title {
     display: block;
+    flex: 1 1 auto;
     min-width: 0;
     color: #0f172a;
     font-size: 13px;
@@ -1067,4 +1180,20 @@
     .task-progress-circle strong {
         font-size: 27px;
     }
+
+    .task-list-card__header {
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.task-list-card__meta {
+    justify-content: space-between;
+    width: 100%;
+}
+
+.task-order-status {
+    min-width: 0;
+    white-space: normal;
+    text-align: left;
+}
 }

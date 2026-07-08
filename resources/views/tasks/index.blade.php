@@ -68,9 +68,13 @@
                             </h2>
                         </div>
 
-                        <span class="task-count-badge">
-                            {{ $totalTasks }}件
-                        </span>
+                        <div class="task-list-card__meta">
+                            <p class="task-order-status" data-task-order-status role="status" aria-live="polite" hidden></p>
+
+                            <span class="task-count-badge">
+                                {{ $totalTasks }}件
+                            </span>
+                        </div>
                     </div>
 
                     @if ($tasks->isNotEmpty())
@@ -87,13 +91,23 @@
                                     </tr>
                                 </thead>
 
-                                <tbody>
+                                <tbody class="task-sortable-list" data-task-list
+                                    data-reorder-url="{{ route('projects.tasks.reorder', $project) }}">
                                     @foreach ($tasks as $task)
-                                        <tr>
+                                        <tr data-task-id="{{ $task->id }}">
                                             <td>
-                                                <strong class="task-table__title">
-                                                    {{ $task->title }}
-                                                </strong>
+                                                <div class="task-table__title-cell">
+                                                    @can('update', $project)
+                                                        <button type="button" class="task-drag-handle"
+                                                            aria-label="「{{ $task->title }}」を並び替える" title="ドラッグして並び替え">
+                                                            <span aria-hidden="true">⋮⋮</span>
+                                                        </button>
+                                                    @endcan
+
+                                                    <strong class="task-table__title">
+                                                        {{ $task->title }}
+                                                    </strong>
+                                                </div>
                                             </td>
 
                                             <td>

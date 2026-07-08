@@ -4,6 +4,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\TaskController;
+use App\Http\Controllers\TaskOrderController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -48,6 +49,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/projects/{project}/tasks/{task}/edit', [TaskController::class, 'edit'])
         ->scopeBindings()
         ->name('projects.tasks.edit');
+
+    Route::patch('/projects/{project}/tasks/reorder', TaskOrderController::class)
+        ->name('projects.tasks.reorder');
 
     Route::patch('/projects/{project}/tasks/{task}', [TaskController::class, 'update'])
         ->scopeBindings()
