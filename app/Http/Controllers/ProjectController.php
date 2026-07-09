@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreProjectRequest;
 use App\Http\Requests\UpdateProjectRequest;
 use App\Models\Project;
+use App\Models\Task;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -94,7 +95,11 @@ class ProjectController extends Controller
 
         $projects = $query->paginate(10)->appends($request->query());
 
-        return view('projects.index', compact('projects', 'categories', 'tags'));
+        return view('projects.index', compact(
+            'projects',
+            'categories',
+            'tags',
+        ));
     }
 
     public function create()
@@ -109,7 +114,10 @@ class ProjectController extends Controller
             ->orderBy('name')
             ->get();
 
-        return view('projects.create', compact('categories', 'tags'));
+        return view('projects.create', compact(
+            'categories',
+            'tags',
+        ));
     }
 
     public function store(StoreProjectRequest $request)
@@ -137,12 +145,57 @@ class ProjectController extends Controller
     {
         $this->authorize('view', $project);
 
+        $userId = auth()->id();
+
         $project->load([
             'category',
             'tags' => fn($query) => $query->orderBy('name'),
         ]);
 
-        return view('projects.show', compact('project'));
+        $project->loadCount([
+            'tasks as total_tasks_count' => fn($query) => $query
+                ->where('user_id', $userId),
+
+            'tasks as not_started_tasks_count' => fn($query) => $query
+                ->where('user_id', $userId)
+                ->where('status', Task::STATUS_NOT_STARTED),
+
+            'tasks as in_progress_tasks_count' => fn($query) => $query
+                ->where('user_id', $userId)
+                ->where('status', Task::STATUS_IN_PROGRESS),
+
+            'tasks as completed_tasks_count' => fn($query) => $query
+                ->where('user_id', $userId)
+                ->where('status', Task::STATUS_COMPLETED),
+        ]);
+
+        $totalTasks = $project->total_tasks_count;
+        $notStartedTasks = $project->not_started_tasks_count;
+        $inProgressTasks = $project->in_progress_tasks_count;
+        $completedTasks = $project->completed_tasks_count;
+
+        $progressRate = $totalTasks > 0
+            ? (int) round(($completedTasks / $totalTasks) * 100)
+            : 0;
+
+        $relatedTasks = $project->tasks()
+            ->where('user_id', $userId)
+            ->orderBy('sort_order')
+            ->orderByRaw('due_date IS NULL')
+            ->orderBy('due_date')
+            ->orderByDesc('created_at')
+            ->limit(5)
+            ->get();
+
+        return view('projects.show', compact(
+            'project',
+            'totalTasks',
+            'notStartedTasks',
+            'inProgressTasks',
+            'completedTasks',
+            'progressRate',
+            'relatedTasks',
+        ));
     }
 
     public function edit(Project $project)
@@ -161,7 +214,11 @@ class ProjectController extends Controller
 
         $project->load('tags');
 
-        return view('projects.edit', compact('project', 'categories', 'tags'));
+        return view('projects.edit', compact(
+            'project',
+            'categories',
+            'tags',
+        ));
     }
 
     public function update(UpdateProjectRequest $request, Project $project)
