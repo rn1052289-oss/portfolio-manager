@@ -13,6 +13,8 @@ class ProjectController extends Controller
 {
     public function index(Request $request)
     {
+        $userId = auth()->id();
+
         $categories = auth()->user()
             ->categories()
             ->orderBy('name')
@@ -28,6 +30,10 @@ class ProjectController extends Controller
             ->with([
                 'category',
                 'tags' => fn($query) => $query->orderBy('name'),
+            ])
+            ->withCount([
+                'tasks' => fn($taskQuery) => $taskQuery
+                    ->where('user_id', $userId),
             ]);
 
         if ($request->filled('keyword')) {
@@ -93,7 +99,9 @@ class ProjectController extends Controller
             default => $query->orderBy('created_at', 'desc'),
         };
 
-        $projects = $query->paginate(10)->appends($request->query());
+        $projects = $query
+            ->paginate(10)
+            ->appends($request->query());
 
         return view('projects.index', compact(
             'projects',

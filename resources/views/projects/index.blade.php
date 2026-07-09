@@ -13,7 +13,11 @@
         <div class="page-section__header">
             <div>
                 <p class="section-label">Projects</p>
-                <h1 class="section-title">案件一覧</h1>
+
+                <h1 class="section-title">
+                    案件一覧
+                </h1>
+
                 <p class="section-description">
                     案件の進行状況、クライアント、納期、関連情報を一覧で確認できます。
                 </p>
@@ -39,68 +43,179 @@
 
         <form method="GET" action="{{ route('projects.index') }}" class="project-filter">
             <div class="project-filter__field project-filter__field--keyword">
-                <label for="keyword">キーワード検索</label>
-                <input
-                    id="keyword"
-                    type="text"
-                    name="keyword"
-                    value="{{ request('keyword') }}"
-                    placeholder="案件名・クライアント名で検索"
-                >
+                <label for="keyword">
+                    キーワード検索
+                </label>
+
+                <input id="keyword" type="text" name="keyword" value="{{ request('keyword') }}"
+                    placeholder="案件名・クライアント名で検索">
             </div>
 
             <div class="project-filter__field project-filter__field--category">
-                <label for="category_id">カテゴリ</label>
+                <label for="category_id">
+                    カテゴリ
+                </label>
+
                 <select id="category_id" name="category_id">
-                    <option value="">すべて</option>
+                    <option value="">
+                        すべて
+                    </option>
 
                     @foreach ($categories as $category)
-                        <option
-                            value="{{ $category->id }}"
-                            {{ (string) $selectedCategoryId === (string) $category->id ? 'selected' : '' }}
-                        >
-                            {{ $category->name }}
-                        </option>
+                        @if ((string) $selectedCategoryId === (string) $category->id)
+                            <option value="{{ $category->id }}" selected>
+                                {{ $category->name }}
+                            </option>
+                        @else
+                            <option value="{{ $category->id }}">
+                                {{ $category->name }}
+                            </option>
+                        @endif
                     @endforeach
                 </select>
             </div>
 
             <div class="project-filter__field project-filter__field--tag">
-                <label for="tag_id">タグ</label>
+                <label for="tag_id">
+                    タグ
+                </label>
+
                 <select id="tag_id" name="tag_id">
-                    <option value="">すべて</option>
+                    <option value="">
+                        すべて
+                    </option>
 
                     @foreach ($tags as $tag)
-                        <option
-                            value="{{ $tag->id }}"
-                            {{ (string) $selectedTagId === (string) $tag->id ? 'selected' : '' }}
-                        >
-                            {{ $tag->name }}
-                        </option>
+                        @if ((string) $selectedTagId === (string) $tag->id)
+                            <option value="{{ $tag->id }}" selected>
+                                {{ $tag->name }}
+                            </option>
+                        @else
+                            <option value="{{ $tag->id }}">
+                                {{ $tag->name }}
+                            </option>
+                        @endif
                     @endforeach
                 </select>
             </div>
 
             <div class="project-filter__field project-filter__field--status">
-                <label for="status">ステータス</label>
+                <label for="status">
+                    ステータス
+                </label>
+
                 <select id="status" name="status">
-                    <option value="">すべて</option>
-                    <option value="not_started" {{ $selectedStatus === 'not_started' ? 'selected' : '' }}>未着手</option>
-                    <option value="in_progress" {{ $selectedStatus === 'in_progress' ? 'selected' : '' }}>進行中</option>
-                    <option value="completed" {{ $selectedStatus === 'completed' ? 'selected' : '' }}>完了</option>
-                    <option value="paused" {{ $selectedStatus === 'paused' ? 'selected' : '' }}>保留</option>
+                    <option value="">
+                        すべて
+                    </option>
+
+                    @if ($selectedStatus === 'not_started')
+                        <option value="not_started" selected>
+                            未着手
+                        </option>
+                    @else
+                        <option value="not_started">
+                            未着手
+                        </option>
+                    @endif
+
+                    @if ($selectedStatus === 'in_progress')
+                        <option value="in_progress" selected>
+                            進行中
+                        </option>
+                    @else
+                        <option value="in_progress">
+                            進行中
+                        </option>
+                    @endif
+
+                    @if ($selectedStatus === 'completed')
+                        <option value="completed" selected>
+                            完了
+                        </option>
+                    @else
+                        <option value="completed">
+                            完了
+                        </option>
+                    @endif
+
+                    @if ($selectedStatus === 'paused')
+                        <option value="paused" selected>
+                            保留
+                        </option>
+                    @else
+                        <option value="paused">
+                            保留
+                        </option>
+                    @endif
                 </select>
             </div>
 
             <div class="project-filter__field project-filter__field--sort">
-                <label for="sort">並び替え</label>
+                <label for="sort">
+                    並び替え
+                </label>
+
                 <select id="sort" name="sort">
-                    <option value="latest" {{ $selectedSort === 'latest' ? 'selected' : '' }}>新しい順</option>
-                    <option value="deadline_asc" {{ $selectedSort === 'deadline_asc' ? 'selected' : '' }}>納期が近い順</option>
-                    <option value="deadline_desc" {{ $selectedSort === 'deadline_desc' ? 'selected' : '' }}>納期が遠い順</option>
-                    <option value="oldest" {{ $selectedSort === 'oldest' ? 'selected' : '' }}>古い順</option>
-                    <option value="budget_desc" {{ $selectedSort === 'budget_desc' ? 'selected' : '' }}>予算が高い順</option>
-                    <option value="budget_asc" {{ $selectedSort === 'budget_asc' ? 'selected' : '' }}>予算が低い順</option>
+                    @if ($selectedSort === 'latest')
+                        <option value="latest" selected>
+                            新しい順
+                        </option>
+                    @else
+                        <option value="latest">
+                            新しい順
+                        </option>
+                    @endif
+
+                    @if ($selectedSort === 'deadline_asc')
+                        <option value="deadline_asc" selected>
+                            納期が近い順
+                        </option>
+                    @else
+                        <option value="deadline_asc">
+                            納期が近い順
+                        </option>
+                    @endif
+
+                    @if ($selectedSort === 'deadline_desc')
+                        <option value="deadline_desc" selected>
+                            納期が遠い順
+                        </option>
+                    @else
+                        <option value="deadline_desc">
+                            納期が遠い順
+                        </option>
+                    @endif
+
+                    @if ($selectedSort === 'oldest')
+                        <option value="oldest" selected>
+                            古い順
+                        </option>
+                    @else
+                        <option value="oldest">
+                            古い順
+                        </option>
+                    @endif
+
+                    @if ($selectedSort === 'budget_desc')
+                        <option value="budget_desc" selected>
+                            予算が高い順
+                        </option>
+                    @else
+                        <option value="budget_desc">
+                            予算が高い順
+                        </option>
+                    @endif
+
+                    @if ($selectedSort === 'budget_asc')
+                        <option value="budget_asc" selected>
+                            予算が低い順
+                        </option>
+                    @else
+                        <option value="budget_asc">
+                            予算が低い順
+                        </option>
+                    @endif
                 </select>
             </div>
 
@@ -128,7 +243,10 @@
         @if ($projects->isEmpty())
             <div class="empty-card">
                 @if ($hasActiveFilters)
-                    <h2 class="empty-card__title">条件に一致する案件が見つかりません</h2>
+                    <h2 class="empty-card__title">
+                        条件に一致する案件が見つかりません
+                    </h2>
+
                     <p class="empty-card__text">
                         キーワード・カテゴリ・タグ・ステータスの条件を変更するか、検索条件をリセットしてください。
                     </p>
@@ -137,7 +255,10 @@
                         検索条件をリセットする
                     </a>
                 @else
-                    <h2 class="empty-card__title">まだ案件が登録されていません</h2>
+                    <h2 class="empty-card__title">
+                        まだ案件が登録されていません
+                    </h2>
+
                     <p class="empty-card__text">
                         最初の案件を登録して、クライアントワークの管理を始めましょう。
                     </p>
@@ -199,8 +320,13 @@
                                         <span class="project-name__icon"></span>
 
                                         <div>
-                                            <strong>{{ $project->title }}</strong>
-                                            <p>WEB-{{ str_pad($project->id, 4, '0', STR_PAD_LEFT) }}</p>
+                                            <strong>
+                                                {{ $project->title }}
+                                            </strong>
+
+                                            <p>
+                                                WEB-{{ str_pad($project->id, 4, '0', STR_PAD_LEFT) }}
+                                            </p>
                                         </div>
                                     </div>
                                 </td>
@@ -238,17 +364,22 @@
                                 <td>
                                     <div class="project-tags-mini">
                                         @forelse ($project->tags as $tag)
-                                            <span>{{ $tag->name }}</span>
+                                            <span>
+                                                {{ $tag->name }}
+                                            </span>
                                         @empty
-                                            <span class="project-tags-mini__empty">未設定</span>
+                                            <span class="project-tags-mini__empty">
+                                                未設定
+                                            </span>
                                         @endforelse
                                     </div>
                                 </td>
 
                                 <td>
-                                    <span class="project-task-count">
-                                        0 / 0
-                                    </span>
+                                    <a href="{{ route('projects.tasks.index', $project) }}" class="project-task-count-link"
+                                        aria-label="{{ $project->title }}のタスク管理を開く">
+                                        {{ $project->tasks_count }}件
+                                    </a>
                                 </td>
 
                                 <td class="project-table__action-cell">
@@ -265,20 +396,24 @@
                                                     詳細を見る
                                                 </a>
 
+                                                <a href="{{ route('projects.tasks.index', $project) }}"
+                                                    class="project-action-menu__link">
+                                                    タスク管理
+                                                </a>
+
                                                 <a href="{{ route('projects.edit', $project) }}" class="project-action-menu__link">
                                                     編集する
                                                 </a>
 
-                                                <form
-                                                    action="{{ route('projects.destroy', $project) }}"
-                                                    method="POST"
+                                                <form action="{{ route('projects.destroy', $project) }}" method="POST"
                                                     class="project-action-menu__form"
-                                                    onsubmit="return confirm('この案件を削除しますか？この操作は取り消せません。');"
-                                                >
+                                                    onsubmit="return confirm('この案件を削除しますか？この操作は取り消せません。');">
                                                     @csrf
-                                                    @method('DELETE')
 
-                                                    <button type="submit" class="project-action-menu__button project-action-menu__button--danger">
+                                                    <input type="hidden" name="_method" value="DELETE">
+
+                                                    <button type="submit"
+                                                        class="project-action-menu__button project-action-menu__button--danger">
                                                         削除する
                                                     </button>
                                                 </form>
@@ -351,20 +486,32 @@
 
                                     <div>
                                         <dt>カテゴリ</dt>
-                                        <dd>{{ $project->category?->name ?? '未分類' }}</dd>
+                                        <dd>
+                                            {{ $project->category?->name ?? '未分類' }}
+                                        </dd>
                                     </div>
 
                                     <div>
                                         <dt>タスク</dt>
-                                        <dd>0 / 0</dd>
+
+                                        <dd>
+                                            <a href="{{ route('projects.tasks.index', $project) }}" class="project-task-count-link"
+                                                aria-label="{{ $project->title }}のタスク管理を開く">
+                                                {{ $project->tasks_count }}件
+                                            </a>
+                                        </dd>
                                     </div>
                                 </dl>
 
                                 <div class="project-tags-mini">
                                     @forelse ($project->tags as $tag)
-                                        <span>{{ $tag->name }}</span>
+                                        <span>
+                                            {{ $tag->name }}
+                                        </span>
                                     @empty
-                                        <span class="project-tags-mini__empty">未設定</span>
+                                        <span class="project-tags-mini__empty">
+                                            未設定
+                                        </span>
                                     @endforelse
                                 </div>
                             </div>
@@ -379,14 +526,11 @@
                                 編集
                             </a>
 
-                            <form
-                                action="{{ route('projects.destroy', $project) }}"
-                                method="POST"
-                                class="project-card-delete-form"
-                                onsubmit="return confirm('この案件を削除しますか？この操作は取り消せません。');"
-                            >
+                            <form action="{{ route('projects.destroy', $project) }}" method="POST" class="project-card-delete-form"
+                                onsubmit="return confirm('この案件を削除しますか？この操作は取り消せません。');">
                                 @csrf
-                                @method('DELETE')
+
+                                <input type="hidden" name="_method" value="DELETE">
 
                                 <button type="submit" class="button button--danger">
                                     削除
@@ -434,7 +578,12 @@
                     </div>
 
                     <p class="project-pagination__text">
-                        {{ $projects->firstItem() }} - {{ $projects->lastItem() }} / {{ $projects->total() }} 件
+                        {{ $projects->firstItem() }}
+                        -
+                        {{ $projects->lastItem() }}
+                        /
+                        {{ $projects->total() }}
+                        件
                     </p>
                 </div>
             @endif
