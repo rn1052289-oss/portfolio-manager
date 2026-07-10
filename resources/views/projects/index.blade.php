@@ -317,7 +317,7 @@
                             <tr>
                                 <td>
                                     <div class="project-name">
-                                        <span class="project-name__icon"></span>
+                                        <x-projects.cover-image :project="$project" variant="table" />
 
                                         <div>
                                             <strong>
@@ -449,7 +449,7 @@
 
                     <article class="project-card">
                         <div class="project-card__summary">
-                            <span class="project-name__icon project-card__icon"></span>
+                            <x-projects.cover-image :project="$project" variant="card" />
 
                             <div class="project-card__body">
                                 <div class="project-card__header">

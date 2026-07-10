@@ -3,6 +3,27 @@
 @section('title', '案件詳細 | ClientWork Manager')
 
 @section('content')
+    @php
+        $statusLabels = [
+            'not_started' => '未着手',
+            'in_progress' => '進行中',
+            'completed' => '完了',
+            'paused' => '保留',
+        ];
+
+        $taskPriorityLabels = [
+            'high' => '高',
+            'medium' => '中',
+            'low' => '低',
+        ];
+
+        $taskStatusLabels = [
+            'not_started' => '未着手',
+            'in_progress' => '進行中',
+            'completed' => '完了',
+        ];
+    @endphp
+
     <section class="page-section project-show-page">
         <div class="project-show-layout">
             <div class="project-show-main">
@@ -50,22 +71,14 @@
 
                     <div class="project-hero-card__meta">
                         <span class="status-badge status-badge--{{ $project->status }}">
-                            @if ($project->status === 'not_started')
-                                未着手
-                            @elseif ($project->status === 'in_progress')
-                                進行中
-                            @elseif ($project->status === 'completed')
-                                完了
-                            @elseif ($project->status === 'paused')
-                                停止中
-                            @endif
+                            {{ $statusLabels[$project->status] ?? $project->status }}
                         </span>
 
                         <div class="project-meta-pill">
                             <span>開始日</span>
 
                             <strong>
-                                {{ $project->start_date ? $project->start_date->format('Y/m/d') : '未設定' }}
+                                {{ $project->start_date?->format('Y/m/d') ?? '未設定' }}
                             </strong>
                         </div>
 
@@ -73,7 +86,7 @@
                             <span>納期</span>
 
                             <strong>
-                                {{ $project->deadline ? $project->deadline->format('Y/m/d') : '未設定' }}
+                                {{ $project->deadline?->format('Y/m/d') ?? '未設定' }}
                             </strong>
                         </div>
 
@@ -81,7 +94,7 @@
                             <span>見積金額</span>
 
                             <strong>
-                                {{ $project->budget ? '¥' . number_format($project->budget) : '未設定' }}
+                                {{ $project->budget !== null ? '¥' . number_format($project->budget) : '未設定' }}
                             </strong>
                         </div>
                     </div>
@@ -90,7 +103,9 @@
                 {{-- 案件概要 --}}
                 <section class="project-panel">
                     <div class="project-panel__header">
-                        <h2>案件概要</h2>
+                        <h2>
+                            案件概要
+                        </h2>
                     </div>
 
                     @if ($project->description)
@@ -107,7 +122,9 @@
                 {{-- タスク概要 --}}
                 <section class="project-panel project-task-summary">
                     <div class="project-panel__header">
-                        <h2>タスク概要</h2>
+                        <h2>
+                            タスク概要
+                        </h2>
                     </div>
 
                     <div class="project-task-summary__progress">
@@ -138,8 +155,7 @@
                     <div class="project-task-summary__status-list">
                         <div class="project-task-summary__status-item">
                             <span class="project-task-summary__status-dot project-task-summary__status-dot--not-started"
-                                aria-hidden="true">
-                            </span>
+                                aria-hidden="true"></span>
 
                             <span class="project-task-summary__status-label">
                                 未着手
@@ -152,8 +168,7 @@
 
                         <div class="project-task-summary__status-item">
                             <span class="project-task-summary__status-dot project-task-summary__status-dot--in-progress"
-                                aria-hidden="true">
-                            </span>
+                                aria-hidden="true"></span>
 
                             <span class="project-task-summary__status-label">
                                 進行中
@@ -166,8 +181,7 @@
 
                         <div class="project-task-summary__status-item">
                             <span class="project-task-summary__status-dot project-task-summary__status-dot--completed"
-                                aria-hidden="true">
-                            </span>
+                                aria-hidden="true"></span>
 
                             <span class="project-task-summary__status-label">
                                 完了
@@ -192,7 +206,9 @@
                 {{-- 備考・メモ --}}
                 <section class="project-panel">
                     <div class="project-panel__header">
-                        <h2>備考・メモ</h2>
+                        <h2>
+                            備考・メモ
+                        </h2>
 
                         <span class="project-panel__badge">
                             Coming Soon
@@ -207,7 +223,9 @@
                 {{-- 関連タスク一覧 --}}
                 <section class="project-panel project-related-tasks">
                     <div class="project-panel__header">
-                        <h2>関連タスク一覧</h2>
+                        <h2>
+                            関連タスク一覧
+                        </h2>
                     </div>
 
                     @if ($relatedTasks->isNotEmpty())
@@ -239,35 +257,16 @@
                                             </td>
 
                                             <td data-label="優先度">
-                                                @if ($task->priority === 'high')
-                                                    <span class="project-task-priority project-task-priority--high">
-                                                        高
-                                                    </span>
-                                                @elseif ($task->priority === 'medium')
-                                                    <span class="project-task-priority project-task-priority--medium">
-                                                        中
-                                                    </span>
-                                                @else
-                                                    <span class="project-task-priority project-task-priority--low">
-                                                        低
-                                                    </span>
-                                                @endif
+                                                <span class="project-task-priority project-task-priority--{{ $task->priority }}">
+                                                    {{ $taskPriorityLabels[$task->priority] ?? $task->priority }}
+                                                </span>
                                             </td>
 
                                             <td data-label="ステータス">
-                                                @if ($task->status === 'not_started')
-                                                    <span class="project-task-status project-task-status--not-started">
-                                                        未着手
-                                                    </span>
-                                                @elseif ($task->status === 'in_progress')
-                                                    <span class="project-task-status project-task-status--in-progress">
-                                                        進行中
-                                                    </span>
-                                                @else
-                                                    <span class="project-task-status project-task-status--completed">
-                                                        完了
-                                                    </span>
-                                                @endif
+                                                <span
+                                                    class="project-task-status project-task-status--{{ str_replace('_', '-', $task->status) }}">
+                                                    {{ $taskStatusLabels[$task->status] ?? $task->status }}
+                                                </span>
                                             </td>
 
                                             <td data-label="操作">
@@ -291,7 +290,10 @@
                         <div class="project-related-tasks__footer">
                             <a href="{{ route('projects.tasks.index', $project) }}" class="project-related-tasks__all-link">
                                 すべてのタスクを見る
-                                <span aria-hidden="true">→</span>
+
+                                <span aria-hidden="true">
+                                    →
+                                </span>
                             </a>
                         </div>
                     @else
@@ -325,14 +327,10 @@
                         案件イメージ
                     </h2>
 
-                    <div class="project-thumbnail-placeholder">
-                        <span>
-                            画像プレビュー
-                        </span>
-                    </div>
+                    <x-projects.cover-image :project="$project" variant="detail" />
 
                     <p class="project-side-card__note">
-                        画像アップロード機能は今後追加予定です。
+                        編集画面からカバー画像を登録・変更できます。
                     </p>
                 </section>
 
@@ -401,11 +399,15 @@
                     <dl class="project-info-list">
                         <div>
                             <dt>案件ID</dt>
-                            <dd>#{{ $project->id }}</dd>
+
+                            <dd>
+                                #{{ $project->id }}
+                            </dd>
                         </div>
 
                         <div>
                             <dt>作成日</dt>
+
                             <dd>
                                 {{ $project->created_at->format('Y/m/d') }}
                             </dd>
@@ -413,6 +415,7 @@
 
                         <div>
                             <dt>最終更新日</dt>
+
                             <dd>
                                 {{ $project->updated_at->format('Y/m/d H:i') }}
                             </dd>
@@ -420,21 +423,15 @@
 
                         <div>
                             <dt>ステータス</dt>
+
                             <dd>
-                                @if ($project->status === 'not_started')
-                                    未着手
-                                @elseif ($project->status === 'in_progress')
-                                    進行中
-                                @elseif ($project->status === 'completed')
-                                    完了
-                                @elseif ($project->status === 'paused')
-                                    停止中
-                                @endif
+                                {{ $statusLabels[$project->status] ?? $project->status }}
                             </dd>
                         </div>
 
                         <div>
                             <dt>クライアント</dt>
+
                             <dd>
                                 {{ $project->client_name }}
                             </dd>
