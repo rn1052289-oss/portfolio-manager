@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('title', 'カテゴリ管理 | ClientWork Manager')
+
 @section('content')
     <div class="category-page">
         @if (session('success'))
@@ -10,7 +12,9 @@
 
         <div class="category-page__header">
             <div>
-                <p class="category-page__label">Category</p>
+                <p class="category-page__label">
+                    Category
+                </p>
 
                 <h1 class="category-page__title">
                     カテゴリ管理
@@ -40,6 +44,7 @@
                     <div class="form-group">
                         <label class="form-label" for="name">
                             カテゴリ名
+
                             <span class="form-label__required">
                                 必須
                             </span>
@@ -88,10 +93,6 @@
                     <h2 class="category-panel__title">
                         既存カテゴリ一覧
                     </h2>
-
-                    <a href="#" class="category-panel__add-button">
-                        ＋ カテゴリ追加
-                    </a>
                 </div>
 
                 @if ($categories->isEmpty())
@@ -105,6 +106,10 @@
                         </p>
                     </div>
                 @else
+                    {{-- =========================================
+                    Desktop Table
+                    901px以上で表示
+                    ========================================== --}}
                     <div class="category-table-wrap">
                         <table class="category-table">
                             <thead>
@@ -152,7 +157,7 @@
                                                     {{ $category->projects_count }}件
                                                 </a>
                                             @else
-                                                <span class="category-count-link category-count-link--empty">
+                                                <span class="category-count-empty">
                                                     0件
                                                 </span>
                                             @endif
@@ -185,6 +190,92 @@
                                 @endforeach
                             </tbody>
                         </table>
+                    </div>
+
+                    {{-- =========================================
+                    Mobile Cards
+                    900px以下で表示
+                    ========================================== --}}
+                    <div class="category-mobile-list">
+                        @foreach ($categories as $category)
+                            @php
+                                $hasProjects = $category->projects_count > 0;
+
+                                $filteredProjectsUrl = route('projects.index', [
+                                    'category_id' => $category->id,
+                                ]);
+                            @endphp
+
+                            <article class="category-card">
+                                <div class="category-card__header">
+                                    <div class="category-card__identity">
+                                        <span class="category-card__color" style="background-color: {{ $category->color }}"></span>
+
+                                        <div class="category-card__name-wrap">
+                                            <p class="category-card__eyebrow">
+                                                Category
+                                            </p>
+
+                                            @if ($hasProjects)
+                                                <a href="{{ $filteredProjectsUrl }}" class="category-card__name-link"
+                                                    aria-label="{{ $category->name }}カテゴリの案件一覧を表示">
+                                                    {{ $category->name }}
+                                                </a>
+                                            @else
+                                                <span class="category-card__name-text">
+                                                    {{ $category->name }}
+                                                </span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="category-card__meta">
+                                    <p class="category-card__meta-label">
+                                        案件数
+                                    </p>
+
+                                    @if ($hasProjects)
+                                        <a href="{{ $filteredProjectsUrl }}" class="category-count-link"
+                                            aria-label="{{ $category->name }}カテゴリの{{ $category->projects_count }}件の案件を表示">
+                                            {{ $category->projects_count }}件
+                                        </a>
+                                    @else
+                                        <span class="category-count-empty">
+                                            0件
+                                        </span>
+                                    @endif
+                                </div>
+
+                                <div class="category-card__description">
+                                    <p class="category-card__description-label">
+                                        説明
+                                    </p>
+
+                                    <p class="category-card__description-text">
+                                        {{ $category->description ?? '説明はまだ登録されていません。' }}
+                                    </p>
+                                </div>
+
+                                <div class="category-card__actions">
+                                    <a href="{{ route('categories.edit', $category) }}" class="category-card__action-button">
+                                        編集
+                                    </a>
+
+                                    <form action="{{ route('categories.destroy', $category) }}" method="POST"
+                                        class="category-card__delete-form"
+                                        onsubmit="return confirm('このカテゴリを削除しますか？案件自体は削除されません。');">
+                                        @csrf
+                                        @method('DELETE')
+
+                                        <button type="submit"
+                                            class="category-card__action-button category-card__action-button--danger">
+                                            削除
+                                        </button>
+                                    </form>
+                                </div>
+                            </article>
+                        @endforeach
                     </div>
                 @endif
             </section>

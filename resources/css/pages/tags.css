@@ -1,9 +1,16 @@
+/* ==============================
+   Tag Page
+============================== */
+
 .tag-page {
     width: 100%;
+    min-width: 0;
 }
 
 .tag-page__inner {
+    width: 100%;
     max-width: 1120px;
+    min-width: 0;
     margin: 0 auto;
 }
 
@@ -29,9 +36,9 @@
 .tag-page__notice {
     margin-bottom: 24px;
     padding: 16px 18px;
+    background: #ffffff;
     border: 1px solid #cbd5e1;
     border-radius: 10px;
-    background: #ffffff;
 }
 
 .tag-page__notice p {
@@ -42,6 +49,10 @@
     line-height: 1.8;
 }
 
+/* ==============================
+   Layout
+============================== */
+
 .tag-page__layout {
     display: grid;
     grid-template-columns: 280px minmax(0, 1fr);
@@ -51,9 +62,10 @@
 
 .tag-form-card,
 .tag-list-card {
+    min-width: 0;
+    background: #ffffff;
     border: 1px solid #cbd5e1;
     border-radius: 10px;
-    background: #ffffff;
 }
 
 .tag-form-card {
@@ -81,6 +93,10 @@
     line-height: 1.7;
 }
 
+/* ==============================
+   Form
+============================== */
+
 .tag-form {
     padding: 22px 20px 20px;
 }
@@ -100,16 +116,24 @@
     width: 100%;
     min-height: 44px;
     padding: 0 14px;
-    border: 1px solid #94a3b8;
-    border-radius: 6px;
-    background: #ffffff;
     color: #0f172a;
     font-size: 14px;
+    background: #ffffff;
+    border: 1px solid #94a3b8;
+    border-radius: 6px;
     outline: none;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
 }
 
 .tag-form__input::placeholder {
     color: #94a3b8;
+}
+
+.tag-form__input:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
 }
 
 .tag-form__input:disabled {
@@ -132,18 +156,34 @@
     min-height: 40px;
     margin: 28px auto 0;
     padding: 0 18px;
-    border: 1px solid #94a3b8;
-    border-radius: 6px;
-    background: #ffffff;
     color: #334155;
     font-size: 14px;
     font-weight: 800;
+    text-decoration: none;
+    background: #ffffff;
+    border: 1px solid #94a3b8;
+    border-radius: 6px;
     cursor: pointer;
+    transition:
+        color 0.2s ease,
+        background-color 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.tag-form__button:hover {
+    color: #0f172a;
+    background: #f8fafc;
+    border-color: #64748b;
+}
+
+.tag-form__button:focus-visible {
+    outline: 3px solid rgba(37, 99, 235, 0.22);
+    outline-offset: 2px;
 }
 
 .tag-form__input.is-error {
-    border-color: #ef4444;
     background: #fff7f7;
+    border-color: #ef4444;
 }
 
 .tag-form__error {
@@ -152,57 +192,6 @@
     font-size: 12px;
     font-weight: 700;
     line-height: 1.6;
-}
-
-.tag-page__success {
-    margin: -8px 0 24px;
-    padding: 12px 14px;
-    border: 1px solid #bbf7d0;
-    border-radius: 10px;
-    background: #f0fdf4;
-    color: #15803d;
-    font-size: 13px;
-    font-weight: 800;
-}
-
-.tag-list-card {
-    padding: 16px;
-}
-
-.tag-list-card__header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 16px;
-    margin-bottom: 12px;
-}
-
-.tag-list-card__add-button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 96px;
-    min-height: 38px;
-    padding: 0 14px;
-    border: 1px solid #94a3b8;
-    border-radius: 6px;
-    background: #ffffff;
-    color: #334155;
-    font-size: 14px;
-    font-weight: 800;
-    white-space: nowrap;
-    cursor: pointer;
-}
-
-.tag-form__button {
-    text-decoration: none;
-    cursor: pointer;
-}
-
-.tag-form__button:hover {
-    background: #f8fafc;
-    border-color: #64748b;
-    color: #0f172a;
 }
 
 .tag-form__cancel {
@@ -221,31 +210,63 @@
     color: #0f172a;
 }
 
-.tag-table tbody tr.is-editing td {
-    background: #eef2ff;
+/* ==============================
+   Messages
+============================== */
+
+.tag-page__success {
+    margin: -8px 0 24px;
+    padding: 12px 14px;
+    color: #15803d;
+    font-size: 13px;
+    font-weight: 800;
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 10px;
 }
 
-.tag-table__button {
-    text-decoration: none;
-    cursor: pointer;
+/* ==============================
+   Tag List
+============================== */
+
+.tag-list-card {
+    padding: 16px;
 }
 
-.tag-table__button:hover {
+.tag-list-card__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 12px;
+}
+
+.tag-list-card__add-button:hover {
+    color: #0f172a;
     background: #f8fafc;
     border-color: #64748b;
-    color: #0f172a;
+    transform: translateY(-1px);
 }
+
+.tag-list-card__add-button:focus-visible {
+    outline: 3px solid rgba(37, 99, 235, 0.22);
+    outline-offset: 2px;
+}
+
+/* ==============================
+   Desktop Table
+============================== */
 
 .tag-table-wrap {
     width: 100%;
-    overflow-x: auto;
+    max-width: 100%;
+    overflow: hidden;
     border: 1px solid #94a3b8;
     border-radius: 4px;
 }
 
 .tag-table {
     width: 100%;
-    min-width: 620px;
     border-collapse: collapse;
     background: #ffffff;
 }
@@ -253,11 +274,11 @@
 .tag-table th,
 .tag-table td {
     padding: 12px 14px;
-    border-right: 1px solid #94a3b8;
-    border-bottom: 1px solid #94a3b8;
     color: #0f172a;
     font-size: 14px;
     vertical-align: middle;
+    border-right: 1px solid #94a3b8;
+    border-bottom: 1px solid #94a3b8;
 }
 
 .tag-table th:last-child,
@@ -270,24 +291,137 @@
 }
 
 .tag-table th {
-    background: #f8fafc;
     font-weight: 800;
     text-align: center;
+    background: #f8fafc;
 }
 
+.tag-table th:first-child,
+.tag-table td:first-child {
+    width: auto;
+}
+
+.tag-table th:nth-child(2),
 .tag-table td:nth-child(2) {
     width: 150px;
     text-align: center;
     white-space: nowrap;
 }
 
+.tag-table th:nth-child(3),
 .tag-table td:nth-child(3) {
     width: 230px;
+    text-align: center;
 }
 
-.tag-table__name {
+.tag-table tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+.tag-table tbody tr:hover {
+    background: #f8fafc;
+}
+
+.tag-table tbody tr.is-editing td {
+    background: #eef2ff;
+}
+
+/* ==============================
+   Tag Name
+============================== */
+
+.tag-table__name,
+.tag-table__name-link {
     font-weight: 700;
 }
+
+.tag-table__name-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 34px;
+    padding: 2px 4px;
+    color: #0f172a;
+    text-decoration-line: underline;
+    text-decoration-color: #cbd5e1;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 4px;
+    border-radius: 6px;
+    transition:
+        color 0.2s ease,
+        background-color 0.2s ease,
+        text-decoration-color 0.2s ease;
+}
+
+.tag-table__name-link:hover {
+    color: #2563eb;
+    text-decoration-color: #2563eb;
+    background: #eff6ff;
+}
+
+.tag-table__name-link:focus-visible {
+    color: #1d4ed8;
+    text-decoration-color: #1d4ed8;
+    outline: 3px solid rgba(37, 99, 235, 0.28);
+    outline-offset: 2px;
+}
+
+.tag-table__name--empty {
+    color: #475569;
+}
+
+/* ==============================
+   Count
+============================== */
+
+.tag-count-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 54px;
+    min-height: 36px;
+    padding: 4px 10px;
+    color: #1d4ed8;
+    font-size: 13px;
+    font-weight: 800;
+    line-height: 1;
+    text-decoration: none;
+    white-space: nowrap;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 999px;
+    transition:
+        color 0.2s ease,
+        background-color 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.tag-count-link:hover {
+    color: #1e40af;
+    background: #dbeafe;
+    border-color: #93c5fd;
+    transform: translateY(-1px);
+}
+
+.tag-count-link:focus-visible {
+    outline: 3px solid rgba(37, 99, 235, 0.24);
+    outline-offset: 2px;
+}
+
+.tag-count-empty {
+    display: inline-flex;
+    align-items: center;
+    min-height: 28px;
+    color: #94a3b8;
+    font-size: 13px;
+    font-weight: 800;
+    line-height: 1.4;
+    white-space: nowrap;
+}
+
+/* ==============================
+   Desktop Actions
+============================== */
 
 .tag-table__actions {
     display: flex;
@@ -300,15 +434,31 @@
     align-items: center;
     justify-content: center;
     min-width: 76px;
-    min-height: 32px;
+    min-height: 34px;
     padding: 0 12px;
-    border: 1px solid #94a3b8;
-    border-radius: 6px;
-    background: #ffffff;
     color: #334155;
     font-size: 13px;
     font-weight: 800;
+    text-decoration: none;
+    background: #ffffff;
+    border: 1px solid #94a3b8;
+    border-radius: 6px;
     cursor: pointer;
+    transition:
+        color 0.2s ease,
+        background-color 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.tag-table__button:hover {
+    color: #0f172a;
+    background: #f8fafc;
+    border-color: #64748b;
+}
+
+.tag-table__button:focus-visible {
+    outline: 3px solid rgba(37, 99, 235, 0.2);
+    outline-offset: 2px;
 }
 
 .tag-table__button--danger {
@@ -317,14 +467,181 @@
 }
 
 .tag-table__button--danger:hover {
-    border-color: #ef4444;
-    background: #fef2f2;
     color: #b91c1c;
+    background: #fef2f2;
+    border-color: #ef4444;
 }
 
 .tag-table__delete-form {
     margin: 0;
 }
+
+/* ==============================
+   Mobile Tag Cards
+============================== */
+
+.tag-mobile-list {
+    display: none;
+}
+
+.tag-card {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    min-width: 0;
+    padding: 18px;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 16px;
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.06);
+}
+
+.tag-card.is-editing {
+    background: #f8faff;
+    border-color: #a5b4fc;
+}
+
+.tag-card__header {
+    min-width: 0;
+}
+
+.tag-card__name-wrap {
+    min-width: 0;
+}
+
+.tag-card__eyebrow {
+    margin: 0 0 4px;
+    color: #94a3b8;
+    font-size: 10px;
+    font-weight: 900;
+    line-height: 1.4;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.tag-card__name-link,
+.tag-card__name-text {
+    color: #0f172a;
+    font-size: 16px;
+    font-weight: 900;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+.tag-card__name-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 36px;
+    padding: 2px 4px;
+    margin-left: -4px;
+    text-decoration-line: underline;
+    text-decoration-color: #cbd5e1;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 4px;
+    border-radius: 6px;
+    transition:
+        color 0.2s ease,
+        background-color 0.2s ease,
+        text-decoration-color 0.2s ease;
+}
+
+.tag-card__name-link:hover {
+    color: #2563eb;
+    text-decoration-color: #2563eb;
+    background: #eff6ff;
+}
+
+.tag-card__name-link:focus-visible {
+    outline: 3px solid rgba(37, 99, 235, 0.24);
+    outline-offset: 2px;
+}
+
+.tag-card__name-text {
+    display: block;
+    color: #475569;
+}
+
+.tag-card__meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    min-width: 0;
+    padding: 14px 0;
+    border-top: 1px solid #e2e8f0;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.tag-card__meta-label {
+    margin: 0;
+    color: #64748b;
+    font-size: 12px;
+    font-weight: 900;
+    line-height: 1.5;
+}
+
+.tag-card__actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.tag-card__delete-form {
+    width: 100%;
+    margin: 0;
+}
+
+.tag-card__action-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 44px;
+    box-sizing: border-box;
+    padding: 0 14px;
+    color: #334155;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 800;
+    line-height: 1.4;
+    text-align: center;
+    text-decoration: none;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    cursor: pointer;
+    transition:
+        color 0.2s ease,
+        background-color 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.tag-card__action-button:hover {
+    color: #0f172a;
+    background: #f8fafc;
+    border-color: #94a3b8;
+}
+
+.tag-card__action-button:focus-visible {
+    outline: 3px solid rgba(37, 99, 235, 0.2);
+    outline-offset: 2px;
+}
+
+.tag-card__action-button--danger {
+    color: #dc2626;
+    background: #fef2f2;
+    border-color: #fecaca;
+}
+
+.tag-card__action-button--danger:hover {
+    color: #b91c1c;
+    background: #fee2e2;
+    border-color: #fca5a5;
+}
+
+/* ==============================
+   Chips
+============================== */
 
 .tag-list-card__chips {
     margin-top: 18px;
@@ -351,12 +668,12 @@
     gap: 8px;
     min-height: 34px;
     padding: 0 12px;
-    border: 1px solid #cbd5e1;
-    border-radius: 6px;
-    background: #f8fafc;
     color: #334155;
     font-size: 13px;
     font-weight: 700;
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
 }
 
 .tag-chip__remove {
@@ -365,17 +682,25 @@
     line-height: 1;
 }
 
+/* ==============================
+   Pagination
+============================== */
+
 .tag-page__pagination {
     margin-top: 18px;
 }
 
+/* ==============================
+   Empty
+============================== */
+
 .tag-empty {
     margin-top: 16px;
     padding: 36px 18px;
+    text-align: center;
+    background: #f8fafc;
     border: 1px dashed #cbd5e1;
     border-radius: 10px;
-    background: #f8fafc;
-    text-align: center;
 }
 
 .tag-empty__title {
@@ -392,15 +717,19 @@
     line-height: 1.7;
 }
 
+/* ==============================
+   Memo
+============================== */
+
 .tag-page__memo {
     display: flex;
     align-items: flex-start;
     gap: 10px;
     margin-top: 28px;
     padding: 16px 18px;
+    background: #ffffff;
     border: 1px dashed #94a3b8;
     border-radius: 10px;
-    background: #ffffff;
 }
 
 .tag-page__memo-icon {
@@ -417,18 +746,46 @@
     line-height: 1.8;
 }
 
-/* responsive */
-@media (max-width: 960px) {
+/* ==============================
+   Responsive
+============================== */
+
+/* ==============================
+   Tablet Layout
+============================== */
+
+@media (max-width: 1024px) {
     .tag-page__layout {
         grid-template-columns: 1fr;
     }
+}
 
-    .tag-form-card {
-        margin-top: 0;
+/* ==============================
+   Table -> Cards
+   projects/index.css と同じ切替幅
+============================== */
+
+@media (max-width: 900px) {
+    .tag-table-wrap {
+        display: none;
+    }
+
+    .tag-mobile-list {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 16px;
     }
 }
 
+/* ==============================
+   Mobile
+============================== */
+
 @media (max-width: 640px) {
+    .tag-page__inner {
+        max-width: none;
+    }
+
     .tag-page__title {
         font-size: 24px;
     }
@@ -441,7 +798,17 @@
         gap: 18px;
     }
 
+    .tag-list-card {
+        padding: 16px;
+        border-radius: 16px;
+    }
+
+    .tag-form-card {
+        border-radius: 16px;
+    }
+
     .tag-list-card__header {
+        align-items: stretch;
         flex-direction: column;
     }
 
@@ -449,25 +816,72 @@
         width: 100%;
     }
 
-    .tag-table {
-        min-width: 560px;
+    .tag-card {
+        gap: 16px;
+        padding: 16px;
+        border-radius: 16px;
     }
 
-    .tag-table th,
-    .tag-table td {
-        padding: 10px 12px;
-        font-size: 13px;
+    .tag-card__name-link {
+        min-height: 44px;
+        padding: 4px 6px;
+        margin-left: -6px;
     }
 
-    .tag-table__actions {
+    .tag-card__meta {
+        align-items: flex-start;
+        flex-direction: column;
         gap: 8px;
     }
 
-    .tag-table__button {
-        min-width: 64px;
+    .tag-count-link {
+        min-width: 58px;
+        min-height: 44px;
+        padding-inline: 12px;
+    }
+
+    .tag-card__actions {
+        grid-template-columns: 1fr;
+    }
+
+    .tag-card__delete-form,
+    .tag-card__delete-form .tag-card__action-button {
+        width: 100%;
     }
 
     .tag-page__memo {
         padding: 14px;
+    }
+}
+
+/* ==============================
+   Small Mobile
+============================== */
+
+@media (max-width: 480px) {
+    .tag-card__name-link,
+    .tag-card__name-text {
+        font-size: 15px;
+    }
+
+    .tag-list-card__chips {
+        margin-top: 16px;
+    }
+}
+
+/* ==============================
+   Reduced Motion
+============================== */
+
+@media (prefers-reduced-motion: reduce) {
+    .tag-list-card__add-button,
+    .tag-form__button,
+    .tag-table tbody tr,
+    .tag-table__name-link,
+    .tag-count-link,
+    .tag-table__button,
+    .tag-card__name-link,
+    .tag-card__action-button {
+        transition: none;
     }
 }
