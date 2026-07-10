@@ -319,6 +319,10 @@
     overflow-wrap: anywhere;
 }
 
+/* ==============================
+   Category Name
+============================== */
+
 .category-name {
     display: flex;
     align-items: center;
@@ -334,17 +338,108 @@
     box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
 }
 
+.category-name__link,
 .category-name__text {
     min-width: 0;
-    color: #0f172a;
     font-weight: 800;
     overflow-wrap: anywhere;
 }
+
+.category-name__link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 34px;
+    padding: 2px 4px;
+    color: #0f172a;
+    text-decoration-line: underline;
+    text-decoration-color: #cbd5e1;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 4px;
+    border-radius: 6px;
+    transition:
+        color 0.2s ease,
+        background 0.2s ease,
+        text-decoration-color 0.2s ease;
+}
+
+.category-name__link:hover {
+    color: #2563eb;
+    text-decoration-color: #2563eb;
+    background: #eff6ff;
+}
+
+.category-name__link:focus-visible {
+    color: #1d4ed8;
+    text-decoration-color: #1d4ed8;
+    outline: 3px solid rgba(37, 99, 235, 0.28);
+    outline-offset: 2px;
+}
+
+.category-name__text {
+    color: #0f172a;
+}
+
+.category-name__text--empty {
+    color: #475569;
+}
+
+/* ==============================
+   Project Count Link
+============================== */
 
 .category-table__count {
     color: #0f172a;
     font-weight: 800;
 }
+
+.category-count-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 54px;
+    min-height: 36px;
+    padding: 4px 10px;
+    color: #1d4ed8;
+    font-size: 13px;
+    font-weight: 800;
+    line-height: 1;
+    text-decoration: none;
+    white-space: nowrap;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 999px;
+    transition:
+        color 0.2s ease,
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+a.category-count-link:hover {
+    color: #ffffff;
+    background: #2563eb;
+    border-color: #2563eb;
+    transform: translateY(-1px);
+}
+
+a.category-count-link:focus-visible {
+    color: #ffffff;
+    background: #1d4ed8;
+    border-color: #1d4ed8;
+    outline: 3px solid rgba(37, 99, 235, 0.28);
+    outline-offset: 2px;
+}
+
+.category-count-link--empty {
+    color: #64748b;
+    background: #f8fafc;
+    border-color: #e2e8f0;
+    cursor: default;
+}
+
+/* ==============================
+   Actions
+============================== */
 
 .category-actions {
     display: flex;
@@ -509,6 +604,17 @@
     .category-table {
         min-width: 680px;
         table-layout: auto;
+    }
+
+    .category-name__link {
+        min-height: 44px;
+        padding: 4px 6px;
+    }
+
+    .category-count-link {
+        min-width: 58px;
+        min-height: 44px;
+        padding-inline: 12px;
     }
 
     .category-guide {

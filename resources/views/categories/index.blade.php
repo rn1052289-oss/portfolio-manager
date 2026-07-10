@@ -7,10 +7,14 @@
                 {{ session('success') }}
             </div>
         @endif
+
         <div class="category-page__header">
             <div>
                 <p class="category-page__label">Category</p>
-                <h1 class="category-page__title">カテゴリ管理</h1>
+
+                <h1 class="category-page__title">
+                    カテゴリ管理
+                </h1>
             </div>
         </div>
 
@@ -35,14 +39,19 @@
 
                     <div class="form-group">
                         <label class="form-label" for="name">
-                            カテゴリ名 <span class="form-label__required">必須</span>
+                            カテゴリ名
+                            <span class="form-label__required">
+                                必須
+                            </span>
                         </label>
 
                         <input id="name" class="form-input @error('name') is-invalid @enderror" type="text" name="name"
                             value="{{ old('name', $editingCategory?->name) }}" placeholder="例）Webサイト制作">
 
                         @error('name')
-                            <p class="form-error">{{ $message }}</p>
+                            <p class="form-error">
+                                {{ $message }}
+                            </p>
                         @enderror
                     </div>
 
@@ -56,7 +65,9 @@
                             placeholder="例）Webサイトの企画・デザイン・コーディングなど">{{ old('description', $editingCategory?->description) }}</textarea>
 
                         @error('description')
-                            <p class="form-error">{{ $message }}</p>
+                            <p class="form-error">
+                                {{ $message }}
+                            </p>
                         @enderror
                     </div>
 
@@ -74,7 +85,9 @@
 
             <section class="category-panel category-panel--list">
                 <div class="category-panel__header category-panel__header--between">
-                    <h2 class="category-panel__title">既存カテゴリ一覧</h2>
+                    <h2 class="category-panel__title">
+                        既存カテゴリ一覧
+                    </h2>
 
                     <a href="#" class="category-panel__add-button">
                         ＋ カテゴリ追加
@@ -83,7 +96,10 @@
 
                 @if ($categories->isEmpty())
                     <div class="category-empty">
-                        <p class="category-empty__title">カテゴリがまだありません</p>
+                        <p class="category-empty__title">
+                            カテゴリがまだありません
+                        </p>
+
                         <p class="category-empty__text">
                             最初のカテゴリを登録すると、案件を分類できるようになります。
                         </p>
@@ -102,19 +118,44 @@
 
                             <tbody>
                                 @foreach ($categories as $category)
+                                    @php
+                                        $hasProjects = $category->projects_count > 0;
+
+                                        $filteredProjectsUrl = route('projects.index', [
+                                            'category_id' => $category->id,
+                                        ]);
+                                    @endphp
+
                                     <tr>
                                         <td>
                                             <div class="category-name">
                                                 <span class="category-name__color"
                                                     style="background-color: {{ $category->color }}"></span>
-                                                <span class="category-name__text">
-                                                    {{ $category->name }}
-                                                </span>
+
+                                                @if ($hasProjects)
+                                                    <a href="{{ $filteredProjectsUrl }}" class="category-name__link"
+                                                        aria-label="{{ $category->name }}カテゴリの案件一覧を表示">
+                                                        {{ $category->name }}
+                                                    </a>
+                                                @else
+                                                    <span class="category-name__text category-name__text--empty">
+                                                        {{ $category->name }}
+                                                    </span>
+                                                @endif
                                             </div>
                                         </td>
 
                                         <td class="category-table__count">
-                                            {{ $category->projects_count }}
+                                            @if ($hasProjects)
+                                                <a href="{{ $filteredProjectsUrl }}" class="category-count-link"
+                                                    aria-label="{{ $category->name }}カテゴリの{{ $category->projects_count }}件の案件を表示">
+                                                    {{ $category->projects_count }}件
+                                                </a>
+                                            @else
+                                                <span class="category-count-link category-count-link--empty">
+                                                    0件
+                                                </span>
+                                            @endif
                                         </td>
 
                                         <td>
@@ -151,13 +192,17 @@
 
         <section class="category-guide">
             <div class="category-guide__content">
-                <div class="category-guide__icon">!</div>
+                <div class="category-guide__icon">
+                    !
+                </div>
 
                 <p class="category-guide__text">
                     <span class="category-guide__strong">
                         カテゴリは1案件につき1つの分類を表します。
                     </span>
+
                     <br>
+
                     例：Webサイト制作、LP制作、WordPress、Laravel開発、保守対応 など
                 </p>
             </div>
