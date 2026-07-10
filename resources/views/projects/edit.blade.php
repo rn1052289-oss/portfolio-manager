@@ -29,7 +29,8 @@
         </div>
 
         <div class="project-editor-layout">
-            <form action="{{ route('projects.update', $project) }}" method="POST" class="project-editor-form">
+            <form action="{{ route('projects.update', $project) }}" method="POST" enctype="multipart/form-data"
+                class="project-editor-form">
                 @csrf
                 @method('PUT')
 
@@ -258,19 +259,52 @@
                     </div>
                 </section>
 
-                <section class="editor-section editor-section--disabled">
+                <section class="editor-section">
                     <div class="editor-section__side">
                         <span class="editor-section__number">4</span>
-                        <h2>画像・メモ</h2>
+                        <h2>案件画像</h2>
                     </div>
 
                     <div class="editor-section__body">
-                        <div class="coming-soon-box">
-                            <p class="coming-soon-box__label">Coming Soon</p>
-                            <h3>参考画像・補足メモ機能は追加予定です</h3>
-                            <p>
-                                今後、案件ごとの参考画像アップロードや社内メモを管理できるように拡張します。
+                        <div class="form-field">
+                            <div class="form-label-row">
+                                <label for="cover_image">代表画像を差し替える</label>
+                                <span class="form-label-badge">任意</span>
+                            </div>
+
+                            <div class="project-image-upload">
+                                <div class="project-image-upload__intro">
+                                    <div class="project-image-upload__icon" aria-hidden="true">
+                                        <svg viewBox="0 0 24 24" fill="none">
+                                            <path d="M12 16V4M12 4L7.5 8.5M12 4L16.5 8.5" stroke="currentColor"
+                                                stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                                            <path d="M5 14V18C5 19.1046 5.89543 20 7 20H17C18.1046 20 19 19.1046 19 18V14"
+                                                stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                                        </svg>
+                                    </div>
+
+                                    <div>
+                                        <p class="project-image-upload__title">
+                                            新しい代表画像を選択
+                                        </p>
+
+                                        <p class="project-image-upload__text">
+                                            新しい画像を選択した場合のみ、現在の案件画像を差し替えます。
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <input id="cover_image" type="file" name="cover_image" class="project-image-upload__input"
+                                    accept="image/jpeg,image/png,image/webp" aria-describedby="cover_image_help">
+                            </div>
+
+                            <p id="cover_image_help" class="form-help">
+                                画像を選択しない場合は既存画像を維持します。JPG、JPEG、PNG、WebP形式、最大5MBです。
                             </p>
+
+                            @error('cover_image')
+                                <p class="form-error">{{ $message }}</p>
+                            @enderror
                         </div>
                     </div>
                 </section>
@@ -319,11 +353,11 @@
                     </p>
                 </div>
 
-                <div class="guide-step guide-step--muted">
+                <div class="guide-step">
                     <span>4</span>
-                    <h3>画像・メモ</h3>
+                    <h3>案件画像</h3>
                     <p>
-                        参考画像や補足メモを管理する拡張機能として追加予定です。
+                        新しい画像を選択した場合だけ代表画像を差し替えます。未選択なら既存画像を維持します。
                     </p>
                 </div>
             </aside>

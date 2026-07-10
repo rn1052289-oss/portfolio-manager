@@ -6,8 +6,10 @@ use App\Http\Requests\StoreProjectRequest;
 use App\Http\Requests\UpdateProjectRequest;
 use App\Models\Project;
 use App\Models\Task;
+use App\Services\ProjectImageService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Throwable;
 
 class ProjectController extends Controller
 {
@@ -128,21 +130,56 @@ class ProjectController extends Controller
         ));
     }
 
-    public function store(StoreProjectRequest $request)
-    {
+    public function store(
+        StoreProjectRequest $request,
+        ProjectImageService $projectImageService
+    ) {
         $validated = $request->validated();
 
         $tagIds = $validated['tag_ids'] ?? [];
 
-        unset($validated['tag_ids']);
+        /*
+         * tag_idsは中間テーブル用、
+         * cover_imageはUploadedFileなので
+         * projectsテーブルへ直接保存しない。
+         */
+        unset(
+            $validated['tag_ids'],
+            $validated['cover_image']
+        );
 
-        DB::transaction(function () use ($validated, $tagIds) {
-            $project = auth()->user()
-                ->projects()
-                ->create($validated);
+        $storedImagePath = null;
 
-            $project->tags()->sync($tagIds);
-        });
+        try {
+            if ($request->hasFile('cover_image')) {
+                /** @var \Illuminate\Http\UploadedFile $coverImage */
+                $coverImage = $request->file('cover_image');
+
+                $storedImagePath = $projectImageService
+                    ->store($coverImage);
+
+                $validated['cover_image_path'] = $storedImagePath;
+            }
+
+            DB::transaction(function () use ($validated, $tagIds) {
+                $project = auth()->user()
+                    ->projects()
+                    ->create($validated);
+
+                $project->tags()->sync($tagIds);
+            });
+        } catch (Throwable $exception) {
+            /*
+             * DB処理に失敗してもStorageは自動rollbackされない。
+             * 先に保存した新画像を補償処理として削除する。
+             */
+            if ($storedImagePath !== null) {
+                $projectImageService
+                    ->delete($storedImagePath);
+            }
+
+            throw $exception;
+        }
 
         return redirect()
             ->route('projects.index')
@@ -229,8 +266,10 @@ class ProjectController extends Controller
         ));
     }
 
-    public function update(UpdateProjectRequest $request, Project $project)
-    {
+    public function update(
+        UpdateProjectRequest $request,
+        Project $project
+    ) {
         $this->authorize('update', $project);
 
         $validated = $request->validated();

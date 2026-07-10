@@ -19,6 +19,7 @@ class Project extends Model
         'title',
         'client_name',
         'description',
+        'cover_image_path',
         'status',
         'budget',
         'start_date',

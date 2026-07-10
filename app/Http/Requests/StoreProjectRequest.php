@@ -26,6 +26,14 @@ class StoreProjectRequest extends FormRequest
             'title' => ['required', 'string', 'max:255'],
             'client_name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:500'],
+
+            'cover_image' => [
+                'nullable',
+                'image',
+                'mimes:jpg,jpeg,png,webp',
+                'max:5120',
+            ],
+
             'status' => ['required', 'in:not_started,in_progress,completed,paused'],
             'budget' => ['nullable', 'integer', 'min:0'],
             'start_date' => ['nullable', 'date'],
@@ -61,6 +69,7 @@ class StoreProjectRequest extends FormRequest
             'title' => '案件名',
             'client_name' => 'クライアント名',
             'description' => '案件概要',
+            'cover_image' => '案件画像',
             'status' => 'ステータス',
             'category_id' => 'カテゴリ',
             'budget' => '予算',
@@ -82,6 +91,11 @@ class StoreProjectRequest extends FormRequest
             'category_id.exists' => '選択されたカテゴリが正しくありません。',
             'category_id.integer' => 'カテゴリの値が正しくありません。',
             'budget.min' => '予算は0円以上で入力してください。',
+
+            'cover_image.image' => '案件画像には有効な画像ファイルを指定してください。',
+            'cover_image.mimes' => '案件画像はJPG、JPEG、PNG、WebP形式で指定してください。',
+            'cover_image.max' => '案件画像は5MB以下で指定してください。',
+
             'tag_ids.array' => 'タグの形式が正しくありません。',
             'tag_ids.*.integer' => 'タグの値が正しくありません。',
             'tag_ids.*.exists' => '選択されたタグが見つからないか、使用できないタグです。',
