@@ -75,6 +75,20 @@ class StoreCustomerRequest extends FormRequest
                 'string',
                 'max:2000',
             ],
+
+            'business_card_front' => [
+                'nullable',
+                'image',
+                'mimes:jpg,jpeg,png,webp',
+                'max:5120',
+            ],
+
+            'business_card_back' => [
+                'nullable',
+                'image',
+                'mimes:jpg,jpeg,png,webp',
+                'max:5120',
+            ],
         ];
     }
 
@@ -93,6 +107,8 @@ class StoreCustomerRequest extends FormRequest
             'postal_code' => '郵便番号',
             'address' => '住所',
             'memo' => 'メモ',
+            'business_card_front' => '名刺表面',
+            'business_card_back' => '名刺裏面',
         ];
     }
 
@@ -108,6 +124,24 @@ class StoreCustomerRequest extends FormRequest
             'name.unique' => '同じ名前の顧客がすでに登録されています。',
             'email.email' => 'メールアドレスの形式が正しくありません。',
             'memo.max' => 'メモは2000文字以内で入力してください。',
+
+            'business_card_front.image'
+            => '名刺表面には有効な画像ファイルを指定してください。',
+
+            'business_card_front.mimes'
+            => '名刺表面はJPG、JPEG、PNG、WebP形式で指定してください。',
+
+            'business_card_front.max'
+            => '名刺表面は5MB以下で指定してください。',
+
+            'business_card_back.image'
+            => '名刺裏面には有効な画像ファイルを指定してください。',
+
+            'business_card_back.mimes'
+            => '名刺裏面はJPG、JPEG、PNG、WebP形式で指定してください。',
+
+            'business_card_back.max'
+            => '名刺裏面は5MB以下で指定してください。',
         ];
     }
 }

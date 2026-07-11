@@ -13,7 +13,8 @@
 
 @section('content')
     <section class="customer-create">
-        <form action="{{ route('customers.store') }}" method="POST" class="customer-form" novalidate>
+        <form action="{{ route('customers.store') }}" method="POST" enctype="multipart/form-data" class="customer-form"
+            novalidate>
             @csrf
 
             @if ($errors->any())
@@ -184,6 +185,59 @@
                                 autocomplete="street-address" placeholder="例：東京都千代田区千代田1-1">
 
                             @error('address')
+                                <p class="customer-field__error">
+                                    {{ $message }}
+                                </p>
+                            @enderror
+                        </div>
+                    </div>
+                </fieldset>
+
+                {{-- 名刺画像 --}}
+                <fieldset class="customer-form-section">
+                    <legend class="customer-form-section__legend">
+                        名刺画像
+                    </legend>
+
+                    <p class="customer-form-section__description">
+                        名刺の表面・裏面をそれぞれ登録できます。どちらも任意です。
+                    </p>
+
+                    <div class="customer-form-grid">
+                        <div class="customer-field">
+                            <label for="business_card_front" class="customer-field__label">
+                                名刺表面
+                            </label>
+
+                            <input type="file" id="business_card_front" name="business_card_front"
+                                class="customer-field__control customer-field__file @error('business_card_front') is-error @enderror"
+                                accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp">
+
+                            <p class="customer-field__help customer-field__help--file">
+                                JPG・JPEG・PNG・WebP／最大5MB
+                            </p>
+
+                            @error('business_card_front')
+                                <p class="customer-field__error">
+                                    {{ $message }}
+                                </p>
+                            @enderror
+                        </div>
+
+                        <div class="customer-field">
+                            <label for="business_card_back" class="customer-field__label">
+                                名刺裏面
+                            </label>
+
+                            <input type="file" id="business_card_back" name="business_card_back"
+                                class="customer-field__control customer-field__file @error('business_card_back') is-error @enderror"
+                                accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp">
+
+                            <p class="customer-field__help customer-field__help--file">
+                                JPG・JPEG・PNG・WebP／最大5MB
+                            </p>
+
+                            @error('business_card_back')
                                 <p class="customer-field__error">
                                     {{ $message }}
                                 </p>
