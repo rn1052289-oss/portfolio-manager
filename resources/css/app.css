@@ -10,6 +10,7 @@
 @import './pages/tasks/index.css';
 @import './pages/tasks/create.css';
 @import './pages/customers/index.css';
+@import './pages/customers/create.css';
 
 :root {
     --color-bg: #f4f7fb;

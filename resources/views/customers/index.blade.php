@@ -3,18 +3,18 @@
 @section('title', '顧客一覧 | ClientWork Manager')
 @section('page-label', 'Customer Management')
 @section('page-title', '顧客管理')
-@section(
-    'page-description',
-    '顧客の基本情報や連絡先を一覧で確認できます。'
-)
+@section('page-description', '顧客の基本情報や連絡先を一覧で確認できます。')
+
+@section('page-actions')
+    <a href="{{ route('customers.create') }}" class="customer-index-action">
+        ＋ 顧客を登録
+    </a>
+@endsection
 
 @section('content')
     <section class="customer-index">
         @if (session('success'))
-            <div
-                class="customer-index__flash"
-                role="status"
-            >
+            <div class="customer-index__flash" role="status">
                 {{ session('success') }}
             </div>
         @endif
@@ -51,18 +51,9 @@
 
         @if ($customers->isEmpty())
             <div class="customer-empty">
-                <div
-                    class="customer-empty__icon"
-                    aria-hidden="true"
-                >
-                    <svg
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="1.7"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                    >
+                <div class="customer-empty__icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"
+                        stroke-linejoin="round">
                         <path d="M4 21v-9a2 2 0 0 1 2-2h4"></path>
                         <path d="M14 5h4a2 2 0 0 1 2 2v14"></path>
                         <path d="M8 10V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v16"></path>
@@ -121,10 +112,7 @@
                                 <tr>
                                     <td>
                                         <div class="customer-table__primary">
-                                            <span
-                                                class="customer-table__avatar"
-                                                aria-hidden="true"
-                                            >
+                                            <span class="customer-table__avatar" aria-hidden="true">
                                                 {{ mb_substr($customer->name, 0, 1) }}
                                             </span>
 
@@ -148,10 +136,7 @@
 
                                     <td>
                                         @if ($customer->email)
-                                            <a
-                                                href="mailto:{{ $customer->email }}"
-                                                class="customer-table__link"
-                                            >
+                                            <a href="mailto:{{ $customer->email }}" class="customer-table__link">
                                                 {{ $customer->email }}
                                             </a>
                                         @else
@@ -163,10 +148,8 @@
 
                                     <td>
                                         @if ($customer->phone)
-                                            <a
-                                                href="tel:{{ preg_replace('/[^0-9+]/', '', $customer->phone) }}"
-                                                class="customer-table__link"
-                                            >
+                                            <a href="tel:{{ preg_replace('/[^0-9+]/', '', $customer->phone) }}"
+                                                class="customer-table__link">
                                                 {{ $customer->phone }}
                                             </a>
                                         @else
@@ -183,10 +166,7 @@
                                     </td>
 
                                     <td>
-                                        <time
-                                            datetime="{{ $customer->updated_at->toDateString() }}"
-                                            class="customer-table__date"
-                                        >
+                                        <time datetime="{{ $customer->updated_at->toDateString() }}" class="customer-table__date">
                                             {{ $customer->updated_at->format('Y/m/d') }}
                                         </time>
                                     </td>
@@ -202,10 +182,7 @@
                 @foreach ($customers as $customer)
                     <article class="customer-card">
                         <header class="customer-card__header">
-                            <span
-                                class="customer-card__avatar"
-                                aria-hidden="true"
-                            >
+                            <span class="customer-card__avatar" aria-hidden="true">
                                 {{ mb_substr($customer->name, 0, 1) }}
                             </span>
 
