@@ -59,9 +59,7 @@ class CustomerController extends Controller
 
         /*
          * 今回Storageへ保存した新画像パスです。
-         *
-         * DB登録に失敗した場合は、
-         * この配列内の画像をcleanupします。
+         * DB登録に失敗した場合はcleanupします。
          */
         $storedPaths = [];
 
@@ -74,7 +72,6 @@ class CustomerController extends Controller
                     ->store($frontImage);
 
                 $storedPaths[] = $frontPath;
-
                 $validated['business_card_front_path'] = $frontPath;
             }
 
@@ -86,7 +83,6 @@ class CustomerController extends Controller
                     ->store($backImage);
 
                 $storedPaths[] = $backPath;
-
                 $validated['business_card_back_path'] = $backPath;
             }
 
@@ -97,10 +93,8 @@ class CustomerController extends Controller
             });
         } catch (Throwable $exception) {
             /*
-             * DBトランザクションをrollbackしても、
-             * Storage上の画像は自動削除されません。
-             *
-             * 今回新しく保存した画像だけを削除します。
+             * DBがrollbackされてもStorageは自動で戻らないため、
+             * 今回保存した新画像だけを削除します。
              */
             $businessCardService->deleteMany($storedPaths);
 
@@ -110,5 +104,18 @@ class CustomerController extends Controller
         return redirect()
             ->route('customers.index')
             ->with('success', '顧客を登録しました。');
+    }
+
+    /**
+     * 顧客詳細を表示します。
+     */
+    public function show(Customer $customer)
+    {
+        $this->authorize('view', $customer);
+
+        return view(
+            'customers.show',
+            compact('customer')
+        );
     }
 }
