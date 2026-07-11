@@ -358,11 +358,36 @@ class ProjectController extends Controller
             ->with('success', '案件を更新しました。');
     }
 
-    public function destroy(Project $project)
-    {
+    public function destroy(
+        Project $project,
+        ProjectImageService $projectImageService
+    ) {
         $this->authorize('delete', $project);
 
-        $project->delete();
+        /*
+         * 案件削除後にStorageから画像を削除するため、
+         * DBレコードが残っているうちに画像パスを保持する。
+         */
+        $imagePath = $project->cover_image_path;
+
+        /*
+         * DB削除が失敗した場合は例外が発生し、
+         * 後続の画像削除処理へ進まない。
+         */
+        DB::transaction(function () use ($project) {
+            $project->delete();
+        });
+
+        /*
+         * DB削除が成功したあとで画像を削除する。
+         *
+         * 画像削除に失敗した場合は、
+         * ProjectImageService内でwarningログを記録する。
+         * 案件削除自体は成功扱いとする。
+         */
+        if ($imagePath !== null) {
+            $projectImageService->delete($imagePath);
+        }
 
         return redirect()
             ->route('projects.index')
