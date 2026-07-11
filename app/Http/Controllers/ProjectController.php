@@ -268,7 +268,8 @@ class ProjectController extends Controller
 
     public function update(
         UpdateProjectRequest $request,
-        Project $project
+        Project $project,
+        ProjectImageService $projectImageService
     ) {
         $this->authorize('update', $project);
 
@@ -276,13 +277,81 @@ class ProjectController extends Controller
 
         $tagIds = $validated['tag_ids'] ?? [];
 
-        unset($validated['tag_ids']);
+        /*
+         * tag_idsは中間テーブル用、
+         * cover_imageはUploadedFileなので
+         * projectsテーブルへ直接保存しない。
+         */
+        unset(
+            $validated['tag_ids'],
+            $validated['cover_image']
+        );
 
-        DB::transaction(function () use ($project, $validated, $tagIds) {
-            $project->update($validated);
+        /*
+         * DB更新前の画像パスを保持する。
+         *
+         * DB更新成功後に旧画像を削除するため、
+         * $project->update()より前に取得しておく。
+         */
+        $oldImagePath = $project->cover_image_path;
 
-            $project->tags()->sync($tagIds);
-        });
+        /*
+         * 今回新しく保存した画像のパス。
+         *
+         * DB更新に失敗した場合は、
+         * この画像をcleanupする。
+         */
+        $storedImagePath = null;
+
+        try {
+            if ($request->hasFile('cover_image')) {
+                /** @var \Illuminate\Http\UploadedFile $coverImage */
+                $coverImage = $request->file('cover_image');
+
+                $storedImagePath = $projectImageService
+                    ->store($coverImage);
+
+                $validated['cover_image_path'] = $storedImagePath;
+            }
+
+            DB::transaction(function () use ($project, $validated, $tagIds) {
+                $project->update($validated);
+
+                $project->tags()->sync($tagIds);
+            });
+        } catch (Throwable $exception) {
+            /*
+             * Storage操作はDBトランザクションで
+             * 自動rollbackされない。
+             *
+             * DB更新に失敗した場合は、
+             * 先に保存した新画像だけを削除する。
+             *
+             * 旧画像はまだ削除していないため維持される。
+             */
+            if ($storedImagePath !== null) {
+                $projectImageService
+                    ->delete($storedImagePath);
+            }
+
+            throw $exception;
+        }
+
+        /*
+         * DB更新・タグ同期がすべて成功したあとで
+         * 古い画像を削除する。
+         *
+         * 削除失敗時はProjectImageService内で
+         * warningログを記録し、案件更新自体は成功扱いにする。
+         */
+        if (
+            $storedImagePath !== null
+            && $oldImagePath !== null
+            && $oldImagePath !== $storedImagePath
+        ) {
+            $projectImageService
+                ->delete($oldImagePath);
+        }
 
         return redirect()
             ->route('projects.show', $project)
