@@ -14,6 +14,12 @@ Route::get('/', function () {
 });
 
 Route::middleware('auth')->group(function () {
+    /*
+    |--------------------------------------------------------------------------
+    | Dashboard
+    |--------------------------------------------------------------------------
+    */
+
     Route::get('/dashboard', [DashboardController::class, 'index'])
         ->name('dashboard');
 
@@ -23,62 +29,36 @@ Route::middleware('auth')->group(function () {
     |--------------------------------------------------------------------------
     */
 
-    Route::get('/projects', [ProjectController::class, 'index'])
-        ->name('projects.index');
-
-    Route::get('/projects/create', [ProjectController::class, 'create'])
-        ->name('projects.create');
-
-    Route::post('/projects', [ProjectController::class, 'store'])
-        ->name('projects.store');
-
-    /*
-|--------------------------------------------------------------------------
-| Project Tasks
-|--------------------------------------------------------------------------
-*/
-
-    Route::get('/projects/{project}/tasks', [TaskController::class, 'index'])
-        ->name('projects.tasks.index');
-
-    Route::get('/projects/{project}/tasks/create', [TaskController::class, 'create'])
-        ->name('projects.tasks.create');
-
-    Route::post('/projects/{project}/tasks', [TaskController::class, 'store'])
-        ->name('projects.tasks.store');
-
-    Route::get('/projects/{project}/tasks/{task}/edit', [TaskController::class, 'edit'])
-        ->scopeBindings()
-        ->name('projects.tasks.edit');
-
-    Route::patch('/projects/{project}/tasks/reorder', TaskOrderController::class)
-        ->name('projects.tasks.reorder');
-
-    Route::patch('/projects/{project}/tasks/{task}', [TaskController::class, 'update'])
-        ->scopeBindings()
-        ->name('projects.tasks.update');
-
-    Route::delete('/projects/{project}/tasks/{task}', [TaskController::class, 'destroy'])
-        ->scopeBindings()
-        ->name('projects.tasks.destroy');
+    Route::resource('projects', ProjectController::class);
 
     /*
     |--------------------------------------------------------------------------
-    | Project Detail / Edit / Delete
+    | Project Tasks
     |--------------------------------------------------------------------------
     */
 
-    Route::get('/projects/{project}', [ProjectController::class, 'show'])
-        ->name('projects.show');
+    /*
+     * tasks/{task}より先に定義する。
+     *
+     * 後ろに置くと「reorder」がtaskパラメータとして
+     * 解釈される可能性があるため。
+     */
+    Route::patch(
+        '/projects/{project}/tasks/reorder',
+        TaskOrderController::class
+    )->name('projects.tasks.reorder');
 
-    Route::get('/projects/{project}/edit', [ProjectController::class, 'edit'])
-        ->name('projects.edit');
-
-    Route::put('/projects/{project}', [ProjectController::class, 'update'])
-        ->name('projects.update');
-
-    Route::delete('/projects/{project}', [ProjectController::class, 'destroy'])
-        ->name('projects.destroy');
+    Route::scopeBindings()->group(function () {
+        Route::resource('projects.tasks', TaskController::class)
+            ->only([
+                'index',
+                'create',
+                'store',
+                'edit',
+                'update',
+                'destroy',
+            ]);
+    });
 
     /*
     |--------------------------------------------------------------------------
@@ -86,8 +66,10 @@ Route::middleware('auth')->group(function () {
     |--------------------------------------------------------------------------
     */
 
-    Route::get('/customers', [CustomerController::class, 'index'])
-        ->name('customers.index');
+    Route::resource('customers', CustomerController::class)
+        ->only([
+            'index',
+        ]);
 
     /*
     |--------------------------------------------------------------------------
@@ -95,20 +77,14 @@ Route::middleware('auth')->group(function () {
     |--------------------------------------------------------------------------
     */
 
-    Route::get('/categories', [CategoryController::class, 'index'])
-        ->name('categories.index');
-
-    Route::post('/categories', [CategoryController::class, 'store'])
-        ->name('categories.store');
-
-    Route::get('/categories/{category}/edit', [CategoryController::class, 'edit'])
-        ->name('categories.edit');
-
-    Route::put('/categories/{category}', [CategoryController::class, 'update'])
-        ->name('categories.update');
-
-    Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])
-        ->name('categories.destroy');
+    Route::resource('categories', CategoryController::class)
+        ->only([
+            'index',
+            'store',
+            'edit',
+            'update',
+            'destroy',
+        ]);
 
     /*
     |--------------------------------------------------------------------------
@@ -116,18 +92,12 @@ Route::middleware('auth')->group(function () {
     |--------------------------------------------------------------------------
     */
 
-    Route::get('/tags', [TagController::class, 'index'])
-        ->name('tags.index');
-
-    Route::post('/tags', [TagController::class, 'store'])
-        ->name('tags.store');
-
-    Route::get('/tags/{tag}/edit', [TagController::class, 'edit'])
-        ->name('tags.edit');
-
-    Route::put('/tags/{tag}', [TagController::class, 'update'])
-        ->name('tags.update');
-
-    Route::delete('/tags/{tag}', [TagController::class, 'destroy'])
-        ->name('tags.destroy');
+    Route::resource('tags', TagController::class)
+        ->only([
+            'index',
+            'store',
+            'edit',
+            'update',
+            'destroy',
+        ]);
 });
