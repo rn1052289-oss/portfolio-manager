@@ -14,7 +14,7 @@ class User extends Authenticatable
     use HasApiTokens, HasFactory, Notifiable;
 
     /**
-     * The attributes that are mass assignable.
+     * 一括代入を許可するカラムです。
      *
      * @var array<int, string>
      */
@@ -25,7 +25,7 @@ class User extends Authenticatable
     ];
 
     /**
-     * The attributes that should be hidden for serialization.
+     * 配列・JSON変換時に非表示にするカラムです。
      *
      * @var array<int, string>
      */
@@ -35,7 +35,7 @@ class User extends Authenticatable
     ];
 
     /**
-     * The attributes that should be cast.
+     * 属性を変換する設定です。
      *
      * @var array<string, string>
      */
@@ -44,20 +44,41 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
+    /**
+     * ユーザーが所有する案件一覧です。
+     */
     public function projects(): HasMany
     {
         return $this->hasMany(Project::class);
     }
 
+    /**
+     * ユーザーが所有する顧客一覧です。
+     */
+    public function customers(): HasMany
+    {
+        return $this->hasMany(Customer::class);
+    }
+
+    /**
+     * ユーザーが所有するカテゴリ一覧です。
+     */
     public function categories(): HasMany
     {
         return $this->hasMany(Category::class);
     }
 
+    /**
+     * ユーザーが所有するタグ一覧です。
+     */
     public function tags(): HasMany
     {
         return $this->hasMany(Tag::class);
     }
+
+    /**
+     * ユーザーが所有するタスク一覧です。
+     */
     public function tasks(): HasMany
     {
         return $this->hasMany(Task::class);

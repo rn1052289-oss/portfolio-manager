@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -13,8 +12,14 @@ class Project extends Model
 {
     use HasFactory;
 
+    /**
+     * 一括代入を許可するカラムです。
+     *
+     * @var array<int, string>
+     */
     protected $fillable = [
         'user_id',
+        'customer_id',
         'category_id',
         'title',
         'client_name',
@@ -26,13 +31,18 @@ class Project extends Model
         'deadline',
     ];
 
+    /**
+     * 属性を変換する設定です。
+     *
+     * @var array<string, string>
+     */
     protected $casts = [
         'start_date' => 'date',
         'deadline' => 'date',
     ];
 
     /**
-     * 案件を所有するユーザー
+     * 案件を所有するユーザーです。
      */
     public function user(): BelongsTo
     {
@@ -40,7 +50,15 @@ class Project extends Model
     }
 
     /**
-     * 案件に紐づくカテゴリ
+     * 案件に紐づく顧客です。
+     */
+    public function customer(): BelongsTo
+    {
+        return $this->belongsTo(Customer::class);
+    }
+
+    /**
+     * 案件に紐づくカテゴリです。
      */
     public function category(): BelongsTo
     {
@@ -48,15 +66,16 @@ class Project extends Model
     }
 
     /**
-     * 案件に紐づいているタグ一覧
+     * 案件に紐づくタグ一覧です。
      */
     public function tags(): BelongsToMany
     {
-        return $this->belongsToMany(Tag::class)->withTimestamps();
+        return $this->belongsToMany(Tag::class)
+            ->withTimestamps();
     }
 
     /**
-     * 案件に紐づくタスク一覧
+     * 案件に紐づくタスク一覧です。
      */
     public function tasks(): HasMany
     {
