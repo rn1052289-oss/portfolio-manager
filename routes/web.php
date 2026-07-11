@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\TagController;
@@ -78,6 +79,15 @@ Route::middleware('auth')->group(function () {
 
     Route::delete('/projects/{project}', [ProjectController::class, 'destroy'])
         ->name('projects.destroy');
+
+    /*
+    |--------------------------------------------------------------------------
+    | Customers
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get('/customers', [CustomerController::class, 'index'])
+        ->name('customers.index');
 
     /*
     |--------------------------------------------------------------------------

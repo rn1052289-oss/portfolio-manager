@@ -160,12 +160,15 @@
                 </a>
 
                 <a
-                    href="#"
-                    class="admin-sidebar__link"
-                >
-                    <span class="admin-sidebar__link-marker"></span>
-                    <span>顧客管理</span>
-                </a>
+    href="{{ route('customers.index') }}"
+    class="admin-sidebar__link {{ request()->routeIs('customers.*') ? 'is-active' : '' }}"
+    @if (request()->routeIs('customers.*'))
+        aria-current="page"
+    @endif
+>
+    <span class="admin-sidebar__link-marker"></span>
+    <span>顧客管理</span>
+</a>
 
                 <a
                     href="{{ route('tags.index') }}"
@@ -404,6 +407,39 @@
                 タグ
             </span>
         </a>
+
+        <a
+    href="{{ route('customers.index') }}"
+    class="mobile-bottom-nav__link {{ request()->routeIs('customers.*') ? 'is-active' : '' }}"
+    @if (request()->routeIs('customers.*'))
+        aria-current="page"
+    @endif
+>
+    <svg
+        class="mobile-bottom-nav__icon"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+    >
+        <path d="M4 21v-9a2 2 0 0 1 2-2h4"></path>
+        <path d="M14 5h4a2 2 0 0 1 2 2v16"></path>
+        <path d="M8 10V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v16"></path>
+        <path d="M3 21h18"></path>
+        <path d="M11 7h2"></path>
+        <path d="M11 11h2"></path>
+        <path d="M11 15h2"></path>
+        <path d="M17 9h1"></path>
+        <path d="M17 13h1"></path>
+    </svg>
+
+    <span class="mobile-bottom-nav__label">
+        顧客
+    </span>
+</a>
     </nav>
 </body>
 
