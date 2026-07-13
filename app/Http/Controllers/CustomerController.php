@@ -254,4 +254,44 @@ class CustomerController extends Controller
             ->route('customers.show', $customer)
             ->with('success', '顧客情報を更新しました。');
     }
+
+    /**
+     * 顧客を削除します。
+     */
+    public function destroy(
+        Customer $customer,
+        CustomerBusinessCardService $businessCardService
+    ) {
+        $this->authorize('delete', $customer);
+
+        /*
+         * DB削除後にStorageから削除するため、
+         * 先に現在の画像パスを保持します。
+         */
+        $businessCardPaths = [
+            $customer->business_card_front_path,
+            $customer->business_card_back_path,
+        ];
+
+        DB::transaction(function () use ($customer) {
+            $customer->delete();
+        });
+
+        /*
+         * DB削除成功後だけStorageを削除します。
+         *
+         * Storage削除失敗時はService内で
+         * warningログのみ記録されます。
+         */
+        $businessCardService->deleteMany(
+            $businessCardPaths
+        );
+
+        return redirect()
+            ->route('customers.index')
+            ->with(
+                'success',
+                '顧客を削除しました。'
+            );
+    }
 }

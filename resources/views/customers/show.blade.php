@@ -7,17 +7,12 @@
 
 @section('page-actions')
     <div class="customer-show-header-actions">
-        <a
-            href="{{ route('customers.index') }}"
-            class="customer-show-header-action"
-        >
+        <a href="{{ route('customers.index') }}" class="customer-show-header-action">
             顧客一覧へ戻る
         </a>
 
-        <a
-            href="{{ route('customers.edit', $customer) }}"
-            class="customer-show-header-action customer-show-header-action--primary"
-        >
+        <a href="{{ route('customers.edit', $customer) }}"
+            class="customer-show-header-action customer-show-header-action--primary">
             顧客情報を編集
         </a>
     </div>
@@ -26,21 +21,9 @@
 @section('content')
     <section class="customer-show">
         @if (session('success'))
-            <div
-                class="customer-show__flash"
-                role="status"
-                aria-live="polite"
-            >
-                <svg
-                    class="customer-show__flash-icon"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    aria-hidden="true"
-                >
+            <div class="customer-show__flash" role="status" aria-live="polite">
+                <svg class="customer-show__flash-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <circle cx="12" cy="12" r="9"></circle>
                     <path d="m8.5 12 2.2 2.2 4.8-5"></path>
                 </svg>
@@ -53,14 +36,8 @@
 
         <div class="customer-show__hero">
             <div class="customer-show__avatar" aria-hidden="true">
-                <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="1.8"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                    stroke-linejoin="round">
                     <path d="M4 21v-9a2 2 0 0 1 2-2h4"></path>
                     <path d="M14 5h4a2 2 0 0 1 2 2v14"></path>
                     <path d="M8 10V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v16"></path>
@@ -132,10 +109,7 @@
 
                             <dd class="customer-information__value">
                                 @if ($customer->email)
-                                    <a
-                                        href="mailto:{{ $customer->email }}"
-                                        class="customer-information__link"
-                                    >
+                                    <a href="mailto:{{ $customer->email }}" class="customer-information__link">
                                         {{ $customer->email }}
                                     </a>
                                 @else
@@ -153,10 +127,8 @@
 
                             <dd class="customer-information__value">
                                 @if ($customer->phone)
-                                    <a
-                                        href="tel:{{ preg_replace('/[^0-9+]/', '', $customer->phone) }}"
-                                        class="customer-information__link"
-                                    >
+                                    <a href="tel:{{ preg_replace('/[^0-9+]/', '', $customer->phone) }}"
+                                        class="customer-information__link">
                                         {{ $customer->phone }}
                                     </a>
                                 @else
@@ -281,20 +253,44 @@
                     </header>
 
                     <div class="business-card-list">
-                        <x-customers.business-card-image
-                            :path="$customer->business_card_front_path"
-                            side="名刺表面"
-                            :alt="$customer->name . 'の名刺表面'"
-                        />
+                        <x-customers.business-card-image :path="$customer->business_card_front_path" side="名刺表面"
+                            :alt="$customer->name . 'の名刺表面'" />
 
-                        <x-customers.business-card-image
-                            :path="$customer->business_card_back_path"
-                            side="名刺裏面"
-                            :alt="$customer->name . 'の名刺裏面'"
-                        />
+                        <x-customers.business-card-image :path="$customer->business_card_back_path" side="名刺裏面"
+                            :alt="$customer->name . 'の名刺裏面'" />
                     </div>
                 </section>
             </aside>
         </div>
+
+        <section class="customer-show-danger" aria-labelledby="customer-delete-title">
+            <div class="customer-show-danger__content">
+                <div>
+                    <p class="customer-show-danger__eyebrow">
+                        Danger Zone
+                    </p>
+
+                    <h3 id="customer-delete-title" class="customer-show-danger__title">
+                        顧客を削除
+                    </h3>
+
+                    <p class="customer-show-danger__description">
+                        顧客情報と登録済みの名刺画像を削除します。
+                        関連する案件は削除されませんが、顧客との紐付けは解除されます。
+                        この操作は元に戻せません。
+                    </p>
+                </div>
+
+                <form method="POST" action="{{ route('customers.destroy', $customer) }}" class="customer-show-danger__form"
+                    onsubmit="return confirm('「{{ $customer->name }}」を削除しますか？\n\n顧客情報と名刺画像が削除されます。\n関連案件は残りますが、顧客との紐付けは解除されます。\nこの操作は元に戻せません。');">
+                    @csrf
+                    @method('DELETE')
+
+                    <button type="submit" class="customer-show-danger__button">
+                        顧客を削除
+                    </button>
+                </form>
+            </div>
+        </section>
     </section>
 @endsection

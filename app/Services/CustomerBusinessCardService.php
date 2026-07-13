@@ -59,8 +59,17 @@ class CustomerBusinessCardService
             return false;
         }
 
-        $deleted = Storage::disk(self::DISK)
-            ->delete($path);
+        $disk = Storage::disk(self::DISK);
+
+        /*
+         * DBにパスが残っていても実ファイルが存在しない場合は、
+         * すでに削除済みとみなします。
+         */
+        if (!$disk->exists($path)) {
+            return true;
+        }
+
+        $deleted = $disk->delete($path);
 
         if (!$deleted) {
             Log::warning(
