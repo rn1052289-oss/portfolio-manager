@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreCustomerRequest;
+use App\Http\Requests\UpdateCustomerRequest;
 use App\Models\Customer;
 use App\Services\CustomerBusinessCardService;
 use Illuminate\Support\Facades\DB;
@@ -117,5 +118,32 @@ class CustomerController extends Controller
             'customers.show',
             compact('customer')
         );
+    }
+
+    /**
+     * 顧客編集画面を表示します。
+     */
+    public function edit(Customer $customer)
+    {
+        $this->authorize('update', $customer);
+
+        return view(
+            'customers.edit',
+            compact('customer')
+        );
+    }
+
+    /**
+     * 顧客の基本情報を更新します。
+     */
+    public function update(
+        UpdateCustomerRequest $request,
+        Customer $customer
+    ) {
+        $customer->update($request->validated());
+
+        return redirect()
+            ->route('customers.show', $customer)
+            ->with('success', '顧客情報を更新しました。');
     }
 }
