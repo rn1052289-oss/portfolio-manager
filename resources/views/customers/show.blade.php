@@ -6,22 +6,66 @@
 @section('page-description', '顧客の基本情報、連絡先、名刺画像を確認できます。')
 
 @section('page-actions')
-    <a href="{{ route('customers.index') }}" class="customer-show-header-action">
-        顧客一覧へ戻る
-    </a>
+    <div class="customer-show-header-actions">
+        <a
+            href="{{ route('customers.index') }}"
+            class="customer-show-header-action"
+        >
+            顧客一覧へ戻る
+        </a>
+
+        <a
+            href="{{ route('customers.edit', $customer) }}"
+            class="customer-show-header-action customer-show-header-action--primary"
+        >
+            顧客情報を編集
+        </a>
+    </div>
 @endsection
 
 @section('content')
     <section class="customer-show">
         @if (session('success'))
-            <div class="customer-show__flash" role="status">
-                {{ session('success') }}
+            <div
+                class="customer-show__flash"
+                role="status"
+                aria-live="polite"
+            >
+                <svg
+                    class="customer-show__flash-icon"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                >
+                    <circle cx="12" cy="12" r="9"></circle>
+                    <path d="m8.5 12 2.2 2.2 4.8-5"></path>
+                </svg>
+
+                <span>
+                    {{ session('success') }}
+                </span>
             </div>
         @endif
 
         <div class="customer-show__hero">
             <div class="customer-show__avatar" aria-hidden="true">
-                {{ mb_substr($customer->name, 0, 1) }}
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                >
+                    <path d="M4 21v-9a2 2 0 0 1 2-2h4"></path>
+                    <path d="M14 5h4a2 2 0 0 1 2 2v14"></path>
+                    <path d="M8 10V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v16"></path>
+                    <path d="M3 21h18"></path>
+                </svg>
             </div>
 
             <div class="customer-show__hero-body">
@@ -34,7 +78,7 @@
                 </h2>
 
                 <p class="customer-show__hero-description">
-                    登録されている顧客情報と名刺画像を確認できます。
+                    連絡先、住所、メモ、名刺画像、更新履歴をまとめて確認できます。
                 </p>
             </div>
         </div>
@@ -71,7 +115,13 @@
                             </dt>
 
                             <dd class="customer-information__value">
-                                {{ $customer->contact_name ?: '未設定' }}
+                                @if ($customer->contact_name)
+                                    {{ $customer->contact_name }}
+                                @else
+                                    <span class="customer-information__empty">
+                                        未設定
+                                    </span>
+                                @endif
                             </dd>
                         </div>
 
@@ -82,7 +132,10 @@
 
                             <dd class="customer-information__value">
                                 @if ($customer->email)
-                                    <a href="mailto:{{ $customer->email }}" class="customer-information__link">
+                                    <a
+                                        href="mailto:{{ $customer->email }}"
+                                        class="customer-information__link"
+                                    >
                                         {{ $customer->email }}
                                     </a>
                                 @else
@@ -100,8 +153,10 @@
 
                             <dd class="customer-information__value">
                                 @if ($customer->phone)
-                                    <a href="tel:{{ preg_replace('/[^0-9+]/', '', $customer->phone) }}"
-                                        class="customer-information__link">
+                                    <a
+                                        href="tel:{{ preg_replace('/[^0-9+]/', '', $customer->phone) }}"
+                                        class="customer-information__link"
+                                    >
                                         {{ $customer->phone }}
                                     </a>
                                 @else
@@ -118,7 +173,13 @@
                             </dt>
 
                             <dd class="customer-information__value">
-                                {{ $customer->postal_code ?: '未設定' }}
+                                @if ($customer->postal_code)
+                                    〒{{ $customer->postal_code }}
+                                @else
+                                    <span class="customer-information__empty">
+                                        未設定
+                                    </span>
+                                @endif
                             </dd>
                         </div>
 
@@ -128,7 +189,13 @@
                             </dt>
 
                             <dd class="customer-information__value">
-                                {{ $customer->address ?: '未設定' }}
+                                @if ($customer->address)
+                                    {{ $customer->address }}
+                                @else
+                                    <span class="customer-information__empty">
+                                        未設定
+                                    </span>
+                                @endif
                             </dd>
                         </div>
                     </dl>
@@ -178,7 +245,7 @@
                             </dt>
 
                             <dd>
-                                <time datetime="{{ $customer->created_at->toDateString() }}">
+                                <time datetime="{{ $customer->created_at->toIso8601String() }}">
                                     {{ $customer->created_at->format('Y年m月d日 H:i') }}
                                 </time>
                             </dd>
@@ -190,7 +257,7 @@
                             </dt>
 
                             <dd>
-                                <time datetime="{{ $customer->updated_at->toDateString() }}">
+                                <time datetime="{{ $customer->updated_at->toIso8601String() }}">
                                     {{ $customer->updated_at->format('Y年m月d日 H:i') }}
                                 </time>
                             </dd>
@@ -214,11 +281,17 @@
                     </header>
 
                     <div class="business-card-list">
-                        <x-customers.business-card-image :path="$customer->business_card_front_path" side="名刺表面"
-                            :alt="$customer->name . 'の名刺表面'" />
+                        <x-customers.business-card-image
+                            :path="$customer->business_card_front_path"
+                            side="名刺表面"
+                            :alt="$customer->name . 'の名刺表面'"
+                        />
 
-                        <x-customers.business-card-image :path="$customer->business_card_back_path" side="名刺裏面"
-                            :alt="$customer->name . 'の名刺裏面'" />
+                        <x-customers.business-card-image
+                            :path="$customer->business_card_back_path"
+                            side="名刺裏面"
+                            :alt="$customer->name . 'の名刺裏面'"
+                        />
                     </div>
                 </section>
             </aside>

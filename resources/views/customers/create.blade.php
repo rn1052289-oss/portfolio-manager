@@ -25,6 +25,27 @@
         >
             @csrf
 
+            <div class="customer-form__intro">
+                <div>
+                    <p class="customer-form__eyebrow">
+                        Customer Profile
+                    </p>
+
+                    <h2 class="customer-form__heading">
+                        顧客情報を登録
+                    </h2>
+
+                    <p class="customer-form__description">
+                        顧客名は必須です。担当者名、連絡先、住所、メモ、名刺画像は任意で登録できます。
+                    </p>
+                </div>
+
+                <span class="customer-form__required-guide">
+                    <span aria-hidden="true">*</span>
+                    必須項目
+                </span>
+            </div>
+
             @if ($errors->any())
                 <div class="customer-form__error-summary" role="alert">
                     <p class="customer-form__error-title">
@@ -41,41 +62,27 @@
                 </div>
             @endif
 
-            <div class="customer-form__intro">
-                <div>
-                    <p class="customer-form__eyebrow">
-                        Customer Profile
-                    </p>
-
-                    <h2 class="customer-form__heading">
-                        顧客情報
-                    </h2>
-
-                    <p class="customer-form__description">
-                        顧客名は必須です。担当者名・連絡先・住所・メモは任意で登録できます。
-                    </p>
-                </div>
-
-                <span class="customer-form__required-guide">
-                    <span aria-hidden="true">*</span>
-                    必須項目
-                </span>
-            </div>
-
             <div class="customer-form__sections">
                 @include('customers.partials.form-fields', [
                     'customer' => null,
                 ])
 
-                {{-- 名刺画像 --}}
-                <fieldset class="customer-form-section">
-                    <legend class="customer-form-section__legend">
-                        名刺画像
-                    </legend>
+                <section
+                    class="customer-form-section"
+                    aria-labelledby="customer-business-card-information-title"
+                >
+                    <header class="customer-form-section__header">
+                        <h3
+                            id="customer-business-card-information-title"
+                            class="customer-form-section__title"
+                        >
+                            名刺画像
+                        </h3>
 
-                    <p class="customer-form-section__description">
-                        名刺の表面・裏面をそれぞれ登録できます。どちらも任意です。
-                    </p>
+                        <p class="customer-form-section__description">
+                            名刺の表面・裏面をそれぞれ登録できます。どちらも任意です。
+                        </p>
+                    </header>
 
                     <div class="customer-form-grid">
                         <div class="customer-field">
@@ -92,9 +99,13 @@
                                 name="business_card_front"
                                 class="customer-field__control customer-field__file @error('business_card_front') is-error @enderror"
                                 accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                                aria-describedby="business-card-front-help"
                             >
 
-                            <p class="customer-field__help customer-field__help--file">
+                            <p
+                                id="business-card-front-help"
+                                class="customer-field__help customer-field__help--file"
+                            >
                                 JPG・JPEG・PNG・WebP／最大5MB
                             </p>
 
@@ -119,9 +130,13 @@
                                 name="business_card_back"
                                 class="customer-field__control customer-field__file @error('business_card_back') is-error @enderror"
                                 accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                                aria-describedby="business-card-back-help"
                             >
 
-                            <p class="customer-field__help customer-field__help--file">
+                            <p
+                                id="business-card-back-help"
+                                class="customer-field__help customer-field__help--file"
+                            >
                                 JPG・JPEG・PNG・WebP／最大5MB
                             </p>
 
@@ -132,23 +147,29 @@
                             @enderror
                         </div>
                     </div>
-                </fieldset>
+                </section>
             </div>
 
             <div class="customer-form__actions">
-                <a
-                    href="{{ route('customers.index') }}"
-                    class="customer-form__button customer-form__button--secondary"
-                >
-                    キャンセル
-                </a>
+                <p class="customer-form__actions-note">
+                    登録後、顧客一覧へ戻ります。
+                </p>
 
-                <button
-                    type="submit"
-                    class="customer-form__button customer-form__button--primary"
-                >
-                    顧客を登録する
-                </button>
+                <div class="customer-form__action-buttons">
+                    <a
+                        href="{{ route('customers.index') }}"
+                        class="customer-form__button customer-form__button--secondary"
+                    >
+                        キャンセル
+                    </a>
+
+                    <button
+                        type="submit"
+                        class="customer-form__button customer-form__button--primary"
+                    >
+                        顧客を登録する
+                    </button>
+                </div>
             </div>
         </form>
     </section>

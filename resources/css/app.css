@@ -10,7 +10,9 @@
 @import './pages/tasks/index.css';
 @import './pages/tasks/create.css';
 @import './pages/customers/index.css';
+@import './pages/customers/form.css';
 @import './pages/customers/create.css';
+@import './pages/customers/edit.css';
 @import './pages/customers/show.css';
 
 :root {

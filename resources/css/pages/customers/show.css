@@ -8,6 +8,14 @@
     width: 100%;
 }
 
+.customer-show-header-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
 .customer-show-header-action {
     display: inline-flex;
     align-items: center;
@@ -33,7 +41,28 @@
     border-color: #93c5fd;
 }
 
+.customer-show-header-action:focus-visible {
+    outline: 3px solid rgb(37 99 235 / 24%);
+    outline-offset: 3px;
+}
+
+.customer-show-header-action--primary {
+    color: #ffffff;
+    background: #2563eb;
+    border-color: #2563eb;
+    box-shadow: 0 8px 18px rgb(37 99 235 / 18%);
+}
+
+.customer-show-header-action--primary:hover {
+    color: #ffffff;
+    background: #1d4ed8;
+    border-color: #1d4ed8;
+}
+
 .customer-show__flash {
+    display: flex;
+    align-items: center;
+    gap: 10px;
     padding: 14px 18px;
     color: #166534;
     font-size: 14px;
@@ -42,6 +71,12 @@
     background: #f0fdf4;
     border: 1px solid #bbf7d0;
     border-radius: 12px;
+}
+
+.customer-show__flash-icon {
+    flex: 0 0 auto;
+    width: 20px;
+    height: 20px;
 }
 
 .customer-show__hero {
@@ -66,12 +101,15 @@
     width: 64px;
     height: 64px;
     color: #1d4ed8;
-    font-size: 24px;
-    font-weight: 900;
     background: #dbeafe;
     border: 1px solid #bfdbfe;
     border-radius: 18px;
     place-items: center;
+}
+
+.customer-show__avatar svg {
+    width: 30px;
+    height: 30px;
 }
 
 .customer-show__hero-body {
@@ -222,6 +260,12 @@
 
 .customer-information__link:hover {
     text-decoration: underline;
+}
+
+.customer-information__link:focus-visible {
+    outline: 3px solid rgb(37 99 235 / 20%);
+    outline-offset: 3px;
+    border-radius: 4px;
 }
 
 .customer-information__empty {
@@ -391,6 +435,7 @@
 @media (max-width: 700px) {
     .customer-show {
         gap: 18px;
+        padding-bottom: 16px;
     }
 
     .customer-show__hero {
@@ -402,8 +447,12 @@
     .customer-show__avatar {
         width: 52px;
         height: 52px;
-        font-size: 20px;
         border-radius: 15px;
+    }
+
+    .customer-show__avatar svg {
+        width: 25px;
+        height: 25px;
     }
 
     .customer-show-panel {
@@ -439,12 +488,30 @@
 }
 
 @media (max-width: 430px) {
+    .customer-show-header-actions {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        width: 100%;
+    }
+
+    .customer-show-header-action {
+        width: 100%;
+        min-height: 40px;
+        padding: 0 10px;
+        font-size: 12px;
+    }
+
     .customer-show__hero {
         gap: 13px;
+        padding: 18px;
     }
 
     .customer-show__name {
         font-size: 20px;
+    }
+
+    .customer-show-panel {
+        padding: 18px;
     }
 
     .customer-show-panel__title {

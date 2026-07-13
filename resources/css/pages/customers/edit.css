@@ -1,0 +1,112 @@
+/* ========================================
+   Customer Edit
+======================================== */
+
+.customer-edit {
+    width: min(100%, 960px);
+    margin: 0 auto;
+}
+
+.customer-edit-header-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 42px;
+    padding: 0 16px;
+    color: #334155;
+    font-size: 13px;
+    font-weight: 800;
+    text-decoration: none;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    transition:
+        color 160ms ease,
+        background-color 160ms ease,
+        border-color 160ms ease;
+}
+
+.customer-edit-header-action:hover {
+    color: #1d4ed8;
+    background: #f8fafc;
+    border-color: #93c5fd;
+}
+
+.customer-edit-header-action:focus-visible {
+    outline: 3px solid rgb(37 99 235 / 24%);
+    outline-offset: 3px;
+}
+
+.customer-edit__notice {
+    display: grid;
+    grid-template-columns: 34px minmax(0, 1fr);
+    gap: 12px;
+    margin: 22px 32px 0;
+    padding: 15px 17px;
+    color: #334155;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 12px;
+}
+
+.customer-edit__notice-icon {
+    width: 30px;
+    height: 30px;
+    padding: 6px;
+    box-sizing: border-box;
+    color: #1d4ed8;
+    background: #dbeafe;
+    border-radius: 50%;
+}
+
+.customer-edit__notice-title {
+    margin: 0;
+    color: #1e3a8a;
+    font-size: 13px;
+    font-weight: 800;
+    line-height: 1.5;
+}
+
+.customer-edit__notice-text {
+    margin: 4px 0 0;
+    color: #475569;
+    font-size: 12px;
+    line-height: 1.75;
+}
+
+@media (max-width: 768px) {
+    .customer-edit {
+        width: 100%;
+        padding-bottom: 16px;
+    }
+
+    .customer-edit__notice {
+        margin: 20px 20px 0;
+    }
+}
+
+@media (max-width: 430px) {
+    .customer-edit-header-action {
+        min-height: 40px;
+        padding: 0 13px;
+        font-size: 12px;
+    }
+
+    .customer-edit__notice {
+        grid-template-columns: 30px minmax(0, 1fr);
+        gap: 10px;
+        padding: 14px;
+    }
+
+    .customer-edit__notice-icon {
+        width: 28px;
+        height: 28px;
+        padding: 5px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .customer-edit-header-action {
+        transition: none;
+    }
+}
