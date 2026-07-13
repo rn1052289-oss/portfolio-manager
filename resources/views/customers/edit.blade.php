@@ -3,7 +3,7 @@
 @section('title', $customer->name . 'を編集 | ClientWork Manager')
 @section('page-label', 'Customer Management')
 @section('page-title', '顧客編集')
-@section('page-description', '登録済みの顧客情報を編集します。')
+@section('page-description', '登録済みの顧客情報と名刺画像を編集します。')
 
 @section('page-actions')
     <a
@@ -19,6 +19,7 @@
         <form
             action="{{ route('customers.update', $customer) }}"
             method="POST"
+            enctype="multipart/form-data"
             class="customer-form"
             novalidate
         >
@@ -36,7 +37,7 @@
                     </h2>
 
                     <p class="customer-form__description">
-                        顧客名、担当者名、連絡先、住所、メモを変更できます。
+                        顧客の基本情報と名刺画像を変更できます。
                     </p>
                 </div>
 
@@ -87,11 +88,11 @@
 
                 <div>
                     <p class="customer-edit__notice-title">
-                        名刺画像について
+                        名刺画像の差し替えについて
                     </p>
 
                     <p class="customer-edit__notice-text">
-                        この画面では名刺画像を変更しません。登録済みの表面・裏面画像はそのまま維持されます。
+                        新しい画像を選択した面だけ差し替えます。未選択の面は、現在登録されている画像を維持します。
                     </p>
                 </div>
             </div>
@@ -100,6 +101,128 @@
                 @include('customers.partials.form-fields', [
                     'customer' => $customer,
                 ])
+
+                <section
+                    class="customer-form-section"
+                    aria-labelledby="customer-business-card-edit-title"
+                >
+                    <header class="customer-form-section__header">
+                        <h3
+                            id="customer-business-card-edit-title"
+                            class="customer-form-section__title"
+                        >
+                            名刺画像
+                        </h3>
+
+                        <p class="customer-form-section__description">
+                            現在の画像を確認し、差し替えたい面だけ新しい画像を選択してください。
+                        </p>
+                    </header>
+
+                    <div class="customer-edit-business-card__grid">
+                        <article class="customer-edit-business-card">
+                            <div class="customer-edit-business-card__header">
+                                <p class="customer-edit-business-card__label">
+                                    現在の名刺表面
+                                </p>
+                            </div>
+
+                            <div class="customer-edit-business-card__preview">
+                                <x-customers.business-card-image
+                                    :path="$customer->business_card_front_path"
+                                    side="名刺表面"
+                                    :alt="$customer->name . 'の名刺表面'"
+                                />
+                            </div>
+
+                            <div class="customer-edit-business-card__field">
+                                <label
+                                    for="business_card_front"
+                                    class="customer-field__label"
+                                >
+                                    新しい表面画像
+                                </label>
+
+                                <input
+                                    type="file"
+                                    id="business_card_front"
+                                    name="business_card_front"
+                                    class="customer-field__control customer-field__file @error('business_card_front') is-error @enderror"
+                                    accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                                    aria-describedby="business-card-front-edit-help"
+                                >
+
+                                <p
+                                    id="business-card-front-edit-help"
+                                    class="customer-field__help customer-field__help--file"
+                                >
+                                    JPG・JPEG・PNG・WebP／最大5MB
+                                    <br>
+                                    未選択の場合は、現在の表面画像を維持します。
+                                </p>
+
+                                @error('business_card_front')
+                                    <p class="customer-field__error">
+                                        {{ $message }}
+                                    </p>
+                                @enderror
+                            </div>
+                        </article>
+
+                        <article class="customer-edit-business-card">
+                            <div class="customer-edit-business-card__header">
+                                <p class="customer-edit-business-card__label">
+                                    現在の名刺裏面
+                                </p>
+                            </div>
+
+                            <div class="customer-edit-business-card__preview">
+                                <x-customers.business-card-image
+                                    :path="$customer->business_card_back_path"
+                                    side="名刺裏面"
+                                    :alt="$customer->name . 'の名刺裏面'"
+                                />
+                            </div>
+
+                            <div class="customer-edit-business-card__field">
+                                <label
+                                    for="business_card_back"
+                                    class="customer-field__label"
+                                >
+                                    新しい裏面画像
+                                </label>
+
+                                <input
+                                    type="file"
+                                    id="business_card_back"
+                                    name="business_card_back"
+                                    class="customer-field__control customer-field__file @error('business_card_back') is-error @enderror"
+                                    accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                                    aria-describedby="business-card-back-edit-help"
+                                >
+
+                                <p
+                                    id="business-card-back-edit-help"
+                                    class="customer-field__help customer-field__help--file"
+                                >
+                                    JPG・JPEG・PNG・WebP／最大5MB
+                                    <br>
+                                    未選択の場合は、現在の裏面画像を維持します。
+                                </p>
+
+                                @error('business_card_back')
+                                    <p class="customer-field__error">
+                                        {{ $message }}
+                                    </p>
+                                @enderror
+                            </div>
+                        </article>
+                    </div>
+
+                    <p class="customer-edit-business-card__validation-note">
+                        バリデーションエラーが発生した場合、セキュリティ上の理由により選択した画像は保持されません。再度画像を選択してください。
+                    </p>
+                </section>
             </div>
 
             <div class="customer-form__actions">

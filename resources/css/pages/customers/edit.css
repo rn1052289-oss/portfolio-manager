@@ -37,6 +37,10 @@
     outline-offset: 3px;
 }
 
+/* ========================================
+   Notice
+======================================== */
+
 .customer-edit__notice {
     display: grid;
     grid-template-columns: 34px minmax(0, 1fr);
@@ -74,6 +78,72 @@
     line-height: 1.75;
 }
 
+/* ========================================
+   Business Card Replacement
+======================================== */
+
+.customer-edit-business-card__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+}
+
+.customer-edit-business-card {
+    min-width: 0;
+    overflow: hidden;
+    background: #f8fafc;
+    border: 1px solid #dbe2ea;
+    border-radius: 16px;
+}
+
+.customer-edit-business-card__header {
+    padding: 14px 16px;
+    background: #ffffff;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.customer-edit-business-card__label {
+    margin: 0;
+    color: #334155;
+    font-size: 13px;
+    font-weight: 800;
+    line-height: 1.5;
+}
+
+.customer-edit-business-card__preview {
+    padding: 16px;
+    background: #f8fafc;
+}
+
+.customer-edit-business-card__preview .business-card-preview__media {
+    background: #ffffff;
+}
+
+.customer-edit-business-card__field {
+    padding: 18px 16px;
+    background: #ffffff;
+    border-top: 1px solid #e2e8f0;
+}
+
+.customer-edit-business-card__field .customer-field__label {
+    margin-bottom: 9px;
+}
+
+.customer-edit-business-card__validation-note {
+    margin: 16px 0 0;
+    padding: 12px 14px;
+    color: #64748b;
+    font-size: 11px;
+    line-height: 1.7;
+    background: #f8fafc;
+    border: 1px dashed #cbd5e1;
+    border-radius: 10px;
+}
+
+/* ========================================
+   Responsive
+======================================== */
+
 @media (max-width: 768px) {
     .customer-edit {
         width: 100%;
@@ -82,6 +152,14 @@
 
     .customer-edit__notice {
         margin: 20px 20px 0;
+    }
+
+    .customer-edit-business-card__grid {
+        grid-template-columns: 1fr;
+    }
+
+    .customer-edit-business-card__preview {
+        padding: 18px;
     }
 }
 
@@ -102,6 +180,26 @@
         width: 28px;
         height: 28px;
         padding: 5px;
+    }
+
+    .customer-edit-business-card {
+        border-radius: 14px;
+    }
+
+    .customer-edit-business-card__header {
+        padding: 13px 14px;
+    }
+
+    .customer-edit-business-card__preview {
+        padding: 14px;
+    }
+
+    .customer-edit-business-card__field {
+        padding: 16px 14px;
+    }
+
+    .customer-edit-business-card__validation-note {
+        margin-top: 14px;
     }
 }
 

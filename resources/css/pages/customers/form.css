@@ -64,6 +64,10 @@
     color: #dc2626;
 }
 
+/* ========================================
+   Error Summary
+======================================== */
+
 .customer-form__error-summary {
     margin: 22px 32px 0;
     padding: 16px 18px;
@@ -87,6 +91,10 @@
     font-size: 13px;
     line-height: 1.6;
 }
+
+/* ========================================
+   Sections
+======================================== */
 
 .customer-form__sections {
     display: grid;
@@ -126,6 +134,10 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 20px;
 }
+
+/* ========================================
+   Fields
+======================================== */
 
 .customer-field {
     min-width: 0;
@@ -222,6 +234,58 @@
     line-height: 1.6;
 }
 
+/* ========================================
+   File Fields
+======================================== */
+
+.customer-field__file {
+    display: block;
+    min-height: 54px;
+    max-width: 100%;
+    overflow: hidden;
+    padding: 7px;
+    color: #475569;
+    font-size: 12px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    cursor: pointer;
+}
+
+.customer-field__file::file-selector-button {
+    min-height: 36px;
+    margin-right: 12px;
+    padding: 0 14px;
+    color: #1d4ed8;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 800;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 8px;
+    cursor: pointer;
+    transition:
+        background-color 160ms ease,
+        border-color 160ms ease;
+}
+
+.customer-field__file:hover::file-selector-button {
+    background: #dbeafe;
+    border-color: #93c5fd;
+}
+
+.customer-field__file:focus::file-selector-button {
+    background: #dbeafe;
+    border-color: #60a5fa;
+}
+
+.customer-field__help--file {
+    margin-top: 8px;
+}
+
+/* ========================================
+   Actions
+======================================== */
+
 .customer-form__actions {
     display: flex;
     align-items: center;
@@ -297,6 +361,10 @@
     border-color: #1d4ed8;
     transform: translateY(-1px);
 }
+
+/* ========================================
+   Responsive
+======================================== */
 
 @media (max-width: 768px) {
     .customer-form {
@@ -385,10 +453,20 @@
     .customer-field__limit {
         justify-self: end;
     }
+
+    .customer-field__file {
+        font-size: 11px;
+    }
+
+    .customer-field__file::file-selector-button {
+        margin-right: 8px;
+        padding: 0 11px;
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {
     .customer-field__control,
+    .customer-field__file::file-selector-button,
     .customer-form__button {
         transition: none;
     }
