@@ -7,28 +7,52 @@ use App\Http\Requests\UpdateProjectRequest;
 use App\Models\Project;
 use App\Models\Task;
 use App\Services\ProjectImageService;
+use App\Services\ProjectSearchService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
 class ProjectController extends Controller
 {
-    public function index(Request $request)
-    {
-        $userId = auth()->id();
+    public function index(
+        Request $request,
+        ProjectSearchService $projectSearchService
+    ) {
+        $user = $request->user();
+        $userId = $user->id;
 
-        $categories = auth()->user()
+        $categories = $user
             ->categories()
             ->orderBy('name')
             ->get();
 
-        $tags = auth()->user()
+        $tags = $user
             ->tags()
             ->orderBy('name')
             ->get();
 
-        $query = auth()->user()
-            ->projects()
+        /*
+         * 一覧画面とCSV出力で検索条件がずれないように、
+         * 検索・絞り込み・並び替えはServiceへまとめる。
+         *
+         * Request全体ではなく、必要な条件だけを渡す。
+         */
+        $query = $projectSearchService->build(
+            $user,
+            $request->only([
+                'keyword',
+                'category_id',
+                'tag_id',
+                'status',
+                'sort',
+            ])
+        );
+
+        /*
+         * リレーション読み込みとタスク件数は、
+         * 一覧画面で必要な表示データなのでController側で追加する。
+         */
+        $query
             ->with([
                 'category',
                 'tags' => fn($query) => $query->orderBy('name'),
@@ -38,72 +62,9 @@ class ProjectController extends Controller
                     ->where('user_id', $userId),
             ]);
 
-        if ($request->filled('keyword')) {
-            $keyword = $request->input('keyword');
-
-            $query->where(function ($query) use ($keyword) {
-                $query->where('title', 'like', "%{$keyword}%")
-                    ->orWhere('client_name', 'like', "%{$keyword}%");
-            });
-        }
-
-        if ($request->filled('category_id')) {
-            $categoryId = (int) $request->input('category_id');
-
-            if ($categories->contains('id', $categoryId)) {
-                $query->where('category_id', $categoryId);
-            } else {
-                $query->whereRaw('1 = 0');
-            }
-        }
-
-        if ($request->filled('tag_id')) {
-            $tagId = (int) $request->input('tag_id');
-
-            if ($tags->contains('id', $tagId)) {
-                $query->whereHas('tags', function ($tagQuery) use ($tagId) {
-                    $tagQuery->where('tags.id', $tagId);
-                });
-            } else {
-                $query->whereRaw('1 = 0');
-            }
-        }
-
-        if ($request->filled('status')) {
-            $query->where('status', $request->input('status'));
-        }
-
-        $sort = $request->input('sort', 'latest');
-
-        match ($sort) {
-            'deadline_asc' => $query
-                ->orderByRaw('deadline IS NULL')
-                ->orderBy('deadline', 'asc')
-                ->orderBy('created_at', 'desc'),
-
-            'deadline_desc' => $query
-                ->orderByRaw('deadline IS NULL')
-                ->orderBy('deadline', 'desc')
-                ->orderBy('created_at', 'desc'),
-
-            'oldest' => $query->orderBy('created_at', 'asc'),
-
-            'budget_desc' => $query
-                ->orderByRaw('budget IS NULL')
-                ->orderBy('budget', 'desc')
-                ->orderBy('created_at', 'desc'),
-
-            'budget_asc' => $query
-                ->orderByRaw('budget IS NULL')
-                ->orderBy('budget', 'asc')
-                ->orderBy('created_at', 'desc'),
-
-            default => $query->orderBy('created_at', 'desc'),
-        };
-
         $projects = $query
             ->paginate(10)
-            ->appends($request->query());
+            ->withQueryString();
 
         return view('projects.index', compact(
             'projects',

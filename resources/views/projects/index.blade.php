@@ -11,7 +11,7 @@
         @endif
 
         <div class="page-section__header">
-            <div>
+            <div class="project-page-heading">
                 <p class="section-label">Projects</p>
 
                 <h1 class="section-title">
@@ -23,9 +23,21 @@
                 </p>
             </div>
 
-            <a href="{{ route('projects.create') }}" class="button button--primary">
-                ＋ 新規案件作成
-            </a>
+            <div class="project-header-actions">
+                <a href="{{ route('projects.export', request()->only([
+        'keyword',
+        'category_id',
+        'tag_id',
+        'status',
+        'sort',
+    ])) }}" class="button button--secondary">
+                    CSVダウンロード
+                </a>
+
+                <a href="{{ route('projects.create') }}" class="button button--primary">
+                    ＋ 新規案件作成
+                </a>
+            </div>
         </div>
 
         @php
