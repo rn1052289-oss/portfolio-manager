@@ -83,4 +83,12 @@ class User extends Authenticatable
     {
         return $this->hasMany(Task::class);
     }
+
+    /**
+     * ユーザーへ送信したタスク期限通知履歴一覧です。
+     */
+    public function taskDueNotificationHistories(): HasMany
+    {
+        return $this->hasMany(TaskDueNotificationHistory::class);
+    }
 }

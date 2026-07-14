@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
 /**
@@ -88,7 +89,7 @@ class Task extends Model
     */
 
     /**
-     * タスクを所有するユーザー
+     * タスクを所有するユーザーです。
      */
     public function user(): BelongsTo
     {
@@ -96,10 +97,18 @@ class Task extends Model
     }
 
     /**
-     * タスクが所属する案件
+     * タスクが所属する案件です。
      */
     public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);
+    }
+
+    /**
+     * タスクの期限通知履歴一覧です。
+     */
+    public function dueNotificationHistories(): HasMany
+    {
+        return $this->hasMany(TaskDueNotificationHistory::class);
     }
 }
