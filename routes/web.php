@@ -6,6 +6,7 @@ use App\Http\Controllers\CustomerCsvExportController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ProjectCsvExportController;
+use App\Http\Controllers\ProjectTaskCsvExportController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\TaskOrderController;
@@ -50,6 +51,17 @@ Route::middleware('auth')->group(function () {
     | Project Tasks
     |--------------------------------------------------------------------------
     */
+
+    /*
+     * タスクCSVは、タスクのリソースルートより先に定義する。
+     *
+     * 固定文字列の「export」がタスクIDとして
+     * 解釈される可能性を避けるため。
+     */
+    Route::get(
+        '/projects/{project}/tasks/export',
+        ProjectTaskCsvExportController::class
+    )->name('projects.tasks.export');
 
     /*
      * tasks/{task}より先に定義する。

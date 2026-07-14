@@ -35,6 +35,68 @@
 
 
 /* ==============================
+   Project Card Actions
+============================== */
+
+.task-project-card__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    min-width: 0;
+}
+
+.task-project-card__actions > a {
+    box-sizing: border-box;
+}
+
+.task-export-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 42px;
+    padding: 0 16px;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    background: #ffffff;
+    color: #334155;
+    font-size: 13px;
+    font-weight: 900;
+    line-height: 1;
+    text-decoration: none;
+    white-space: nowrap;
+    box-shadow:
+        0 6px 16px rgba(15, 23, 42, 0.06);
+    transition:
+        color 0.2s ease,
+        background-color 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
+}
+
+.task-export-button:hover {
+    border-color: #93c5fd;
+    background: #eff6ff;
+    color: #1d4ed8;
+    box-shadow:
+        0 8px 18px rgba(37, 99, 235, 0.1);
+    transform: translateY(-1px);
+}
+
+.task-export-button:focus-visible {
+    outline: 3px solid rgba(59, 130, 246, 0.28);
+    outline-offset: 3px;
+}
+
+.task-export-button:active {
+    transform: translateY(0);
+}
+
+
+/* ==============================
    Flash Message
 ============================== */
 
@@ -1124,6 +1186,32 @@
 }
 
 
+@media (max-width: 640px) {
+    .task-project-card__actions {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        width: 100%;
+    }
+
+    .task-project-card__actions > a {
+        width: 100%;
+        min-height: 44px;
+    }
+
+    .task-project-card__actions .task-add-button {
+        order: 1;
+    }
+
+    .task-project-card__actions .task-export-button {
+        order: 2;
+    }
+
+    .task-project-card__actions .task-project-detail-button {
+        order: 3;
+    }
+}
+
+
 /*
  * スマホ
  */
@@ -1196,4 +1284,19 @@
     white-space: normal;
     text-align: left;
 }
+}
+
+/* ==============================
+   Reduced Motion
+============================== */
+
+@media (prefers-reduced-motion: reduce) {
+    .task-export-button {
+        transition: none;
+    }
+
+    .task-export-button:hover,
+    .task-export-button:active {
+        transform: none;
+    }
 }

@@ -41,8 +41,14 @@
             </div>
 
             <div class="task-project-card__actions">
-                <a href="{{ route('projects.show', $project) }}" class="button button--secondary">
+                <a href="{{ route('projects.show', $project) }}"
+                    class="button button--secondary task-project-detail-button">
                     案件詳細へ
+                </a>
+
+                <a href="{{ route('projects.tasks.export', $project) }}" class="task-export-button">
+                    <span aria-hidden="true">↓</span>
+                    <span>CSVダウンロード</span>
                 </a>
 
                 @if (auth()->user()->can('update', $project))
