@@ -6,10 +6,17 @@
 @section('page-description', '顧客の基本情報や連絡先を一覧で確認できます。')
 
 @section('page-actions')
-    <a href="{{ route('customers.create') }}" class="customer-index-action">
-        <span aria-hidden="true">＋</span>
-        <span>顧客を登録</span>
-    </a>
+    <div class="customer-index-actions">
+        <a href="{{ route('customers.export') }}" class="customer-index-action customer-index-action--secondary">
+            <span aria-hidden="true">↓</span>
+            <span>CSVダウンロード</span>
+        </a>
+
+        <a href="{{ route('customers.create') }}" class="customer-index-action customer-index-action--primary">
+            <span aria-hidden="true">＋</span>
+            <span>顧客を登録</span>
+        </a>
+    </div>
 @endsection
 
 @section('content')

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\CustomerCsvExportController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ProjectCsvExportController;
@@ -78,6 +79,18 @@ Route::middleware('auth')->group(function () {
     | Customers
     |--------------------------------------------------------------------------
     */
+
+    /*
+     * customers/{customer}より先に定義する。
+     *
+     * 後ろに置くと「export」がCustomerの
+     * ルートモデルバインディング用パラメータとして
+     * 解釈される可能性があるため。
+     */
+    Route::get(
+        '/customers/export',
+        CustomerCsvExportController::class
+    )->name('customers.export');
 
     Route::resource('customers', CustomerController::class)
         ->only([
