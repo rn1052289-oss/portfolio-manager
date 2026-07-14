@@ -8,19 +8,26 @@ use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 class Kernel extends ConsoleKernel
 {
     /**
-     * Define the application's command schedule.
+     * アプリケーションの定期実行処理を定義します。
      */
     protected function schedule(Schedule $schedule): void
     {
-        // $schedule->command('inspire')->hourly();
+        $schedule
+            ->command('tasks:send-due-notifications')
+            ->name('tasks:send-due-notifications-daily')
+            ->dailyAt('09:00')
+            ->timezone(
+                config('app.timezone', 'Asia/Tokyo')
+            )
+            ->withoutOverlapping(60);
     }
 
     /**
-     * Register the commands for the application.
+     * アプリケーションのArtisan Commandを登録します。
      */
     protected function commands(): void
     {
-        $this->load(__DIR__.'/Commands');
+        $this->load(__DIR__ . '/Commands');
 
         require base_path('routes/console.php');
     }
