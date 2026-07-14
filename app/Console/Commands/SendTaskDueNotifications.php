@@ -80,7 +80,7 @@ class SendTaskDueNotifications extends Command
         );
 
         $this->newLine();
-        $this->components->info(
+        $this->info(
             'ドライランを実行しました。メール送信と履歴登録は行っていません。'
         );
 
@@ -90,7 +90,7 @@ class SendTaskDueNotifications extends Command
 
         if ($reminders->isEmpty()) {
             $this->newLine();
-            $this->components->info('通知対象のタスクはありません。');
+            $this->info('通知対象のタスクはありません。');
 
             return self::SUCCESS;
         }
@@ -120,7 +120,7 @@ class SendTaskDueNotifications extends Command
         ?string $referenceDate
     ): int {
         $this->newLine();
-        $this->components->info('タスク期限通知を開始します。');
+        $this->info('タスク期限通知を開始します。');
 
         $summary = $service->sendEligibleNotifications(
             $referenceDate
@@ -169,7 +169,7 @@ class SendTaskDueNotifications extends Command
 
         if ($summary['failed_email_count'] > 0) {
             $this->newLine();
-            $this->components->error(
+            $this->error(
                 '一部の通知メールを送信できませんでした。'
             );
 
@@ -195,7 +195,7 @@ class SendTaskDueNotifications extends Command
 
         if ($summary['sent_email_count'] === 0) {
             $this->newLine();
-            $this->components->info(
+            $this->info(
                 '新しく送信する期限通知はありませんでした。'
             );
 
@@ -203,7 +203,7 @@ class SendTaskDueNotifications extends Command
         }
 
         $this->newLine();
-        $this->components->success(
+        $this->info(
             'タスク期限通知を正常に送信しました。'
         );
 
