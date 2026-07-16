@@ -51,6 +51,7 @@ final class StripeService
             'currency' => strtolower($currency),
             'automatic_payment_methods' => [
                 'enabled' => true,
+                'allow_redirects' => 'never',
             ],
             'metadata' => $metadata,
         ];
@@ -61,6 +62,25 @@ final class StripeService
 
         return $this->client->paymentIntents->create(
             $parameters,
+            [
+                'idempotency_key' => $idempotencyKey,
+            ],
+        );
+    }
+
+    /**
+     * StripeのPaymentIntentへ支払い方法を設定し、決済を確定する。
+     */
+    public function confirmPaymentIntent(
+        string $paymentIntentId,
+        string $paymentMethod,
+        string $idempotencyKey,
+    ): PaymentIntent {
+        return $this->client->paymentIntents->confirm(
+            $paymentIntentId,
+            [
+                'payment_method' => $paymentMethod,
+            ],
             [
                 'idempotency_key' => $idempotencyKey,
             ],

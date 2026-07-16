@@ -12,6 +12,28 @@ final class Payment extends Model
 {
     use HasFactory;
 
+    public const STATUS_REQUIRES_PAYMENT_METHOD = 'requires_payment_method';
+
+    public const STATUS_REQUIRES_CONFIRMATION = 'requires_confirmation';
+
+    public const STATUS_REQUIRES_ACTION = 'requires_action';
+
+    public const STATUS_PROCESSING = 'processing';
+
+    public const STATUS_SUCCEEDED = 'succeeded';
+
+    public const STATUS_CANCELED = 'canceled';
+
+    /**
+     * 決済確定APIを実行できるStripeステータス。
+     *
+     * @var array<int, string>
+     */
+    private const CONFIRMABLE_STATUSES = [
+        self::STATUS_REQUIRES_PAYMENT_METHOD,
+        self::STATUS_REQUIRES_CONFIRMATION,
+    ];
+
     /**
      * 一括代入を許可するカラムです。
      *
@@ -45,6 +67,34 @@ final class Payment extends Model
         'canceled_at' => 'datetime',
         'metadata' => 'array',
     ];
+
+    /**
+     * 決済がすでに成功しているか判定する。
+     */
+    public function isSucceeded(): bool
+    {
+        return $this->status === self::STATUS_SUCCEEDED;
+    }
+
+    /**
+     * 決済がキャンセル済みか判定する。
+     */
+    public function isCanceled(): bool
+    {
+        return $this->status === self::STATUS_CANCELED;
+    }
+
+    /**
+     * 現在の状態で決済確定APIを実行できるか判定する。
+     */
+    public function canBeConfirmed(): bool
+    {
+        return in_array(
+            $this->status,
+            self::CONFIRMABLE_STATUSES,
+            true
+        );
+    }
 
     /**
      * この決済を所有するユーザーです。

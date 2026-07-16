@@ -43,4 +43,8 @@ Route::middleware('auth:sanctum')->group(function (): void {
     Route::post('/payments', [PaymentController::class, 'store'])
         ->middleware('abilities:payments:create')
         ->name('api.payments.store');
+
+    Route::post('/payments/{payment}/confirm', [PaymentController::class, 'confirm'])
+        ->middleware('abilities:payments:confirm')
+        ->name('api.payments.confirm');
 });

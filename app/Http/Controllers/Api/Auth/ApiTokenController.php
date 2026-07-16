@@ -13,6 +13,17 @@ use Illuminate\Support\Facades\Hash;
 final class ApiTokenController extends Controller
 {
     /**
+     * このAPIトークンに許可する操作。
+     *
+     * @var array<int, string>
+     */
+    private const TOKEN_ABILITIES = [
+        'payments:create',
+        'payments:read',
+        'payments:confirm',
+    ];
+
+    /**
      * ログイン情報を確認し、Sanctum APIトークンを発行する。
      */
     public function store(ApiLoginRequest $request): JsonResponse
@@ -43,10 +54,7 @@ final class ApiTokenController extends Controller
 
         $token = $user->createToken(
             $deviceName,
-            [
-                'payments:create',
-                'payments:read',
-            ]
+            self::TOKEN_ABILITIES
         );
 
         return response()->json([
@@ -54,10 +62,7 @@ final class ApiTokenController extends Controller
             'data' => [
                 'token' => $token->plainTextToken,
                 'token_type' => 'Bearer',
-                'abilities' => [
-                    'payments:create',
-                    'payments:read',
-                ],
+                'abilities' => self::TOKEN_ABILITIES,
                 'user' => [
                     'id' => $user->id,
                     'name' => $user->name,
