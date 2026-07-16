@@ -91,4 +91,12 @@ class User extends Authenticatable
     {
         return $this->hasMany(TaskDueNotificationHistory::class);
     }
+
+    /**
+     * ユーザーが所有する決済履歴一覧です。
+     */
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class);
+    }
 }
