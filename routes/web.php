@@ -71,6 +71,17 @@ Route::middleware('auth')->group(function () {
         [PaymentCheckoutController::class, 'checkout']
     )->name('payments.checkout');
 
+    /*
+     * Stripeで決済を確定したあとに戻るURL。
+     *
+     * 現段階では所有者確認後、最新のStripe状態を取得する
+     * 決済入力画面へ安全に戻す。
+     */
+    Route::get(
+        '/payments/{payment}/result',
+        [PaymentCheckoutController::class, 'result']
+    )->name('payments.result');
+
     Route::resource('projects', ProjectController::class);
 
     /*

@@ -366,16 +366,43 @@ final class PaymentCheckoutController extends Controller
             ?? $project->client_name
             ?? '未設定';
 
+        /*
+         * stripe.confirmPayment()で使用する決済後の戻り先。
+         *
+         * Laravelの名前付きルートから生成し、
+         * client_secretをURLへ含めない。
+         */
+        $returnUrl = route('payments.result', $payment);
+
         return view('payments.checkout', compact(
             'payment',
             'project',
             'customerName',
             'clientSecret',
             'stripePublicKey',
+            'returnUrl',
             'stripeStatus',
             'statusLabel',
             'canContinue',
         ));
+    }
+
+    /**
+     * Stripeの決済処理後に戻るURL。
+     *
+     * 現段階ではPaymentPolicyで所有者を確認してから、
+     * Stripeの最新状態を取得する決済入力画面へ戻す。
+     */
+    public function result(Payment $payment): RedirectResponse
+    {
+        $this->authorize('view', $payment);
+
+        return redirect()
+            ->route('payments.checkout', $payment)
+            ->with(
+                'success',
+                'Stripeから決済画面へ戻りました。最新の決済状況を確認してください。',
+            );
     }
 
     /**

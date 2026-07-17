@@ -27,6 +27,7 @@ async function initializeStripeCheckout(form) {
 
     const publishableKey = form.dataset.stripePublishableKey;
     const clientSecret = form.dataset.clientSecret;
+    const returnUrl = form.dataset.returnUrl;
 
     const paymentElementContainer = form.querySelector('#payment-element');
     const initializationStatus = form.querySelector(
@@ -46,6 +47,7 @@ async function initializeStripeCheckout(form) {
         || publishableKey === ''
         || typeof clientSecret !== 'string'
         || clientSecret === ''
+        || !isSameOriginReturnUrl(returnUrl)
         || !(paymentElementContainer instanceof HTMLElement)
         || !(submitButton instanceof HTMLButtonElement)
     ) {
@@ -135,7 +137,7 @@ async function initializeStripeCheckout(form) {
 
             setInitializationStatus(
                 initializationStatus,
-                '支払い情報入力欄の準備ができました。',
+                '支払い情報入力欄と決済後の戻り先の準備ができました。',
             );
 
             setSubmitButtonEnabled(submitButton, true);
@@ -228,6 +230,33 @@ async function initializeStripeCheckout(form) {
             submitButton,
             '決済画面を初期化できませんでした。時間を置いて再度お試しください。',
         );
+    }
+}
+
+/**
+ * Laravelから渡された戻り先URLが、
+ * 現在のアプリと同じオリジンか確認する。
+ *
+ * 外部サイトへの意図しないリダイレクトを防ぐため、
+ * protocol・host・portが同じURLだけを許可する。
+ *
+ * @param {unknown} returnUrl
+ * @returns {boolean}
+ */
+function isSameOriginReturnUrl(returnUrl) {
+    if (typeof returnUrl !== 'string' || returnUrl === '') {
+        return false;
+    }
+
+    try {
+        const parsedUrl = new URL(
+            returnUrl,
+            window.location.origin,
+        );
+
+        return parsedUrl.origin === window.location.origin;
+    } catch {
+        return false;
     }
 }
 

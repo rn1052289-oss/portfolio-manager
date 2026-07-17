@@ -147,7 +147,7 @@
 
                         <form id="payment-form" class="payment-checkout-form" data-payment-checkout
                             data-stripe-publishable-key="{{ $stripePublicKey }}" data-client-secret="{{ $clientSecret }}"
-                            novalidate>
+                            data-return-url="{{ $returnUrl }}" novalidate>
                             <div id="payment-element" class="payment-checkout-element" aria-label="Stripe決済情報入力欄"></div>
 
                             <p id="payment-initialization-status" class="payment-checkout-form-card__note" role="status"
