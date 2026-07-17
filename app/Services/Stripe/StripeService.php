@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace App\Services\Stripe;
 
+use App\Contracts\Stripe\StripeServiceInterface;
 use RuntimeException;
 use Stripe\Balance;
 use Stripe\PaymentIntent;
 use Stripe\StripeClient;
 
-final class StripeService
+final class StripeService implements StripeServiceInterface
 {
     private StripeClient $client;
 

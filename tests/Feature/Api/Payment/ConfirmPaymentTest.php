@@ -2,11 +2,14 @@
 
 namespace Tests\Feature\Api\Payment;
 
+use App\Contracts\Stripe\StripeServiceInterface;
 use App\Models\Payment;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
 use Laravel\Sanctum\Sanctum;
+use Stripe\PaymentIntent;
+use Tests\Fakes\Stripe\FakeStripeService;
 use Tests\TestCase;
 
 class ConfirmPaymentTest extends TestCase
@@ -22,7 +25,7 @@ class ConfirmPaymentTest extends TestCase
 
         $payment = $user->payments()->create([
             'project_id' => null,
-            'stripe_payment_intent_id' => 'pi_test_'.Str::uuid(),
+            'stripe_payment_intent_id' => 'pi_test_' . Str::uuid(),
             'idempotency_key' => (string) Str::uuid(),
             'amount' => 5000,
             'currency' => 'jpy',
@@ -69,7 +72,7 @@ class ConfirmPaymentTest extends TestCase
 
         $payment = $paymentOwner->payments()->create([
             'project_id' => null,
-            'stripe_payment_intent_id' => 'pi_policy_test_'.Str::uuid(),
+            'stripe_payment_intent_id' => 'pi_policy_test_' . Str::uuid(),
             'idempotency_key' => (string) Str::uuid(),
             'amount' => 5000,
             'currency' => 'jpy',
@@ -118,7 +121,7 @@ class ConfirmPaymentTest extends TestCase
 
         $payment = $user->payments()->create([
             'project_id' => null,
-            'stripe_payment_intent_id' => 'pi_ability_test_'.Str::uuid(),
+            'stripe_payment_intent_id' => 'pi_ability_test_' . Str::uuid(),
             'idempotency_key' => (string) Str::uuid(),
             'amount' => 5000,
             'currency' => 'jpy',
@@ -170,7 +173,7 @@ class ConfirmPaymentTest extends TestCase
 
         $payment = $user->payments()->create([
             'project_id' => null,
-            'stripe_payment_intent_id' => 'pi_validation_test_'.Str::uuid(),
+            'stripe_payment_intent_id' => 'pi_validation_test_' . Str::uuid(),
             'idempotency_key' => (string) Str::uuid(),
             'amount' => 5000,
             'currency' => 'jpy',
@@ -224,7 +227,7 @@ class ConfirmPaymentTest extends TestCase
 
         $payment = $user->payments()->create([
             'project_id' => null,
-            'stripe_payment_intent_id' => 'pi_idempotency_validation_test_'.Str::uuid(),
+            'stripe_payment_intent_id' => 'pi_idempotency_validation_test_' . Str::uuid(),
             'idempotency_key' => (string) Str::uuid(),
             'amount' => 5000,
             'currency' => 'jpy',
@@ -277,7 +280,7 @@ class ConfirmPaymentTest extends TestCase
 
         $payment = $user->payments()->create([
             'project_id' => null,
-            'stripe_payment_intent_id' => 'pi_processing_test_'.Str::uuid(),
+            'stripe_payment_intent_id' => 'pi_processing_test_' . Str::uuid(),
             'idempotency_key' => (string) Str::uuid(),
             'amount' => 5000,
             'currency' => 'jpy',
@@ -353,7 +356,7 @@ class ConfirmPaymentTest extends TestCase
 
         $payment = $user->payments()->create([
             'project_id' => null,
-            'stripe_payment_intent_id' => 'pi_succeeded_test_'.Str::uuid(),
+            'stripe_payment_intent_id' => 'pi_succeeded_test_' . Str::uuid(),
             'idempotency_key' => (string) Str::uuid(),
             'amount' => 5000,
             'currency' => 'jpy',
@@ -455,7 +458,7 @@ class ConfirmPaymentTest extends TestCase
 
         $payment = $user->payments()->create([
             'project_id' => null,
-            'stripe_payment_intent_id' => 'pi_requires_action_test_'.Str::uuid(),
+            'stripe_payment_intent_id' => 'pi_requires_action_test_' . Str::uuid(),
             'idempotency_key' => (string) Str::uuid(),
             'amount' => 5000,
             'currency' => 'jpy',
@@ -533,7 +536,7 @@ class ConfirmPaymentTest extends TestCase
 
         $payment = $user->payments()->create([
             'project_id' => null,
-            'stripe_payment_intent_id' => 'pi_canceled_test_'.Str::uuid(),
+            'stripe_payment_intent_id' => 'pi_canceled_test_' . Str::uuid(),
             'idempotency_key' => (string) Str::uuid(),
             'amount' => 5000,
             'currency' => 'jpy',
@@ -598,5 +601,108 @@ class ConfirmPaymentTest extends TestCase
             $originalUpdatedAt,
             $payment->updated_at?->toIso8601String()
         );
+    }
+
+    /**
+     * Stripeがsucceededを返した場合、
+     * Paymentが支払い完了状態へ同期されることを確認する。
+     */
+    public function test_payment_can_be_confirmed_successfully(): void
+    {
+        config([
+            'services.stripe.secret' => 'sk_test_feature_test',
+        ]);
+
+        $user = User::factory()->create();
+
+        $payment = $user->payments()->create([
+            'project_id' => null,
+            'stripe_payment_intent_id' => 'pi_confirm_success_' . Str::uuid(),
+            'idempotency_key' => (string) Str::uuid(),
+            'amount' => 5000,
+            'currency' => 'jpy',
+            'status' => Payment::STATUS_REQUIRES_CONFIRMATION,
+            'description' => '決済確定正常系テスト',
+            'failure_message' => null,
+            'paid_at' => null,
+            'canceled_at' => null,
+        ]);
+
+        $fakePaymentIntent = PaymentIntent::constructFrom([
+            'id' => $payment->stripe_payment_intent_id,
+            'object' => 'payment_intent',
+            'amount' => $payment->amount,
+            'currency' => $payment->currency,
+            'status' => Payment::STATUS_SUCCEEDED,
+            'description' => $payment->description,
+            'last_payment_error' => null,
+        ]);
+
+        $fakeStripeService = (new FakeStripeService)
+            ->returnPaymentIntent($fakePaymentIntent);
+
+        $this->app->instance(
+            StripeServiceInterface::class,
+            $fakeStripeService,
+        );
+
+        Sanctum::actingAs(
+            $user,
+            ['payments:confirm'],
+        );
+
+        $idempotencyKey = (string) Str::uuid();
+
+        $response = $this->postJson(
+            route('api.payments.confirm', [
+                'payment' => $payment,
+            ]),
+            [
+                'payment_method' => 'pm_card_visa',
+            ],
+            [
+                'Idempotency-Key' => $idempotencyKey,
+            ],
+        );
+
+        $response
+            ->assertOk()
+            ->assertJsonPath(
+                'message',
+                '決済が完了しました。',
+            )
+            ->assertJsonPath(
+                'data.payment.id',
+                $payment->id,
+            )
+            ->assertJsonPath(
+                'data.payment.status',
+                Payment::STATUS_SUCCEEDED,
+            )
+            ->assertJsonPath(
+                'data.payment.amount',
+                5000,
+            )
+            ->assertJsonPath(
+                'data.payment.currency',
+                'jpy',
+            )
+            ->assertJsonMissingPath(
+                'data.client_secret',
+            )
+            ->assertJsonMissingPath(
+                'client_secret',
+            );
+
+        $payment->refresh();
+
+        $this->assertSame(
+            Payment::STATUS_SUCCEEDED,
+            $payment->status,
+        );
+
+        $this->assertNotNull($payment->paid_at);
+        $this->assertNull($payment->canceled_at);
+        $this->assertNull($payment->failure_message);
     }
 }

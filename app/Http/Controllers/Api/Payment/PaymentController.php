@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\Payment;
 
+use App\Contracts\Stripe\StripeServiceInterface;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\Payment\ConfirmPaymentRequest;
 use App\Http\Requests\Api\Payment\StorePaymentRequest;
@@ -11,7 +12,6 @@ use App\Models\Payment;
 use App\Models\Project;
 use App\Models\User;
 use App\Services\Stripe\PaymentIntentSynchronizer;
-use App\Services\Stripe\StripeService;
 use App\Services\Stripe\StripeTestPaymentMethodGuard;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
@@ -27,7 +27,7 @@ final class PaymentController extends Controller
      */
     public function store(
         StorePaymentRequest $request,
-        StripeService $stripeService,
+        StripeServiceInterface $stripeService,
     ): JsonResponse {
         $validated = $request->validated();
         $user = $request->user();
@@ -182,7 +182,7 @@ final class PaymentController extends Controller
     public function confirm(
         ConfirmPaymentRequest $request,
         Payment $payment,
-        StripeService $stripeService,
+        StripeServiceInterface $stripeService,
         StripeTestPaymentMethodGuard $paymentMethodGuard,
         PaymentIntentSynchronizer $paymentIntentSynchronizer,
     ): JsonResponse {

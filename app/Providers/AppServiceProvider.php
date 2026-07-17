@@ -1,21 +1,28 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Providers;
 
+use App\Contracts\Stripe\StripeServiceInterface;
+use App\Services\Stripe\StripeService;
 use Illuminate\Support\ServiceProvider;
 
-class AppServiceProvider extends ServiceProvider
+final class AppServiceProvider extends ServiceProvider
 {
     /**
-     * Register any application services.
+     * アプリケーションのサービスを登録する。
      */
     public function register(): void
     {
-        //
+        $this->app->bind(
+            StripeServiceInterface::class,
+            StripeService::class,
+        );
     }
 
     /**
-     * Bootstrap any application services.
+     * アプリケーションのサービスを起動する。
      */
     public function boot(): void
     {
