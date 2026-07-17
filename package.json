@@ -11,6 +11,10 @@
         "vite": "^5.0.0"
     },
     "dependencies": {
+        "@stripe/stripe-js": "^9.10.0",
         "sortablejs": "^1.15.7"
+    },
+    "allowScripts": {
+        "esbuild@0.21.5": true
     }
 }

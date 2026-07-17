@@ -4,6 +4,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\CustomerCsvExportController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\PaymentCheckoutController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ProjectCsvExportController;
 use App\Http\Controllers\ProjectTaskCsvExportController;
@@ -43,6 +44,32 @@ Route::middleware('auth')->group(function () {
         '/projects/export',
         ProjectCsvExportController::class
     )->name('projects.export');
+
+    /*
+     * 案件に紐づくブラウザ決済ルート。
+     *
+     * GETでは決済内容を表示し、
+     * POSTではStripe PaymentIntentを作成する。
+     */
+    Route::get(
+        '/projects/{project}/payments/create',
+        [PaymentCheckoutController::class, 'create']
+    )->name('projects.payments.create');
+
+    Route::post(
+        '/projects/{project}/payments',
+        [PaymentCheckoutController::class, 'store']
+    )->name('projects.payments.store');
+
+    /*
+     * 作成済みPaymentIntentを使った決済入力画面。
+     *
+     * PaymentPolicyにより、決済所有者本人だけが閲覧できる。
+     */
+    Route::get(
+        '/payments/{payment}/checkout',
+        [PaymentCheckoutController::class, 'checkout']
+    )->name('payments.checkout');
 
     Route::resource('projects', ProjectController::class);
 
@@ -132,7 +159,7 @@ Route::middleware('auth')->group(function () {
 
     /*
     |--------------------------------------------------------------------------
-    | Tags
+       | Tags
     |--------------------------------------------------------------------------
     */
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\Payment;
 
+use App\Actions\Payment\CreatePaymentIntentAction;
 use App\Contracts\Stripe\StripeServiceInterface;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\Payment\ConfirmPaymentRequest;
@@ -14,8 +15,8 @@ use App\Models\User;
 use App\Services\Stripe\PaymentIntentSynchronizer;
 use App\Services\Stripe\StripeTestPaymentMethodGuard;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use RuntimeException;
 use Stripe\Exception\ApiErrorException;
 use Stripe\Exception\IdempotencyException;
 
@@ -27,7 +28,7 @@ final class PaymentController extends Controller
      */
     public function store(
         StorePaymentRequest $request,
-        StripeServiceInterface $stripeService,
+        CreatePaymentIntentAction $createPaymentIntentAction,
     ): JsonResponse {
         $validated = $request->validated();
         $user = $request->user();
@@ -47,45 +48,23 @@ final class PaymentController extends Controller
             ->where('user_id', $user->getKey())
             ->firstOrFail();
 
-        $currency = config('services.stripe.currency', 'jpy');
-
-        if (! is_string($currency) || strlen($currency) !== 3) {
-            Log::error('Stripeの通貨設定が正しくありません。', [
-                'currency' => $currency,
-            ]);
-
-            return response()->json([
-                'message' => '決済設定に問題があります。',
-            ], 500);
-        }
-
         $amount = (int) $validated['amount'];
         $idempotencyKey = (string) $validated['idempotency_key'];
 
         $description = isset($validated['description'])
-            ? trim((string) $validated['description'])
+            ? (string) $validated['description']
             : null;
 
-        if ($description === '') {
-            $description = null;
-        }
-
-        /*
-         * Stripe DashboardとLaravelのデータを対応させる情報。
-         * 機密情報はmetadataへ入れない。
-         */
-        $metadata = [
-            'user_id' => (string) $user->getKey(),
-            'project_id' => (string) $project->getKey(),
-            'project_title' => (string) $project->title,
-        ];
-
         try {
-            $paymentIntent = $stripeService->createPaymentIntent(
+            /*
+             * Stripe通信とPayment保存は、
+             * Web決済からも再利用できるActionへ委譲する。
+             */
+            $result = $createPaymentIntentAction->execute(
+                user: $user,
+                project: $project,
                 amount: $amount,
-                currency: $currency,
                 description: $description,
-                metadata: $metadata,
                 idempotencyKey: $idempotencyKey,
             );
         } catch (IdempotencyException $exception) {
@@ -115,42 +94,20 @@ final class PaymentController extends Controller
             return response()->json([
                 'message' => 'Stripeとの通信に失敗しました。時間を置いて再度お試しください。',
             ], 502);
+        } catch (RuntimeException $exception) {
+            Log::error('Stripeの決済設定が正しくありません。', [
+                'user_id' => $user->getKey(),
+                'project_id' => $project->getKey(),
+                'exception' => $exception::class,
+            ]);
+
+            return response()->json([
+                'message' => '決済設定に問題があります。',
+            ], 500);
         }
 
-        $failureMessage = data_get(
-            $paymentIntent,
-            'last_payment_error.message'
-        );
-
-        /*
-         * DB保存に失敗しても、同じIdempotency-Keyで再実行すれば
-         * Stripe側のPaymentIntentを重複作成せずに再取得できる。
-         */
-        $payment = DB::transaction(function () use ($user, $project, $paymentIntent, $idempotencyKey, $description, $metadata, $failureMessage): Payment {
-            return $user->payments()->updateOrCreate(
-                [
-                    'idempotency_key' => $idempotencyKey,
-                ],
-                [
-                    'project_id' => $project->getKey(),
-                    'stripe_payment_intent_id' => $paymentIntent->id,
-                    'amount' => (int) $paymentIntent->amount,
-                    'currency' => (string) $paymentIntent->currency,
-                    'status' => (string) $paymentIntent->status,
-                    'description' => $description,
-                    'failure_message' => is_string($failureMessage)
-                        ? $failureMessage
-                        : null,
-                    'paid_at' => $paymentIntent->status === 'succeeded'
-                        ? now()
-                        : null,
-                    'canceled_at' => $paymentIntent->status === 'canceled'
-                        ? now()
-                        : null,
-                    'metadata' => $metadata,
-                ],
-            );
-        }, 3);
+        $payment = $result['payment'];
+        $paymentIntent = $result['payment_intent'];
 
         return response()->json([
             'message' => $payment->wasRecentlyCreated

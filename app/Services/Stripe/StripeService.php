@@ -70,6 +70,18 @@ final class StripeService implements StripeServiceInterface
     }
 
     /**
+     * 作成済みのPaymentIntentをStripeから取得する。
+     */
+    public function retrievePaymentIntent(
+        string $paymentIntentId,
+    ): PaymentIntent {
+        return $this->client->paymentIntents->retrieve(
+            $paymentIntentId,
+            [],
+        );
+    }
+
+    /**
      * StripeのPaymentIntentへ支払い方法を設定し、決済を確定する。
      */
     public function confirmPaymentIntent(

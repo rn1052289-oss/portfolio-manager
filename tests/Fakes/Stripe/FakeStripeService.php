@@ -50,6 +50,27 @@ final class FakeStripeService implements StripeServiceInterface
     }
 
     /**
+     * PaymentIntent取得時に、事前設定したFakeの結果を返す。
+     */
+    public function retrievePaymentIntent(
+        string $paymentIntentId,
+    ): PaymentIntent {
+        $paymentIntent = $this->paymentIntent();
+
+        /*
+         * Laravel側に保存されたStripe IDと、
+         * Fakeへ設定したPaymentIntentのIDが一致するか確認する。
+         */
+        if ($paymentIntent->id !== $paymentIntentId) {
+            throw new LogicException(
+                '取得対象のPaymentIntent IDが一致しません。'
+            );
+        }
+
+        return $paymentIntent;
+    }
+
+    /**
      * PaymentIntent確定時に、事前設定したFakeの結果を返す。
      */
     public function confirmPaymentIntent(
