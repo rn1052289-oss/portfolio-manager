@@ -5,17 +5,8 @@ if (paymentForm instanceof HTMLFormElement) {
 }
 
 /**
- * Stripe.jsとPayment Elementを初期化する。
- *
- * このステップでは次の処理だけを行う。
- *
- * 1. Stripe.jsを読み込む
- * 2. Elementsインスタンスを作成する
- * 3. Payment Elementを作成する
- * 4. Payment Elementを画面へ表示する
- * 5. ready後に支払いボタンを有効化する
- *
- * stripe.confirmPayment()は、まだ実行しない。
+ * Stripe.jsとPayment Elementを初期化し、
+ * 入力された支払い情報をStripeへ送信する。
  *
  * @param {HTMLFormElement} form
  * @returns {Promise<void>}
@@ -35,10 +26,12 @@ async function initializeStripeCheckout(form) {
     );
     const paymentMessage = form.querySelector('#payment-message');
     const submitButton = form.querySelector('#payment-submit');
+    const submitText = form.querySelector('#payment-submit-text');
+    const submitSpinner = form.querySelector('#payment-submit-spinner');
 
     /*
-     * Payment Elementのreadyイベントが発生するまでは、
-     * 支払いボタンを操作できない状態にする。
+     * Payment Elementの準備が完了するまでは、
+     * 支払いボタンを無効にする。
      */
     setSubmitButtonEnabled(submitButton, false);
 
@@ -50,6 +43,8 @@ async function initializeStripeCheckout(form) {
         || !isSameOriginReturnUrl(returnUrl)
         || !(paymentElementContainer instanceof HTMLElement)
         || !(submitButton instanceof HTMLButtonElement)
+        || !(submitText instanceof HTMLElement)
+        || !(submitSpinner instanceof HTMLElement)
     ) {
         showInitializationError(
             paymentMessage,
@@ -63,18 +58,14 @@ async function initializeStripeCheckout(form) {
 
     try {
         /*
-         * 決済画面にフォームが存在する場合だけ、
-         * @stripe/stripe-jsを遅延読み込みする。
-         *
-         * 案件一覧や顧客一覧などではStripe.jsを読み込まない。
+         * 決済画面でのみStripe.jsを遅延読み込みする。
          */
         const { loadStripe } = await import('@stripe/stripe-js');
 
         /*
-         * Stripe公開鍵を使ってStripe.jsを初期化する。
+         * ブラウザへ渡してよいStripe公開鍵で初期化する。
          *
-         * sk_test_やsk_live_から始まる秘密鍵は、
-         * JavaScriptへ絶対に渡さない。
+         * Stripe秘密鍵は絶対にJavaScriptへ渡さない。
          */
         const stripe = await loadStripe(publishableKey);
 
@@ -82,44 +73,25 @@ async function initializeStripeCheckout(form) {
             throw new Error('Stripe.js initialization failed.');
         }
 
-        /*
-         * Payment Elementの外観設定。
-         *
-         * 今回はStripe標準テーマを使用する。
-         * 色やフォントの本格的な調整は、
-         * 決済処理が安定してから行う。
-         */
         const appearance = {
             theme: 'stripe',
         };
 
         /*
-         * Elementsインスタンスを作成し、変数へ保持する。
-         *
-         * このelementsは、次のステップで
-         * stripe.confirmPayment()へ渡すためにも必要になる。
+         * Payment Elementの作成と決済確定の両方で使う
+         * Elementsインスタンスを保持する。
          */
         const elements = stripe.elements({
             clientSecret,
             appearance,
         });
 
-        /*
-         * Payment Elementを作成する。
-         *
-         * layout: 'accordion'により、
-         * 利用可能な支払い方法を縦方向の形式で表示する。
-         */
         const paymentElement = elements.create('payment', {
             layout: 'accordion',
         });
 
         let paymentElementReady = false;
 
-        /*
-         * StripeのローディングUIが、
-         * DOMへ配置されたタイミングで発生する。
-         */
         paymentElement.on('loaderstart', () => {
             setInitializationStatus(
                 initializationStatus,
@@ -127,11 +99,6 @@ async function initializeStripeCheckout(form) {
             );
         });
 
-        /*
-         * Payment Elementが完全に表示されたタイミングで発生する。
-         *
-         * 表示が完了してから支払いボタンを有効化する。
-         */
         paymentElement.on('ready', () => {
             paymentElementReady = true;
 
@@ -143,12 +110,6 @@ async function initializeStripeCheckout(form) {
             setSubmitButtonEnabled(submitButton, true);
         });
 
-        /*
-         * Payment Element内の入力内容や状態が変化したときに発生する。
-         *
-         * カード番号や有効期限の入力エラーがある場合は、
-         * Stripeから渡された安全なエラーメッセージを表示する。
-         */
         paymentElement.on('change', (event) => {
             if (
                 event.error
@@ -166,12 +127,6 @@ async function initializeStripeCheckout(form) {
             hidePaymentMessage(paymentMessage);
         });
 
-        /*
-         * Payment Element自体の読み込みに失敗した場合に発生する。
-         *
-         * エラー詳細やclient_secretは画面・Consoleへ出さず、
-         * ユーザー向けの安全な文言だけを表示する。
-         */
         paymentElement.on('loaderror', () => {
             paymentElementReady = false;
 
@@ -186,23 +141,16 @@ async function initializeStripeCheckout(form) {
         });
 
         /*
-         * 空の#payment-elementへ、
-         * Stripeが管理する安全な決済入力欄を表示する。
-         *
-         * カード入力欄のiframeはStripe側から挿入されるため、
-         * 自分でカード番号用inputを作成しない。
+         * Stripeが管理する決済入力欄を表示する。
          */
         paymentElement.mount(paymentElementContainer);
 
         form.dataset.stripeInitialized = 'true';
 
         /*
-         * 今回はstripe.confirmPayment()をまだ実装しない。
-         *
-         * ボタンを押した際にブラウザ標準のフォーム送信が発生して
-         * ページが再読み込みされるのを防ぐ。
+         * 支払いボタンが押されたときの決済確定処理。
          */
-        form.addEventListener('submit', (event) => {
+        form.addEventListener('submit', async (event) => {
             event.preventDefault();
 
             if (!paymentElementReady) {
@@ -214,10 +162,112 @@ async function initializeStripeCheckout(form) {
                 return;
             }
 
-            showPaymentMessage(
-                paymentMessage,
-                '入力欄の表示確認は完了しています。決済確定処理は次のステップで実装します。',
+            /*
+             * ボタン連打やEnterキーの連続入力による
+             * 二重送信を防止する。
+             */
+            if (form.dataset.paymentSubmitting === 'true') {
+                return;
+            }
+
+            hidePaymentMessage(paymentMessage);
+
+            setPaymentSubmitting(
+                form,
+                submitButton,
+                submitText,
+                submitSpinner,
+                true,
             );
+
+            let navigationStarted = false;
+
+            try {
+                /*
+                 * Payment Element内の入力内容を事前検証する。
+                 *
+                 * 入力不足があればStripeからエラーが返り、
+                 * confirmPaymentは実行しない。
+                 */
+                const { error: submitError } = await elements.submit();
+
+                if (submitError) {
+                    showStripeError(
+                        paymentMessage,
+                        submitError,
+                    );
+
+                    return;
+                }
+
+                /*
+                 * StripeへPaymentIntentの確定を依頼する。
+                 *
+                 * redirect: 'if_required'により、
+                 * 3Dセキュアなどリダイレクトが必要な場合だけ
+                 * Stripe側の認証画面へ移動する。
+                 */
+                const {
+                    error,
+                    paymentIntent,
+                } = await stripe.confirmPayment({
+                    elements,
+                    confirmParams: {
+                        return_url: returnUrl,
+                    },
+                    redirect: 'if_required',
+                });
+
+                if (error) {
+                    showStripeError(
+                        paymentMessage,
+                        error,
+                    );
+
+                    return;
+                }
+
+                /*
+                 * 通常のカード決済などでStripeによる
+                 * 自動リダイレクトが発生しなかった場合は、
+                 * Laravelの結果URLへ移動する。
+                 */
+                if (paymentIntent) {
+                    navigationStarted = true;
+
+                    window.location.assign(returnUrl);
+
+                    return;
+                }
+
+                showPaymentMessage(
+                    paymentMessage,
+                    '決済結果を確認できませんでした。画面を再読み込みして、決済状況を確認してください。',
+                );
+            } catch {
+                /*
+                 * client_secret・カード情報・内部例外は
+                 * Consoleや画面へ出さない。
+                 */
+                showPaymentMessage(
+                    paymentMessage,
+                    '決済処理中に通信エラーが発生しました。時間を置いて再度お試しください。',
+                );
+            } finally {
+                /*
+                 * 画面移動を開始した場合は、
+                 * ボタンを有効状態へ戻さない。
+                 */
+                if (!navigationStarted) {
+                    setPaymentSubmitting(
+                        form,
+                        submitButton,
+                        submitText,
+                        submitSpinner,
+                        false,
+                    );
+                }
+            }
         });
     } catch {
         /*
@@ -237,9 +287,6 @@ async function initializeStripeCheckout(form) {
  * Laravelから渡された戻り先URLが、
  * 現在のアプリと同じオリジンか確認する。
  *
- * 外部サイトへの意図しないリダイレクトを防ぐため、
- * protocol・host・portが同じURLだけを許可する。
- *
  * @param {unknown} returnUrl
  * @returns {boolean}
  */
@@ -258,6 +305,40 @@ function isSameOriginReturnUrl(returnUrl) {
     } catch {
         return false;
     }
+}
+
+/**
+ * 決済送信中のフォーム表示を切り替える。
+ *
+ * @param {HTMLFormElement} form
+ * @param {HTMLButtonElement} submitButton
+ * @param {HTMLElement} submitText
+ * @param {HTMLElement} submitSpinner
+ * @param {boolean} isSubmitting
+ */
+function setPaymentSubmitting(
+    form,
+    submitButton,
+    submitText,
+    submitSpinner,
+    isSubmitting,
+) {
+    form.dataset.paymentSubmitting = String(isSubmitting);
+    form.setAttribute(
+        'aria-busy',
+        String(isSubmitting),
+    );
+
+    setSubmitButtonEnabled(
+        submitButton,
+        !isSubmitting,
+    );
+
+    submitText.textContent = isSubmitting
+        ? '決済処理中...'
+        : '支払いを確定する';
+
+    submitSpinner.hidden = !isSubmitting;
 }
 
 /**
@@ -320,6 +401,48 @@ function hidePaymentMessage(paymentMessage) {
 }
 
 /**
+ * Stripeから返されたエラーを、
+ * ユーザー向けメッセージへ変換して表示する。
+ *
+ * @param {Element|null} paymentMessage
+ * @param {unknown} error
+ */
+function showStripeError(paymentMessage, error) {
+    showPaymentMessage(
+        paymentMessage,
+        stripeErrorMessage(error),
+    );
+}
+
+/**
+ * Stripeのエラーを安全な表示文言へ変換する。
+ *
+ * カード入力エラーとバリデーションエラーだけは、
+ * ユーザー自身で修正できるためStripeの文言を表示する。
+ *
+ * @param {unknown} error
+ * @returns {string}
+ */
+function stripeErrorMessage(error) {
+    if (
+        typeof error === 'object'
+        && error !== null
+        && 'type' in error
+        && 'message' in error
+        && (
+            error.type === 'card_error'
+            || error.type === 'validation_error'
+        )
+        && typeof error.message === 'string'
+        && error.message !== ''
+    ) {
+        return error.message;
+    }
+
+    return '決済を完了できませんでした。入力内容を確認して、もう一度お試しください。';
+}
+
+/**
  * Stripe.jsまたはPayment Elementの初期化エラーを、
  * 安全な文言で表示する。
  *
@@ -339,6 +462,13 @@ function showInitializationError(
         'Stripe決済フォームの初期化に失敗しました。',
     );
 
-    setSubmitButtonEnabled(submitButton, false);
-    showPaymentMessage(paymentMessage, message);
+    setSubmitButtonEnabled(
+        submitButton,
+        false,
+    );
+
+    showPaymentMessage(
+        paymentMessage,
+        message,
+    );
 }
