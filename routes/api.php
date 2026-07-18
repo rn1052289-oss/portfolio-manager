@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Http\Controllers\Api\Auth\ApiTokenController;
 use App\Http\Controllers\Api\Payment\PaymentController;
+use App\Http\Controllers\Api\Webhook\StripeWebhookController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -28,6 +29,19 @@ Route::prefix('auth')->group(function (): void {
         ->middleware('throttle:5,1')
         ->name('api.auth.token.store');
 });
+
+/*
+|--------------------------------------------------------------------------
+| Stripe Webhook
+|--------------------------------------------------------------------------
+|
+| Stripeサーバーから送信されるWebhookを受信します。
+| Sanctum認証ではなく、Stripe-Signatureによる署名検証を行います。
+|
+*/
+
+Route::post('/webhooks/stripe', StripeWebhookController::class)
+    ->name('api.webhooks.stripe');
 
 /*
 |--------------------------------------------------------------------------

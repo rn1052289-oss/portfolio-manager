@@ -20,12 +20,31 @@ class RouteServiceProvider extends ServiceProvider
     public const HOME = '/dashboard';
 
     /**
-     * Define your route model bindings, pattern filters, and other route configuration.
+     * Define your route model bindings, pattern filters,
+     * and other route configuration.
      */
     public function boot(): void
     {
         RateLimiter::for('api', function (Request $request) {
-            return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
+            /*
+             * Stripe Webhookは、通常APIとは別の制限枠にする。
+             *
+             * Stripeによる再送や複数イベントの集中を考慮しつつ、
+             * 異常な大量アクセスを無制限には受け付けない。
+             */
+            if ($request->is('api/webhooks/stripe')) {
+                return Limit::perMinute(300)
+                    ->by('stripe-webhook:'.$request->ip());
+            }
+
+            /*
+             * 既存APIのレート制限は変更しない。
+             *
+             * 認証済みの場合はユーザー単位、
+             * 未認証の場合はIPアドレス単位で制限する。
+             */
+            return Limit::perMinute(60)
+                ->by($request->user()?->id ?: $request->ip());
         });
 
         $this->routes(function () {
