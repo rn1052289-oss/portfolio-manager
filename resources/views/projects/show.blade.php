@@ -53,6 +53,11 @@
                         </div>
 
                         <div class="project-hero-card__actions">
+                            <a href="{{ route('projects.payments.create', $project) }}"
+                                class="button button--primary button--small">
+                                決済する
+                            </a>
+
                             <a href="{{ route('projects.edit', $project) }}" class="button button--secondary button--small">
                                 編集
                             </a>
