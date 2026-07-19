@@ -168,11 +168,6 @@
                                     hidden></span>
                             </button>
                         </form>
-
-                        <p class="payment-checkout-form-card__note">
-                            このステップでは決済入力欄の表示確認まで行います。
-                            実際の決済確定処理は次のステップで実装します。
-                        </p>
                     @else
                         <div class="payment-checkout-state payment-checkout-state--warning" role="status">
                             <h3 class="payment-checkout-state__title">
