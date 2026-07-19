@@ -36,7 +36,6 @@ class UpdateProjectRequest extends FormRequest
             ],
 
             'status' => ['required', 'in:not_started,in_progress,completed,paused'],
-            'status' => ['required', 'in:not_started,in_progress,completed,paused'],
 
             'priority' => [
                 'required',
