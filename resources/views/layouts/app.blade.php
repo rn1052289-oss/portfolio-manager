@@ -413,12 +413,12 @@
         </a>
 
         <a
-            href="{{ route('projects.index') }}"
-            class="mobile-bottom-nav__link {{ request()->routeIs('projects.*') ? 'is-active' : '' }}"
-            @if (request()->routeIs('projects.*'))
-                aria-current="page"
-            @endif
-        >
+    href="{{ route('projects.index') }}"
+    class="mobile-bottom-nav__link {{ $isProjectsActive ? 'is-active' : '' }}"
+    @if ($isProjectsActive)
+        aria-current="page"
+    @endif
+>
             <svg
                 class="mobile-bottom-nav__icon"
                 viewBox="0 0 24 24"
