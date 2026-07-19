@@ -1,5 +1,6 @@
 @import './foundation/base.css';
 @import './pages/auth.css';
+@import './pages/welcome.css';
 @import './layouts/app-layout.css';
 @import './components/ui.css';
 @import './pages/dashboard.css';
