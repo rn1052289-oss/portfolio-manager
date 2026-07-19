@@ -7,10 +7,35 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 
+/**
+ * @property Carbon|null $start_date
+ * @property Carbon|null $deadline
+ */
 class Project extends Model
 {
     use HasFactory;
+
+    /**
+     * 案件優先度です。
+     */
+    public const PRIORITY_LOW = 'low';
+
+    public const PRIORITY_MEDIUM = 'medium';
+
+    public const PRIORITY_HIGH = 'high';
+
+    /**
+     * 使用可能な案件優先度です。
+     *
+     * @var array<int, string>
+     */
+    public const PRIORITIES = [
+        self::PRIORITY_LOW,
+        self::PRIORITY_MEDIUM,
+        self::PRIORITY_HIGH,
+    ];
 
     /**
      * 一括代入を許可するカラムです。
@@ -26,6 +51,7 @@ class Project extends Model
         'description',
         'cover_image_path',
         'status',
+        'priority',
         'budget',
         'start_date',
         'deadline',

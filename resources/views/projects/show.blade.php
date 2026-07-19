@@ -11,6 +11,12 @@
             'paused' => '保留',
         ];
 
+        $projectPriorityLabels = [
+            'high' => '高',
+            'medium' => '中',
+            'low' => '低',
+        ];
+
         $taskPriorityLabels = [
             'high' => '高',
             'medium' => '中',
@@ -78,6 +84,14 @@
                         <span class="status-badge status-badge--{{ $project->status }}">
                             {{ $statusLabels[$project->status] ?? $project->status }}
                         </span>
+
+                        <div class="project-meta-pill">
+                            <span>優先度</span>
+
+                            <strong>
+                                {{ $projectPriorityLabels[$project->priority] ?? $project->priority }}
+                            </strong>
+                        </div>
 
                         <div class="project-meta-pill">
                             <span>開始日</span>

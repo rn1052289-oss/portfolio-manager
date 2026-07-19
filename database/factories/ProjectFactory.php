@@ -35,7 +35,8 @@ class ProjectFactory extends Factory
             'client_name' => fake()->company(),
             'description' => fake()->optional()->paragraph(),
             'cover_image_path' => null,
-            'status' => 'new',
+            'status' => 'not_started',
+            'priority' => Project::PRIORITY_MEDIUM,
             'budget' => fake()->optional()->numberBetween(
                 50_000,
                 1_000_000

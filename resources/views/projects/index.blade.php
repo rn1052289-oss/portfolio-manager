@@ -288,6 +288,18 @@
                     'completed' => '完了',
                     'paused' => '保留',
                 ];
+
+                $priorityLabels = [
+                    'high' => '高',
+                    'medium' => '中',
+                    'low' => '低',
+                ];
+
+                $priorityClasses = [
+                    'high' => 'high',
+                    'medium' => 'middle',
+                    'low' => 'low',
+                ];
             @endphp
 
             <div class="project-table-wrap">
@@ -313,17 +325,11 @@
                                     ? \Illuminate\Support\Carbon::parse($project->deadline)->format('Y/m/d')
                                     : '未設定';
 
-                                $priorityLabel = match ($project->status) {
-                                    'completed' => '低',
-                                    'paused' => '中',
-                                    default => '高',
-                                };
+                                $priorityLabel = $priorityLabels[$project->priority]
+                                    ?? $project->priority;
 
-                                $priorityClass = match ($priorityLabel) {
-                                    '高' => 'high',
-                                    '中' => 'middle',
-                                    default => 'low',
-                                };
+                                $priorityClass = $priorityClasses[$project->priority]
+                                    ?? 'middle';
                             @endphp
 
                             <tr>
@@ -446,17 +452,11 @@
                             ? \Illuminate\Support\Carbon::parse($project->deadline)->format('Y/m/d')
                             : '未設定';
 
-                        $priorityLabel = match ($project->status) {
-                            'completed' => '低',
-                            'paused' => '中',
-                            default => '高',
-                        };
+                        $priorityLabel = $priorityLabels[$project->priority]
+                            ?? $project->priority;
 
-                        $priorityClass = match ($priorityLabel) {
-                            '高' => 'high',
-                            '中' => 'middle',
-                            default => 'low',
-                        };
+                        $priorityClass = $priorityClasses[$project->priority]
+                            ?? 'middle';
                     @endphp
 
                     <article class="project-card">

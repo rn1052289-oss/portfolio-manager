@@ -19,7 +19,7 @@
                 <p class="section-label">Project Edit</p>
                 <h1 class="section-title">案件編集</h1>
                 <p class="section-description">
-                    案件の基本情報、進行状況、予算、スケジュール、カテゴリ・タグを更新します。
+                    案件の基本情報、進行状況、優先度、予算、スケジュール、カテゴリ・タグを更新します。
                 </p>
             </div>
 
@@ -120,6 +120,34 @@
                                 <p class="form-help">現在の進行状況を選択してください。</p>
 
                                 @error('status')
+                                    <p class="form-error">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div class="form-field">
+                                <label for="priority">
+                                    優先度 <span>必須</span>
+                                </label>
+
+                                <select id="priority" name="priority">
+                                    <option value="high" @selected(old('priority', $project->priority) === 'high')>
+                                        高
+                                    </option>
+
+                                    <option value="medium" @selected(old('priority', $project->priority) === 'medium')>
+                                        中
+                                    </option>
+
+                                    <option value="low" @selected(old('priority', $project->priority) === 'low')>
+                                        低
+                                    </option>
+                                </select>
+
+                                <p class="form-help">
+                                    対応する順番や緊急度に合わせて選択してください。
+                                </p>
+
+                                @error('priority')
                                     <p class="form-error">{{ $message }}</p>
                                 @enderror
                             </div>
@@ -341,7 +369,7 @@
                     <span>2</span>
                     <h3>進捗・条件</h3>
                     <p>
-                        ステータス、予算、開始日、納期をまとめて管理します。
+                        ステータス、優先度、予算、開始日、納期をまとめて管理します。
                     </p>
                 </div>
 

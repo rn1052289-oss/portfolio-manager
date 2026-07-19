@@ -23,6 +23,17 @@ class ProjectCsvExportService
     ];
 
     /**
+     * CSVに出力する案件優先度の日本語表示です。
+     *
+     * @var array<string, string>
+     */
+    private const PRIORITY_LABELS = [
+        Project::PRIORITY_HIGH => '高',
+        Project::PRIORITY_MEDIUM => '中',
+        Project::PRIORITY_LOW => '低',
+    ];
+
+    /**
      * CSVの先頭に付与するUTF-8 BOMです。
      *
      * ExcelでUTF-8の日本語CSVを開いた際の
@@ -32,8 +43,7 @@ class ProjectCsvExportService
 
     public function __construct(
         private readonly ProjectSearchService $projectSearchService
-    ) {
-    }
+    ) {}
 
     /**
      * 案件CSVをストリーミング形式でダウンロードします。
@@ -100,11 +110,11 @@ class ProjectCsvExportService
             ->with([
                 'customer',
                 'category',
-                'tags' => fn($query) => $query
+                'tags' => fn ($query) => $query
                     ->orderBy('name'),
             ])
             ->withCount([
-                'tasks' => fn($query) => $query
+                'tasks' => fn ($query) => $query
                     ->where('user_id', $user->id),
             ]);
     }
@@ -140,6 +150,7 @@ class ProjectCsvExportService
                 'カテゴリ',
                 'タグ',
                 'ステータス',
+                '優先度',
                 '予算',
                 '開始日',
                 '納期',
@@ -178,6 +189,10 @@ class ProjectCsvExportService
                 ),
                 self::STATUS_LABELS[$project->status]
                 ?? $this->sanitizeCsvValue($project->status),
+
+                self::PRIORITY_LABELS[$project->priority]
+                ?? $this->sanitizeCsvValue($project->priority),
+
                 $project->budget,
                 $project->start_date?->format('Y/m/d'),
                 $project->deadline?->format('Y/m/d'),
@@ -194,7 +209,7 @@ class ProjectCsvExportService
      */
     private function makeProjectCode(Project $project): string
     {
-        return 'WEB-' . str_pad(
+        return 'WEB-'.str_pad(
             (string) $project->id,
             4,
             '0',
@@ -254,7 +269,7 @@ class ProjectCsvExportService
                 true
             )
         ) {
-            return "'" . $value;
+            return "'".$value;
         }
 
         return $value;

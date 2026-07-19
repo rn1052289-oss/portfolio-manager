@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Project;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -35,8 +36,14 @@ class UpdateProjectRequest extends FormRequest
             ],
 
             'status' => ['required', 'in:not_started,in_progress,completed,paused'],
+            'status' => ['required', 'in:not_started,in_progress,completed,paused'],
+
+            'priority' => [
+                'required',
+                Rule::in(Project::PRIORITIES),
+            ],
+
             'budget' => ['nullable', 'integer', 'min:0'],
-            'start_date' => ['nullable', 'date'],
             'deadline' => ['nullable', 'date', 'after_or_equal:start_date'],
 
             'category_id' => [
@@ -71,6 +78,7 @@ class UpdateProjectRequest extends FormRequest
             'description' => '案件概要',
             'cover_image' => '案件画像',
             'status' => 'ステータス',
+            'priority' => '優先度',
             'category_id' => 'カテゴリ',
             'budget' => '予算',
             'start_date' => '開始日',
@@ -88,6 +96,8 @@ class UpdateProjectRequest extends FormRequest
         return [
             'deadline.after_or_equal' => '納期は開始日以降の日付を指定してください。',
             'status.in' => 'ステータスの値が正しくありません。',
+            'priority.required' => '優先度を選択してください。',
+            'priority.in' => '優先度の値が正しくありません。',
             'category_id.exists' => '選択されたカテゴリが正しくありません。',
             'category_id.integer' => 'カテゴリの値が正しくありません。',
             'budget.min' => '予算は0円以上で入力してください。',
