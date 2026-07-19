@@ -22,8 +22,15 @@
             class="mobile-topbar__logo-link"
             aria-label="ダッシュボードへ移動"
         >
-            <span class="mobile-topbar__logo" aria-hidden="true">
-                C
+            <span class="mobile-topbar__logo">
+                <img
+                    src="{{ asset('images/clientwork-manager-logo.png') }}"
+                    alt=""
+                    class="mobile-topbar__logo-image"
+                    width="36"
+                    height="36"
+                    aria-hidden="true"
+                >
             </span>
         </a>
 
@@ -112,7 +119,14 @@
                     class="admin-sidebar__brand-link"
                 >
                     <span class="admin-sidebar__logo">
-                        C
+                        <img
+                            src="{{ asset('images/clientwork-manager-logo.png') }}"
+                            alt=""
+                            class="admin-sidebar__logo-image"
+                            width="42"
+                            height="42"
+                            aria-hidden="true"
+                        >
                     </span>
 
                     <span class="admin-sidebar__brand-text">
