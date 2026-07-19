@@ -110,102 +110,204 @@
 
     <div class="admin-layout">
         {{-- =========================================
-            PC Sidebar
-        ========================================== --}}
-        <aside class="admin-sidebar">
-            <div class="admin-sidebar__brand">
-                <a
-                    href="{{ route('dashboard') }}"
-                    class="admin-sidebar__brand-link"
+    PC Sidebar
+========================================== --}}
+@php
+    $currentProject = request()->route('project');
+
+    $isProjectsActive =
+        request()->routeIs('projects.*')
+        || request()->routeIs('payments.*');
+
+    $isTasksActive = request()->routeIs('projects.tasks.*');
+@endphp
+
+<aside class="admin-sidebar">
+    <div class="admin-sidebar__brand">
+        <a
+            href="{{ route('dashboard') }}"
+            class="admin-sidebar__brand-link"
+            aria-label="ClientWork Manager ダッシュボードへ移動"
+        >
+            <span class="admin-sidebar__brand-name">
+                ClientWork Manager
+            </span>
+
+            <span class="admin-sidebar__brand-description">
+                小規模事業者向け 案件管理アプリ
+            </span>
+        </a>
+    </div>
+
+    <nav
+        class="admin-sidebar__nav"
+        aria-label="管理画面メニュー"
+    >
+        <a
+            href="{{ route('dashboard') }}"
+            class="admin-sidebar__link {{ request()->routeIs('dashboard') ? 'is-active' : '' }}"
+            @if (request()->routeIs('dashboard'))
+                aria-current="page"
+            @endif
+        >
+            <svg
+                class="admin-sidebar__link-icon"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+            >
+                <path d="M12 12V3a9 9 0 1 0 9 9h-9Z"></path>
+                <path d="M15 3.5A9 9 0 0 1 20.5 9H15V3.5Z"></path>
+            </svg>
+
+            <span class="admin-sidebar__link-label">
+                Dashboard
+            </span>
+        </a>
+
+        <div class="admin-sidebar__nav-group">
+            <a
+                href="{{ route('projects.index') }}"
+                class="admin-sidebar__link {{ $isProjectsActive ? 'is-active' : '' }}"
+                @if ($isProjectsActive && ! $isTasksActive)
+                    aria-current="page"
+                @endif
+            >
+                <svg
+                    class="admin-sidebar__link-icon"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
                 >
-                    <span class="admin-sidebar__logo">
-                        <img
-                            src="{{ asset('images/clientwork-manager-logo.png') }}"
-                            alt=""
-                            class="admin-sidebar__logo-image"
-                            width="42"
-                            height="42"
+                    <path d="M3 7.5h6l2 2h10v10.5H3V7.5Z"></path>
+                    <path d="M3 7.5V5h6l2 2"></path>
+                </svg>
+
+                <span class="admin-sidebar__link-label">
+                    Projects
+                </span>
+            </a>
+
+            @if ($currentProject)
+                <div class="admin-sidebar__subnav">
+                    <a
+                        href="{{ route('projects.tasks.index', $currentProject) }}"
+                        class="admin-sidebar__sublink {{ $isTasksActive ? 'is-active' : '' }}"
+                        @if ($isTasksActive)
+                            aria-current="page"
+                        @endif
+                    >
+                        <svg
+                            class="admin-sidebar__sublink-icon"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.8"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
                             aria-hidden="true"
                         >
-                    </span>
+                            <path d="m4 6 1.5 1.5L8.5 4.5"></path>
+                            <path d="M11 6h9"></path>
+                            <path d="m4 12 1.5 1.5 3-3"></path>
+                            <path d="M11 12h9"></path>
+                            <path d="m4 18 1.5 1.5 3-3"></path>
+                            <path d="M11 18h9"></path>
+                        </svg>
 
-                    <span class="admin-sidebar__brand-text">
-                        ClientWork
-                        <span>Manager</span>
-                    </span>
-                </a>
-            </div>
+                        <span>
+                            この案件のタスク
+                        </span>
+                    </a>
+                </div>
+            @endif
+        </div>
 
-            <nav
-                class="admin-sidebar__nav"
-                aria-label="管理画面メニュー"
+        <a
+            href="{{ route('categories.index') }}"
+            class="admin-sidebar__link {{ request()->routeIs('categories.*') ? 'is-active' : '' }}"
+            @if (request()->routeIs('categories.*'))
+                aria-current="page"
+            @endif
+        >
+            <svg
+                class="admin-sidebar__link-icon"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
             >
-                <a
-                    href="{{ route('dashboard') }}"
-                    class="admin-sidebar__link {{ request()->routeIs('dashboard') ? 'is-active' : '' }}"
-                    @if (request()->routeIs('dashboard'))
-                        aria-current="page"
-                    @endif
-                >
-                    <span class="admin-sidebar__link-marker"></span>
-                    <span>ダッシュボード</span>
-                </a>
+                <path d="M20.5 13.5 13.5 20.5a2.1 2.1 0 0 1-3 0l-7-7A2 2 0 0 1 3 12V5a2 2 0 0 1 2-2h7a2 2 0 0 1 1.5.5l7 7a2.1 2.1 0 0 1 0 3Z"></path>
+                <circle cx="8.5" cy="8.5" r="1.2"></circle>
+            </svg>
 
-                <a
-                    href="{{ route('projects.index') }}"
-                    class="admin-sidebar__link {{ request()->routeIs('projects.*') ? 'is-active' : '' }}"
-                    @if (request()->routeIs('projects.*'))
-                        aria-current="page"
-                    @endif
-                >
-                    <span class="admin-sidebar__link-marker"></span>
-                    <span>案件管理</span>
-                </a>
+            <span class="admin-sidebar__link-label">
+                Categories
+            </span>
+        </a>
 
-                <a
-                    href="{{ route('categories.index') }}"
-                    class="admin-sidebar__link {{ request()->routeIs('categories.*') ? 'is-active' : '' }}"
-                    @if (request()->routeIs('categories.*'))
-                        aria-current="page"
-                    @endif
-                >
-                    <span class="admin-sidebar__link-marker"></span>
-                    <span>カテゴリ管理</span>
-                </a>
+        <a
+            href="{{ route('tags.index') }}"
+            class="admin-sidebar__link {{ request()->routeIs('tags.*') ? 'is-active' : '' }}"
+            @if (request()->routeIs('tags.*'))
+                aria-current="page"
+            @endif
+        >
+            <svg
+                class="admin-sidebar__link-icon"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+            >
+                <path d="M21 12.5 12.5 21a2 2 0 0 1-2.8 0L3 14.3A2 2 0 0 1 3 11.5L11.5 3H18a3 3 0 0 1 3 3v6.5Z"></path>
+                <circle cx="16" cy="8" r="1.25"></circle>
+            </svg>
 
-                <a
-    href="{{ route('customers.index') }}"
-    class="admin-sidebar__link {{ request()->routeIs('customers.*') ? 'is-active' : '' }}"
-    @if (request()->routeIs('customers.*'))
-        aria-current="page"
-    @endif
->
-    <span class="admin-sidebar__link-marker"></span>
-    <span>顧客管理</span>
-</a>
+            <span class="admin-sidebar__link-label">
+                Tags
+            </span>
+        </a>
 
-                <a
-                    href="{{ route('tags.index') }}"
-                    class="admin-sidebar__link {{ request()->routeIs('tags.*') ? 'is-active' : '' }}"
-                    @if (request()->routeIs('tags.*'))
-                        aria-current="page"
-                    @endif
-                >
-                    <span class="admin-sidebar__link-marker"></span>
-                    <span>タグ管理</span>
-                </a>
-            </nav>
+        <span
+            class="admin-sidebar__link admin-sidebar__link--disabled"
+            aria-disabled="true"
+            title="プロフィール画面は今後実装予定です"
+        >
+            <svg
+                class="admin-sidebar__link-icon"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+            >
+                <circle cx="12" cy="8" r="4"></circle>
+                <path d="M4.5 21a7.5 7.5 0 0 1 15 0"></path>
+            </svg>
 
-            <div class="admin-sidebar__footer">
-                <p class="admin-sidebar__user-label">
-                    ログイン中
-                </p>
-
-                <p class="admin-sidebar__user-name">
-                    {{ auth()->user()?->name ?? 'ユーザー' }}
-                </p>
-            </div>
-        </aside>
+            <span class="admin-sidebar__link-label">
+                Profile
+            </span>
+        </span>
+    </nav>
+</aside>
 
         {{-- =========================================
             Main Area
