@@ -37,18 +37,24 @@ body {
 .admin-sidebar {
     position: sticky;
     top: 0;
+
     display: flex;
     flex-direction: column;
     flex-shrink: 0;
+
     width: 288px;
     height: 100vh;
     padding: 0 18px 24px;
+
     overflow-y: auto;
+
+    border-right: 1px solid #d1d5db;
+
     background: #ffffff;
     color: #111827;
-    border-right: 1px solid #d1d5db;
-    scrollbar-width: thin;
+
     scrollbar-color: #d1d5db transparent;
+    scrollbar-width: thin;
 }
 
 .admin-sidebar::-webkit-scrollbar {
@@ -60,34 +66,38 @@ body {
 }
 
 .admin-sidebar::-webkit-scrollbar-thumb {
-    background: #d1d5db;
     border-radius: 999px;
+    background: #d1d5db;
 }
 
 .admin-sidebar__brand {
     margin: 0 -18px 20px;
     padding: 22px 18px 20px;
+
     border-bottom: 1px solid #d1d5db;
 }
 
 .admin-sidebar__brand-link {
     display: flex;
-    flex-direction: column;
     align-items: center;
+    flex-direction: column;
     gap: 2px;
+
     color: #111827;
+
     text-align: center;
     text-decoration: none;
 }
 
 .admin-sidebar__brand-link:focus-visible {
+    border-radius: 6px;
     outline: 3px solid rgba(37, 99, 235, 0.24);
     outline-offset: 4px;
-    border-radius: 6px;
 }
 
 .admin-sidebar__brand-name {
     color: #111827;
+
     font-size: 18px;
     font-weight: 800;
     line-height: 1.3;
@@ -96,6 +106,7 @@ body {
 
 .admin-sidebar__brand-description {
     color: #4b5563;
+
     font-size: 11px;
     font-weight: 500;
     line-height: 1.5;
@@ -106,22 +117,33 @@ body {
     gap: 6px;
 }
 
+.admin-sidebar__nav-group {
+    display: grid;
+    gap: 4px;
+}
+
 .admin-sidebar__link {
     display: flex;
     align-items: center;
     gap: 14px;
+
     width: 100%;
     min-height: 50px;
     padding: 0 14px;
+
     border: 0;
     border-radius: 6px;
+
     background: transparent;
     color: #111827;
+
     font-size: 14px;
     font-weight: 500;
     line-height: 1.4;
     text-decoration: none;
+
     cursor: pointer;
+
     transition:
         background-color 0.18s ease,
         color 0.18s ease;
@@ -135,6 +157,7 @@ body {
 .admin-sidebar__link.is-active {
     background: #e5e7eb;
     color: #111827;
+
     font-weight: 700;
 }
 
@@ -144,92 +167,62 @@ body {
 }
 
 .admin-sidebar__link-icon {
+    flex: 0 0 25px;
+
     width: 25px;
     height: 25px;
-    flex: 0 0 25px;
+
     color: currentColor;
 }
 
 .admin-sidebar__link-label {
     min-width: 0;
+
     overflow: hidden;
+
     color: inherit;
+
     text-overflow: ellipsis;
     white-space: nowrap;
-}
-
-.admin-sidebar__link--disabled {
-    color: #374151;
-    cursor: default;
-}
-
-.admin-sidebar__link--disabled:hover {
-    background: transparent;
-    color: #374151;
-}
-
-.admin-sidebar__link-marker,
-.admin-sidebar__logo,
-.admin-sidebar__logo-image,
-.admin-sidebar__brand-text,
-.admin-sidebar__footer {
-    display: none;
-}
-
-@media (max-width: 1180px) and (min-width: 769px) {
-    .admin-sidebar {
-        width: 250px;
-        padding-right: 14px;
-        padding-left: 14px;
-    }
-
-    .admin-sidebar__brand {
-        margin-right: -14px;
-        margin-left: -14px;
-    }
-
-    .admin-sidebar__link {
-        gap: 12px;
-        padding-right: 12px;
-        padding-left: 12px;
-    }
-}
-
-.admin-sidebar__nav-group {
-    display: grid;
-    gap: 4px;
 }
 
 .admin-sidebar__subnav {
     margin: 0 0 2px 26px;
     padding-left: 15px;
+
     border-left: 1px solid #d1d5db;
 }
 
 .admin-sidebar__sublink {
     display: flex;
-    min-height: 40px;
     align-items: center;
     gap: 10px;
+
+    min-height: 40px;
     padding: 0 12px;
+
+    border-radius: 6px;
+
     color: #4b5563;
+
     font-size: 12px;
     font-weight: 600;
     text-decoration: none;
-    border-radius: 6px;
+
     transition:
         background-color 0.18s ease,
         color 0.18s ease;
 }
 
 .admin-sidebar__sublink:hover {
-    color: #111827;
     background: #f3f4f6;
+    color: #111827;
 }
 
 .admin-sidebar__sublink.is-active {
-    color: #1d4ed8;
     background: #eff6ff;
+    color: #1d4ed8;
+
     font-weight: 700;
 }
 
@@ -239,9 +232,17 @@ body {
 }
 
 .admin-sidebar__sublink-icon {
+    flex: 0 0 18px;
+
     width: 18px;
     height: 18px;
-    flex: 0 0 18px;
+}
+
+.admin-sidebar__account {
+    margin-top: 10px;
+    padding-top: 12px;
+
+    border-top: 1px solid #dbe3ef;
 }
 
 
@@ -501,10 +502,10 @@ body {
 }
 
 .mobile-user-menu__icon {
+    flex-shrink: 0;
+
     width: 19px;
     height: 19px;
-
-    flex-shrink: 0;
 }
 
 .mobile-user-menu__dropdown {
@@ -565,6 +566,47 @@ body {
     line-height: 1.4;
 }
 
+.mobile-user-menu__profile-link {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+
+    min-height: 46px;
+    padding: 0 16px;
+
+    border-top: 1px solid #e2e8f0;
+
+    background: #ffffff;
+    color: #334155;
+
+    font-size: 12px;
+    font-weight: 800;
+    text-decoration: none;
+
+    transition:
+        background-color 0.2s ease,
+        color 0.2s ease;
+}
+
+.mobile-user-menu__profile-link:hover {
+    background: #eff6ff;
+    color: #2563eb;
+}
+
+.mobile-user-menu__profile-link:focus-visible {
+    position: relative;
+
+    outline: 3px solid rgba(37, 99, 235, 0.24);
+    outline-offset: -3px;
+}
+
+.mobile-user-menu__profile-link-icon {
+    flex-shrink: 0;
+
+    width: 17px;
+    height: 17px;
+}
+
 .mobile-user-menu__logout {
     margin: 0;
 
@@ -610,10 +652,10 @@ body {
 }
 
 .mobile-user-menu__logout-icon {
+    flex-shrink: 0;
+
     width: 17px;
     height: 17px;
-
-    flex-shrink: 0;
 }
 
 
@@ -629,6 +671,25 @@ body {
 /* ==============================
    Responsive
 ============================== */
+
+@media (max-width: 1180px) and (min-width: 769px) {
+    .admin-sidebar {
+        width: 250px;
+        padding-right: 14px;
+        padding-left: 14px;
+    }
+
+    .admin-sidebar__brand {
+        margin-right: -14px;
+        margin-left: -14px;
+    }
+
+    .admin-sidebar__link {
+        gap: 12px;
+        padding-right: 12px;
+        padding-left: 12px;
+    }
+}
 
 @media (max-width: 1180px) {
     .admin-main {
@@ -712,13 +773,21 @@ body {
         width: 36px;
         height: 36px;
 
+        overflow: hidden;
+
         border-radius: 12px;
 
         background: #2563eb;
         color: #ffffff;
+    }
 
-        font-size: 15px;
-        font-weight: 800;
+    .mobile-topbar__logo-image {
+        display: block;
+
+        width: 100%;
+        height: 100%;
+
+        object-fit: cover;
     }
 
     .mobile-topbar__title {
@@ -758,6 +827,7 @@ body {
 
     .admin-header__actions {
         display: block;
+
         width: 100%;
     }
 
@@ -855,10 +925,10 @@ body {
     }
 
     .mobile-bottom-nav__icon {
+        flex-shrink: 0;
+
         width: 21px;
         height: 21px;
-
-        flex-shrink: 0;
     }
 
     .mobile-bottom-nav__label {
@@ -904,8 +974,10 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
     .admin-sidebar__link,
+    .admin-sidebar__sublink,
     .admin-logout__button,
     .mobile-user-menu__trigger,
+    .mobile-user-menu__profile-link,
     .mobile-user-menu__logout-button,
     .mobile-bottom-nav__link {
         transition: none;

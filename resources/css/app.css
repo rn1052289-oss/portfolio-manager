@@ -4,6 +4,7 @@
 @import './layouts/app-layout.css';
 @import './components/ui.css';
 @import './pages/dashboard.css';
+@import './pages/profile.css';
 @import './pages/projects.css';
 @import './pages/categories.css';
 @import './pages/tags.css';
