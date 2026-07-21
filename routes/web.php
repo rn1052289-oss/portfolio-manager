@@ -1,11 +1,12 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\CustomerCsvExportController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\PaymentCheckoutController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ProjectCsvExportController;
 use App\Http\Controllers\ProjectTaskCsvExportController;
@@ -133,6 +134,17 @@ Route::middleware('auth')->group(function () {
                 'destroy',
             ]);
     });
+
+    /*
+|--------------------------------------------------------------------------
+| Invoices
+|--------------------------------------------------------------------------
+*/
+
+    Route::resource('invoices', InvoiceController::class)
+        ->only([
+            'index',
+        ]);
 
     /*
     |--------------------------------------------------------------------------

@@ -16,6 +16,7 @@
 @import './pages/customers/create.css';
 @import './pages/customers/edit.css';
 @import './pages/customers/show.css';
+@import './pages/invoices/index.css';
 
 :root {
     --color-bg: #f4f7fb;
