@@ -9,6 +9,12 @@
 @section('page-description', '登録情報の確認・変更と、案件・タスクの実績確認ができます。')
 
 @section('content')
+    @php
+        $shouldOpenPasswordForm =
+            $errors->updatePassword->any()
+            || session('status') === 'password-updated';
+    @endphp
+
     <div class="profile-page">
         <section class="profile-hero">
             <div
@@ -296,7 +302,7 @@
                     </form>
                 </section>
 
-                <section class="profile-panel">
+                <section class="profile-panel profile-panel--password">
                     <div class="profile-panel__head">
                         <div>
                             <p class="profile-panel__eyebrow">
@@ -304,131 +310,160 @@
                             </p>
 
                             <h2 class="profile-panel__title">
-                                パスワードを変更
+                                パスワード設定
                             </h2>
 
                             <p class="profile-panel__description">
-                                本人確認のため、現在のパスワードが必要です。
+                                本人確認のため、変更時には現在のパスワードが必要です。
                             </p>
                         </div>
                     </div>
 
-                    @if (session('status') === 'password-updated')
-                        <div
-                            class="profile-feedback profile-feedback--success"
-                            role="status"
-                        >
-                            パスワードを変更しました。
-                        </div>
-                    @endif
-
-                    <form
-                        action="{{ route('user-password.update') }}"
-                        method="POST"
-                        class="profile-form"
+                    <details
+                        class="profile-password-disclosure"
+                        @if ($shouldOpenPasswordForm) open @endif
                     >
-                        @csrf
-                        @method('PUT')
+                        <summary class="profile-password-disclosure__summary">
+                            <span class="profile-password-disclosure__summary-text">
+                                パスワードを変更する
+                            </span>
 
-                        <div class="profile-form__field">
-                            <label
-                                for="current-password"
-                                class="profile-form__label"
+                            <span
+                                class="profile-password-disclosure__icon"
+                                aria-hidden="true"
                             >
-                                現在のパスワード
-                                <span class="profile-form__required">
-                                    必須
-                                </span>
-                            </label>
-
-                            <input
-                                id="current-password"
-                                type="password"
-                                name="current_password"
-                                class="profile-form__input @error('current_password', 'updatePassword') is-invalid @enderror"
-                                autocomplete="current-password"
-                                required
-                                aria-describedby="current-password-error"
-                            >
-
-                            @error('current_password', 'updatePassword')
-                                <p
-                                    id="current-password-error"
-                                    class="profile-form__error"
+                                <svg
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
                                 >
-                                    {{ $message }}
-                                </p>
-                            @enderror
-                        </div>
+                                    <path d="m6 9 6 6 6-6"></path>
+                                </svg>
+                            </span>
+                        </summary>
 
-                        <div class="profile-form__field">
-                            <label
-                                for="new-password"
-                                class="profile-form__label"
-                            >
-                                新しいパスワード
-                                <span class="profile-form__required">
-                                    必須
-                                </span>
-                            </label>
-
-                            <input
-                                id="new-password"
-                                type="password"
-                                name="password"
-                                class="profile-form__input @error('password', 'updatePassword') is-invalid @enderror"
-                                autocomplete="new-password"
-                                required
-                                aria-describedby="new-password-help new-password-error"
-                            >
-
-                            <p
-                                id="new-password-help"
-                                class="profile-form__help"
-                            >
-                                8文字以上で、推測されにくいパスワードを設定してください。
-                            </p>
-
-                            @error('password', 'updatePassword')
-                                <p
-                                    id="new-password-error"
-                                    class="profile-form__error"
+                        <div class="profile-password-disclosure__content">
+                            @if (session('status') === 'password-updated')
+                                <div
+                                    class="profile-feedback profile-feedback--success"
+                                    role="status"
                                 >
-                                    {{ $message }}
-                                </p>
-                            @enderror
-                        </div>
+                                    パスワードを変更しました。
+                                </div>
+                            @endif
 
-                        <div class="profile-form__field">
-                            <label
-                                for="password-confirmation"
-                                class="profile-form__label"
+                            <form
+                                action="{{ route('user-password.update') }}"
+                                method="POST"
+                                class="profile-form"
                             >
-                                新しいパスワードの確認
-                                <span class="profile-form__required">
-                                    必須
-                                </span>
-                            </label>
+                                @csrf
+                                @method('PUT')
 
-                            <input
-                                id="password-confirmation"
-                                type="password"
-                                name="password_confirmation"
-                                class="profile-form__input"
-                                autocomplete="new-password"
-                                required
-                            >
-                        </div>
+                                <div class="profile-form__field">
+                                    <label
+                                        for="current-password"
+                                        class="profile-form__label"
+                                    >
+                                        現在のパスワード
+                                        <span class="profile-form__required">
+                                            必須
+                                        </span>
+                                    </label>
 
-                        <div class="profile-form__actions">
-                            <button
-                                type="submit"
-                                class="profile-form__submit"
-                            >
-                                パスワードを変更
-                            </button>
+                                    <input
+                                        id="current-password"
+                                        type="password"
+                                        name="current_password"
+                                        class="profile-form__input @error('current_password', 'updatePassword') is-invalid @enderror"
+                                        autocomplete="current-password"
+                                        required
+                                        aria-describedby="current-password-error"
+                                    >
+
+                                    @error('current_password', 'updatePassword')
+                                        <p
+                                            id="current-password-error"
+                                            class="profile-form__error"
+                                        >
+                                            {{ $message }}
+                                        </p>
+                                    @enderror
+                                </div>
+
+                                <div class="profile-form__field">
+                                    <label
+                                        for="new-password"
+                                        class="profile-form__label"
+                                    >
+                                        新しいパスワード
+                                        <span class="profile-form__required">
+                                            必須
+                                        </span>
+                                    </label>
+
+                                    <input
+                                        id="new-password"
+                                        type="password"
+                                        name="password"
+                                        class="profile-form__input @error('password', 'updatePassword') is-invalid @enderror"
+                                        autocomplete="new-password"
+                                        required
+                                        aria-describedby="new-password-help new-password-error"
+                                    >
+
+                                    <p
+                                        id="new-password-help"
+                                        class="profile-form__help"
+                                    >
+                                        8文字以上で、推測されにくいパスワードを設定してください。
+                                    </p>
+
+                                    @error('password', 'updatePassword')
+                                        <p
+                                            id="new-password-error"
+                                            class="profile-form__error"
+                                        >
+                                            {{ $message }}
+                                        </p>
+                                    @enderror
+                                </div>
+
+                                <div class="profile-form__field">
+                                    <label
+                                        for="password-confirmation"
+                                        class="profile-form__label"
+                                    >
+                                        新しいパスワードの確認
+                                        <span class="profile-form__required">
+                                            必須
+                                        </span>
+                                    </label>
+
+                                    <input
+                                        id="password-confirmation"
+                                        type="password"
+                                        name="password_confirmation"
+                                        class="profile-form__input"
+                                        autocomplete="new-password"
+                                        required
+                                    >
+                                </div>
+
+                                <div class="profile-form__actions">
+                                    <button
+                                        type="submit"
+                                        class="profile-form__submit"
+                                    >
+                                        パスワードを変更
+                                    </button>
+                                </div>
+                            </form>
                         </div>
-                    </form>
+                    </details>
                 </section>
             </div>
 
