@@ -115,4 +115,12 @@ class Project extends Model
     {
         return $this->hasMany(Payment::class);
     }
+
+    /**
+     * 案件に紐づく請求書一覧です。
+     */
+    public function invoices(): HasMany
+    {
+        return $this->hasMany(Invoice::class);
+    }
 }

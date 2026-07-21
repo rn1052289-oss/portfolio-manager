@@ -44,6 +44,7 @@ final class Payment extends Model
      */
     protected $fillable = [
         'project_id',
+        'invoice_id',
         'stripe_payment_intent_id',
         'idempotency_key',
         'amount',
@@ -110,5 +111,13 @@ final class Payment extends Model
     public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);
+    }
+
+    /**
+     * この決済に紐づく請求書です。
+     */
+    public function invoice(): BelongsTo
+    {
+        return $this->belongsTo(Invoice::class);
     }
 }

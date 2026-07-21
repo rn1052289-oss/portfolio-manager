@@ -44,4 +44,12 @@ class Customer extends Model
     {
         return $this->hasMany(Project::class);
     }
+
+    /**
+     * 顧客に紐づく請求書一覧です。
+     */
+    public function invoices(): HasMany
+    {
+        return $this->hasMany(Invoice::class);
+    }
 }
