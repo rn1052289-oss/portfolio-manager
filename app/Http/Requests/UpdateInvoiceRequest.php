@@ -21,10 +21,8 @@ final class UpdateInvoiceRequest extends FormRequest
     {
         $invoice = $this->route('invoice');
 
-        return $this->user() !== null
-            && $invoice instanceof Invoice
-            && $invoice->user_id === $this->user()->id
-            && $invoice->isDraft();
+        return $invoice instanceof Invoice
+            && $this->user()?->can('update', $invoice) === true;
     }
 
     /**

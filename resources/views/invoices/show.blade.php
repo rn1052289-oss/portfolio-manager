@@ -6,6 +6,12 @@
 @section('page-description', '請求内容、請求先、発行日、支払期限を確認できます。')
 
 @section('page-actions')
+    @can('update', $invoice)
+        <a href="{{ route('invoices.edit', $invoice) }}" class="button button--primary">
+            請求書を編集
+        </a>
+    @endcan
+
     <a href="{{ route('invoices.index') }}" class="button button--secondary">
         ← 請求書一覧へ戻る
     </a>
@@ -117,9 +123,12 @@
 
                                 <dd class="invoice-detail-definition__value">
                                     @if ($invoice->project)
-                                        <a href="{{ route('projects.show', $invoice->project) }}" class="invoice-detail-link">
-                                            {{ $invoice->project->title }}
-                                        </a>
+                                                                    <a href="{{ route(
+                                            'projects.show',
+                                            $invoice->project
+                                        ) }}" class="invoice-detail-link">
+                                                                        {{ $invoice->project->title }}
+                                                                    </a>
                                     @else
                                         <span class="invoice-detail-empty">
                                             案件情報なし
@@ -138,18 +147,12 @@
                                 </dd>
                             </div>
 
-                            <div class="
-                                        invoice-detail-definition__row
-                                        invoice-detail-definition__row--block
-                                    ">
+                            <div class="invoice-detail-definition__row invoice-detail-definition__row--block">
                                 <dt class="invoice-detail-definition__term">
                                     請求内容・補足
                                 </dt>
 
-                                <dd class="
-                                            invoice-detail-definition__value
-                                            invoice-detail-definition__value--description
-                                        ">
+                                <dd class="invoice-detail-definition__value invoice-detail-definition__value--description">
                                     {!! nl2br(e(
         $invoice->description
         ?: '補足情報はありません。'
@@ -238,10 +241,8 @@
                                         住所
                                     </dt>
 
-                                    <dd class="
-                                                invoice-detail-contact-list__value
-                                                invoice-detail-contact-list__value--address
-                                            ">
+                                    <dd
+                                        class="invoice-detail-contact-list__value invoice-detail-contact-list__value--address">
                                         @if (
                                                 $invoice->billing_postal_code
                                                 || $invoice->billing_address
@@ -314,10 +315,7 @@
                             </dd>
                         </div>
 
-                        <div class="
-                                    invoice-detail-summary__row
-                                    invoice-detail-summary__row--total
-                                ">
+                        <div class="invoice-detail-summary__row invoice-detail-summary__row--total">
                             <dt>
                                 合計
                             </dt>
@@ -382,27 +380,33 @@
 
                     <div class="invoice-detail-related-links">
                         @if ($invoice->project)
-                            <a href="{{ route('projects.show', $invoice->project) }}" class="invoice-detail-related-link">
-                                <span>
-                                    関連案件を確認
-                                </span>
+                                            <a href="{{ route(
+                                'projects.show',
+                                $invoice->project
+                            ) }}" class="invoice-detail-related-link">
+                                                <span>
+                                                    関連案件を確認
+                                                </span>
 
-                                <span aria-hidden="true">
-                                    →
-                                </span>
-                            </a>
+                                                <span aria-hidden="true">
+                                                    →
+                                                </span>
+                                            </a>
                         @endif
 
                         @if ($invoice->customer)
-                            <a href="{{ route('customers.show', $invoice->customer) }}" class="invoice-detail-related-link">
-                                <span>
-                                    顧客詳細を確認
-                                </span>
+                                            <a href="{{ route(
+                                'customers.show',
+                                $invoice->customer
+                            ) }}" class="invoice-detail-related-link">
+                                                <span>
+                                                    顧客詳細を確認
+                                                </span>
 
-                                <span aria-hidden="true">
-                                    →
-                                </span>
-                            </a>
+                                                <span aria-hidden="true">
+                                                    →
+                                                </span>
+                                            </a>
                         @endif
                     </div>
                 </section>

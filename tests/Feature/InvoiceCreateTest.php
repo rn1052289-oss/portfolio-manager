@@ -55,7 +55,7 @@ final class InvoiceCreateTest extends TestCase
 
         $response
             ->assertOk()
-            ->assertViewIs('invoices.create')
+            ->assertViewIs('invoices.form')
             ->assertViewHasAll([
                 'projects',
                 'customers',

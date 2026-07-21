@@ -5,12 +5,13 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreInvoiceRequest;
+use App\Http\Requests\UpdateInvoiceRequest;
 use App\Models\Customer;
 use App\Models\Invoice;
 use App\Models\Project;
 use App\Services\InvoiceNumberGenerator;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -46,32 +47,9 @@ final class InvoiceController extends Controller
     {
         $this->authorize('create', Invoice::class);
 
-        $userId = auth()->id();
-
-        $projects = Project::query()
-            ->where('user_id', $userId)
-            ->select([
-                'id',
-                'customer_id',
-                'title',
-                'client_name',
-            ])
-            ->orderBy('title')
-            ->get();
-
-        $customers = Customer::query()
-            ->where('user_id', $userId)
-            ->select([
-                'id',
-                'name',
-                'contact_name',
-            ])
-            ->orderBy('name')
-            ->get();
-
-        return view('invoices.create', [
-            'projects' => $projects,
-            'customers' => $customers,
+        return view('invoices.form', [
+            'invoice' => null,
+            ...$this->formOptions((int) auth()->id()),
         ]);
     }
 
@@ -96,26 +74,17 @@ final class InvoiceController extends Controller
         DB::transaction(function () use ($validated, $userId, $subtotal, $taxAmount, $totalAmount, $invoiceNumberGenerator): void {
             $project = Project::query()
                 ->where('user_id', $userId)
-                ->findOrFail(
-                    (int) $validated['project_id']
-                );
+                ->findOrFail((int) $validated['project_id']);
 
             $customer = Customer::query()
                 ->where('user_id', $userId)
-                ->findOrFail(
-                    (int) $validated['customer_id']
-                );
+                ->findOrFail((int) $validated['customer_id']);
 
-            $issuedAt = Carbon::parse(
-                $validated['issued_at']
-            );
+            $issuedAt = Carbon::parse($validated['issued_at']);
 
             /*
              * ユーザー・発行年月単位の連番管理テーブルから、
              * 重複しない請求書番号を発行します。
-             *
-             * この採番と請求書保存は、同じトランザクション内で
-             * 確定またはロールバックされます。
              */
             $invoiceNumber = $invoiceNumberGenerator->generate(
                 $userId,
@@ -139,16 +108,8 @@ final class InvoiceController extends Controller
 
                 /*
                  * 顧客情報を請求書作成時点の内容として保存します。
-                 *
-                 * 後からCustomerが変更されても、
-                 * 過去の請求書に表示する請求先情報は変わりません。
                  */
-                'billing_name' => $customer->name,
-                'billing_contact_name' => $customer->contact_name,
-                'billing_email' => $customer->email,
-                'billing_phone' => $customer->phone,
-                'billing_postal_code' => $customer->postal_code,
-                'billing_address' => $customer->address,
+                ...$this->customerSnapshot($customer),
 
                 'status' => Invoice::STATUS_DRAFT,
 
@@ -166,7 +127,7 @@ final class InvoiceController extends Controller
 
             /*
              * user_idはリクエストから受け取らず、
-             * 認証済みユーザーから明示的に設定します。
+             * 認証済みユーザーから設定します。
              */
             $invoice->user_id = $userId;
 
@@ -184,24 +145,10 @@ final class InvoiceController extends Controller
     /**
      * 請求書の詳細画面を表示します。
      */
-    /**
-     * 請求書の詳細画面を表示します。
-     */
     public function show(Invoice $invoice): View
     {
-        /*
-         * URLへ直接IDを入力された場合も、
-         * ログインユーザー本人の請求書かPolicyで確認します。
-         */
         $this->authorize('view', $invoice);
 
-        /*
-         * 詳細画面で案件名と現在の顧客名を利用するため、
-         * N+1問題を避けて事前に読み込みます。
-         *
-         * 請求先として画面に表示する情報は、
-         * 原則としてInvoiceのbilling_*スナップショットを使用します。
-         */
         $invoice->load([
             'project:id,title',
             'customer:id,name',
@@ -215,19 +162,114 @@ final class InvoiceController extends Controller
     /**
      * 請求書の編集画面を表示します。
      */
-    public function edit(Invoice $invoice)
+    public function edit(Invoice $invoice): View
     {
-        //
+        /*
+         * InvoicePolicyにより、
+         * 所有者本人かつ下書きの場合だけ許可します。
+         */
+        $this->authorize('update', $invoice);
+
+        return view('invoices.form', [
+            'invoice' => $invoice,
+            ...$this->formOptions((int) auth()->id()),
+        ]);
     }
 
     /**
-     * 請求書を更新します。
+     * 下書き請求書を更新します。
      */
     public function update(
-        Request $request,
-        Invoice $invoice
-    ) {
-        //
+        UpdateInvoiceRequest $request,
+        Invoice $invoice,
+        InvoiceNumberGenerator $invoiceNumberGenerator
+    ): RedirectResponse {
+        $validated = $request->validated();
+        $userId = (int) $request->user()->id;
+
+        /*
+         * 更新時もブラウザ側の計算結果は信用せず、
+         * 小計からサーバー側で再計算します。
+         */
+        $subtotal = (int) $validated['subtotal'];
+        $taxAmount = intdiv($subtotal, 10);
+        $totalAmount = $subtotal + $taxAmount;
+
+        DB::transaction(function () use ($invoice, $validated, $userId, $subtotal, $taxAmount, $totalAmount, $invoiceNumberGenerator): void {
+            /*
+             * 同時に送信・更新される競合を防ぐため、
+             * 対象請求書を排他ロックして再取得します。
+             */
+            $lockedInvoice = Invoice::query()
+                ->whereKey($invoice->id)
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            /*
+             * FormRequest通過後に状態が変わった可能性も考慮し、
+             * ロック取得後にもう一度Policyを確認します。
+             */
+            $this->authorize('update', $lockedInvoice);
+
+            $project = Project::query()
+                ->where('user_id', $userId)
+                ->findOrFail((int) $validated['project_id']);
+
+            $customer = Customer::query()
+                ->where('user_id', $userId)
+                ->findOrFail((int) $validated['customer_id']);
+
+            $issuedAt = Carbon::parse($validated['issued_at']);
+
+            $invoiceNumber = $lockedInvoice->invoice_number;
+
+            /*
+             * 発行月が変わる場合は、
+             * 新しい発行年月の請求書番号を採番します。
+             *
+             * 同じ発行月内の日付変更では番号を維持します。
+             */
+            if (
+                $lockedInvoice->issued_at?->format('Ym')
+                !== $issuedAt->format('Ym')
+            ) {
+                $invoiceNumber = $invoiceNumberGenerator->generate(
+                    $userId,
+                    $issuedAt
+                );
+            }
+
+            $lockedInvoice->fill([
+                'project_id' => $project->id,
+                'customer_id' => $customer->id,
+                'invoice_number' => $invoiceNumber,
+
+                'title' => $validated['title'],
+                'description' => $validated['description'] ?? null,
+
+                'subtotal' => $subtotal,
+                'tax_amount' => $taxAmount,
+                'total_amount' => $totalAmount,
+
+                /*
+                 * 下書きは未送信のため、保存時点の顧客情報で
+                 * 請求先スナップショットを更新します。
+                 */
+                ...$this->customerSnapshot($customer),
+
+                'issued_at' => $issuedAt->toDateString(),
+                'due_date' => $validated['due_date'],
+            ]);
+
+            $lockedInvoice->save();
+        });
+
+        return redirect()
+            ->route('invoices.show', $invoice)
+            ->with(
+                'success',
+                '請求書を更新しました。'
+            );
     }
 
     /**
@@ -236,5 +278,59 @@ final class InvoiceController extends Controller
     public function destroy(Invoice $invoice)
     {
         //
+    }
+
+    /**
+     * 請求書フォームで使用する案件と顧客を取得します。
+     *
+     * @return array{
+     *     projects: Collection<int, Project>,
+     *     customers: Collection<int, Customer>
+     * }
+     */
+    private function formOptions(int $userId): array
+    {
+        $projects = Project::query()
+            ->where('user_id', $userId)
+            ->select([
+                'id',
+                'customer_id',
+                'title',
+                'client_name',
+            ])
+            ->orderBy('title')
+            ->get();
+
+        $customers = Customer::query()
+            ->where('user_id', $userId)
+            ->select([
+                'id',
+                'name',
+                'contact_name',
+            ])
+            ->orderBy('name')
+            ->get();
+
+        return [
+            'projects' => $projects,
+            'customers' => $customers,
+        ];
+    }
+
+    /**
+     * Customerから請求先スナップショットを作成します。
+     *
+     * @return array<string, string|null>
+     */
+    private function customerSnapshot(Customer $customer): array
+    {
+        return [
+            'billing_name' => $customer->name,
+            'billing_contact_name' => $customer->contact_name,
+            'billing_email' => $customer->email,
+            'billing_phone' => $customer->phone,
+            'billing_postal_code' => $customer->postal_code,
+            'billing_address' => $customer->address,
+        ];
     }
 }

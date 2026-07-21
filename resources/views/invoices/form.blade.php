@@ -1,49 +1,95 @@
 @extends('layouts.app')
 
-@section('title', '請求書作成 | ClientWork Manager')
-@section('page-label', 'Create Invoice')
-@section('page-title', '請求書作成')
-@section('page-description', '案件と顧客を選択し、請求金額や支払期限を登録します。')
+@php
+    $invoice = $invoice ?? null;
+    $isEdit = $invoice instanceof \App\Models\Invoice;
+
+    $formAction = $isEdit
+        ? route('invoices.update', $invoice)
+        : route('invoices.store');
+
+    $selectedProjectId = (string) old(
+        'project_id',
+        $isEdit
+        ? $invoice->project_id
+        : request('project_id', '')
+    );
+
+    $selectedCustomerId = (string) old(
+        'customer_id',
+        $isEdit
+        ? $invoice->customer_id
+        : request('customer_id', '')
+    );
+
+    $oldSubtotal = old(
+        'subtotal',
+        $isEdit
+        ? $invoice->subtotal
+        : null
+    );
+
+    $formattedOldSubtotal = $oldSubtotal !== null
+        && $oldSubtotal !== ''
+        ? number_format((int) $oldSubtotal)
+        : '';
+
+    $documentTitle = $isEdit
+        ? '請求書編集 | ClientWork Manager'
+        : '請求書作成 | ClientWork Manager';
+
+    $pageLabel = $isEdit
+        ? 'Edit Invoice'
+        : 'Create Invoice';
+
+    $pageTitle = $isEdit
+        ? '請求書編集'
+        : '請求書作成';
+
+    $pageDescription = $isEdit
+        ? '下書き請求書の案件、請求先、金額、日付を編集します。'
+        : '案件と顧客を選択し、請求金額や支払期限を登録します。';
+@endphp
+
+@section('title', $documentTitle)
+@section('page-label', $pageLabel)
+@section('page-title', $pageTitle)
+@section('page-description', $pageDescription)
 
 @section('page-actions')
-    <a href="{{ route('invoices.index') }}" class="button button--secondary">
-        ← 請求書一覧へ戻る
-    </a>
+    @if ($isEdit)
+        <a href="{{ route('invoices.show', $invoice) }}" class="button button--secondary">
+            ← 請求書詳細へ戻る
+        </a>
+    @else
+        <a href="{{ route('invoices.index') }}" class="button button--secondary">
+            ← 請求書一覧へ戻る
+        </a>
+    @endif
 @endsection
 
 @section('content')
-    @php
-        $selectedProjectId = (string) old(
-            'project_id',
-            request('project_id', '')
-        );
-
-        $selectedCustomerId = (string) old(
-            'customer_id',
-            request('customer_id', '')
-        );
-
-        $oldSubtotal = old('subtotal');
-
-        $formattedOldSubtotal = $oldSubtotal !== null
-            && $oldSubtotal !== ''
-            ? number_format((int) $oldSubtotal)
-            : '';
-    @endphp
-
     <section class="invoice-form-page">
         <div class="invoice-form-page__header">
             <div>
                 <p class="invoice-form-page__eyebrow">
-                    New Invoice
+                    {{ $isEdit ? 'Edit Invoice' : 'New Invoice' }}
                 </p>
 
                 <h2 class="invoice-form-page__title">
-                    新しい請求書を作成
+                    {{ $isEdit
+        ? '請求書を編集'
+        : '新しい請求書を作成' }}
                 </h2>
 
                 <p class="invoice-form-page__description">
-                    案件情報、請求先、請求金額、支払期限を入力してください。
+                    @if ($isEdit)
+                        請求書番号
+                        {{ $invoice->invoice_number }}
+                        の内容を編集します。
+                    @else
+                        案件情報、請求先、請求金額、支払期限を入力してください。
+                    @endif
                 </p>
             </div>
 
@@ -53,7 +99,11 @@
                 </span>
 
                 <span class="invoice-form-page__status-text">
-                    作成直後は下書きとして保存されます
+                    @if ($isEdit)
+                        下書き状態の請求書だけ編集できます
+                    @else
+                        作成直後は下書きとして保存されます
+                    @endif
                 </span>
             </div>
         </div>
@@ -99,9 +149,12 @@
                 </div>
             </div>
         @else
-
-            <form method="POST" action="{{ route('invoices.store') }}" class="invoice-form" novalidate data-invoice-form>
+            <form method="POST" action="{{ $formAction }}" class="invoice-form" novalidate data-invoice-form>
                 @csrf
+
+                @if ($isEdit)
+                    @method('PUT')
+                @endif
 
                 <div class="invoice-form__section">
                     <div class="invoice-form__section-heading">
@@ -233,8 +286,12 @@
                                 </span>
                             </label>
 
-                            <input id="title" type="text" name="title" value="{{ old('title') }}"
-                                class="invoice-form__control @error('title') is-invalid @enderror" maxlength="255"
+                            <input id="title" type="text" name="title" value="{{ old(
+                'title',
+                $isEdit
+                ? $invoice->title
+                : ''
+            ) }}" class="invoice-form__control @error('title') is-invalid @enderror" maxlength="255"
                                 placeholder="例：Webサイト制作費" autocomplete="off"
                                 aria-describedby="title_help @error('title') title_error @enderror" required>
 
@@ -257,7 +314,12 @@
                             <textarea id="description" name="description" rows="6"
                                 class="invoice-form__control invoice-form__control--textarea @error('description') is-invalid @enderror"
                                 maxlength="5000" placeholder="例：コーポレートサイトの設計、デザイン、コーディング一式"
-                                aria-describedby="description_help @error('description') description_error @enderror">{{ old('description') }}</textarea>
+                                aria-describedby="description_help @error('description') description_error @enderror">{{ old(
+                'description',
+                $isEdit
+                ? $invoice->description
+                : ''
+            ) }}</textarea>
 
                             <p id="description_help" class="invoice-form__help">
                                 作業範囲や内訳など、顧客へ伝える補足情報を入力できます。
@@ -328,7 +390,7 @@
                                         aria-describedby="subtotal_help @error('subtotal') subtotal_error @enderror" required>
                                 </div>
 
-                                <input type="hidden" name="subtotal" value="{{ old('subtotal') }}" data-invoice-subtotal>
+                                <input type="hidden" name="subtotal" value="{{ $oldSubtotal }}" data-invoice-subtotal>
 
                                 <p id="subtotal_help" class="invoice-form__help invoice-form__amount-help">
                                     消費税を含まない金額を、1円単位で入力してください。
@@ -427,9 +489,19 @@
                         </aside>
                     </div>
 
-                    <input type="hidden" name="tax_amount" value="{{ old('tax_amount', 0) }}" data-invoice-tax>
+                    <input type="hidden" name="tax_amount" value="{{ old(
+                'tax_amount',
+                $isEdit
+                ? $invoice->tax_amount
+                : 0
+            ) }}" data-invoice-tax>
 
-                    <input type="hidden" name="total_amount" value="{{ old('total_amount', 0) }}" data-invoice-total>
+                    <input type="hidden" name="total_amount" value="{{ old(
+                'total_amount',
+                $isEdit
+                ? $invoice->total_amount
+                : 0
+            ) }}" data-invoice-total>
                 </div>
 
                 <div class="invoice-form__section">
@@ -459,9 +531,12 @@
                                 </span>
                             </label>
 
-                            <input id="issued_at" type="date" name="issued_at"
-                                value="{{ old('issued_at', now()->toDateString()) }}"
-                                class="invoice-form__control @error('issued_at') is-invalid @enderror" data-invoice-issued-at
+                            <input id="issued_at" type="date" name="issued_at" value="{{ old(
+                'issued_at',
+                $isEdit
+                ? $invoice->issued_at?->toDateString()
+                : now()->toDateString()
+            ) }}" class="invoice-form__control @error('issued_at') is-invalid @enderror" data-invoice-issued-at
                                 aria-describedby="issued_at_help @error('issued_at') issued_at_error @enderror" required>
 
                             <p id="issued_at_help" class="invoice-form__help">
@@ -484,9 +559,12 @@
                                 </span>
                             </label>
 
-                            <input id="due_date" type="date" name="due_date"
-                                value="{{ old('due_date', now()->addMonth()->toDateString()) }}"
-                                class="invoice-form__control @error('due_date') is-invalid @enderror" data-invoice-due-date
+                            <input id="due_date" type="date" name="due_date" value="{{ old(
+                'due_date',
+                $isEdit
+                ? $invoice->due_date?->toDateString()
+                : now()->addMonth()->toDateString()
+            ) }}" class="invoice-form__control @error('due_date') is-invalid @enderror" data-invoice-due-date
                                 aria-describedby="due_date_help @error('due_date') due_date_error @enderror" required>
 
                             <p id="due_date_help" class="invoice-form__help">
@@ -504,35 +582,59 @@
 
                 <aside class="invoice-form__notice">
                     <h3 class="invoice-form__notice-title">
-                        保存時に自動設定される情報
+                        {{ $isEdit
+                ? '更新時に自動処理される情報'
+                : '保存時に自動設定される情報' }}
                     </h3>
 
                     <ul class="invoice-form__notice-list">
-                        <li>
-                            請求書番号と公開用トークンは、システムが自動生成します。
-                        </li>
+                        @if ($isEdit)
+                            <li>
+                                同じ発行月内の日付変更では、現在の請求書番号を維持します。
+                            </li>
 
-                        <li>
-                            請求先の会社名、担当者、メール、住所は、選択した顧客情報からコピーします。
-                        </li>
+                            <li>
+                                発行月を変更した場合は、新しい年月の請求書番号を自動採番します。
+                            </li>
 
-                        <li>
-                            作成直後のステータスは「下書き」になります。
-                        </li>
+                            <li>
+                                請求先情報は、選択した顧客の現在情報から再取得します。
+                            </li>
 
-                        <li>
-                            通貨は日本円（JPY）で保存されます。
-                        </li>
+                            <li>
+                                ステータス、公開用トークン、送信回数などの管理情報は変更されません。
+                            </li>
+                        @else
+                            <li>
+                                請求書番号と公開用トークンは、システムが自動生成します。
+                            </li>
+
+                            <li>
+                                請求先の会社名、担当者、メール、住所は、選択した顧客情報からコピーします。
+                            </li>
+
+                            <li>
+                                作成直後のステータスは「下書き」になります。
+                            </li>
+
+                            <li>
+                                通貨は日本円（JPY）で保存されます。
+                            </li>
+                        @endif
                     </ul>
                 </aside>
 
                 <div class="invoice-form__actions">
-                    <a href="{{ route('invoices.index') }}" class="button button--secondary">
+                    <a href="{{ $isEdit
+                ? route('invoices.show', $invoice)
+                : route('invoices.index') }}" class="button button--secondary">
                         キャンセル
                     </a>
 
                     <button type="submit" class="button button--primary">
-                        請求書を保存
+                        {{ $isEdit
+                ? '変更内容を保存'
+                : '請求書を保存' }}
                     </button>
                 </div>
             </form>
@@ -638,6 +740,7 @@
                 );
 
                 const taxRate = 0.1;
+
                 const taxAmount = Math.floor(
                     subtotal * taxRate
                 );
