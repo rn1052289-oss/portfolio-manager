@@ -19,6 +19,7 @@
 @import './pages/invoices/index.css';
 @import './pages/invoices/form.css';
 @import './pages/invoices/create.css';
+@import './pages/invoices/show.css';
 
 :root {
     --color-bg: #f4f7fb;

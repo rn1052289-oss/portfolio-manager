@@ -146,6 +146,7 @@ Route::middleware('auth')->group(function () {
             'index',
             'create',
             'store',
+            'show',
         ]);
 
     /*

@@ -184,9 +184,32 @@ final class InvoiceController extends Controller
     /**
      * 請求書の詳細画面を表示します。
      */
-    public function show(Invoice $invoice)
+    /**
+     * 請求書の詳細画面を表示します。
+     */
+    public function show(Invoice $invoice): View
     {
-        //
+        /*
+         * URLへ直接IDを入力された場合も、
+         * ログインユーザー本人の請求書かPolicyで確認します。
+         */
+        $this->authorize('view', $invoice);
+
+        /*
+         * 詳細画面で案件名と現在の顧客名を利用するため、
+         * N+1問題を避けて事前に読み込みます。
+         *
+         * 請求先として画面に表示する情報は、
+         * 原則としてInvoiceのbilling_*スナップショットを使用します。
+         */
+        $invoice->load([
+            'project:id,title',
+            'customer:id,name',
+        ]);
+
+        return view('invoices.show', [
+            'invoice' => $invoice,
+        ]);
     }
 
     /**
