@@ -1,0 +1,409 @@
+/* ========================================
+   Invoice Form
+======================================== */
+
+.invoice-form {
+    display: grid;
+    gap: 24px;
+    width: 100%;
+    min-width: 0;
+}
+
+/* ========================================
+   Form Section
+======================================== */
+
+.invoice-form__section {
+    padding: 28px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 18px;
+    box-shadow: 0 10px 30px rgb(15 23 42 / 5%);
+}
+
+.invoice-form__section-heading {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    margin-bottom: 24px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.invoice-form__section-number {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    color: #1d4ed8;
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 0.05em;
+    background: #dbeafe;
+    border-radius: 12px;
+}
+
+.invoice-form__section-title {
+    margin: 0;
+    color: #0f172a;
+    font-size: 18px;
+    line-height: 1.4;
+}
+
+.invoice-form__section-description {
+    margin: 5px 0 0;
+    color: #64748b;
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+/* ========================================
+   Grid
+======================================== */
+
+.invoice-form__grid {
+    display: grid;
+    gap: 22px;
+}
+
+.invoice-form__grid--two-columns {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.invoice-form__grid--three-columns {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+/* ========================================
+   Field
+======================================== */
+
+.invoice-form__field {
+    min-width: 0;
+}
+
+.invoice-form__label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    color: #334155;
+    font-size: 13px;
+    font-weight: 800;
+    line-height: 1.5;
+}
+
+.invoice-form__required {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 20px;
+    padding: 0 7px;
+    color: #b91c1c;
+    font-size: 10px;
+    font-weight: 900;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 999px;
+}
+
+.invoice-form__control {
+    width: 100%;
+    min-width: 0;
+    min-height: 46px;
+    box-sizing: border-box;
+    padding: 11px 13px;
+    color: #0f172a;
+    font: inherit;
+    font-size: 14px;
+    line-height: 1.5;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    outline: none;
+    transition:
+        border-color 160ms ease,
+        box-shadow 160ms ease,
+        background-color 160ms ease;
+}
+
+.invoice-form__control::placeholder {
+    color: #94a3b8;
+}
+
+.invoice-form__control:hover {
+    border-color: #94a3b8;
+}
+
+.invoice-form__control:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 4px rgb(37 99 235 / 12%);
+}
+
+.invoice-form__control.is-invalid {
+    border-color: #dc2626;
+    background: #fffafa;
+}
+
+.invoice-form__control.is-invalid:focus {
+    box-shadow: 0 0 0 4px rgb(220 38 38 / 10%);
+}
+
+.invoice-form__control--textarea {
+    min-height: 140px;
+    resize: vertical;
+}
+
+.invoice-form__control--readonly {
+    color: #0f172a;
+    font-weight: 800;
+    background: #f8fafc;
+    cursor: default;
+}
+
+.invoice-form__help {
+    margin: 7px 0 0;
+    color: #64748b;
+    font-size: 11px;
+    line-height: 1.65;
+}
+
+.invoice-form__error {
+    margin: 7px 0 0;
+    color: #b91c1c;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1.6;
+}
+
+/* ========================================
+   Select
+======================================== */
+
+select.invoice-form__control {
+    padding-right: 38px;
+    cursor: pointer;
+    appearance: none;
+    background-image:
+        linear-gradient(45deg, transparent 50%, #64748b 50%),
+        linear-gradient(135deg, #64748b 50%, transparent 50%);
+    background-repeat: no-repeat;
+    background-position:
+        calc(100% - 17px) 20px,
+        calc(100% - 12px) 20px;
+    background-size:
+        5px 5px,
+        5px 5px;
+}
+
+select.invoice-form__control:disabled {
+    color: #64748b;
+    background-color: #f8fafc;
+    cursor: not-allowed;
+}
+
+/* ========================================
+   Money Input
+======================================== */
+
+.invoice-form__money-control {
+    position: relative;
+}
+
+.invoice-form__money-prefix {
+    position: absolute;
+    top: 50%;
+    left: 14px;
+    z-index: 1;
+    color: #64748b;
+    font-size: 14px;
+    font-weight: 800;
+    pointer-events: none;
+    transform: translateY(-50%);
+}
+
+.invoice-form__control--money {
+    padding-left: 32px;
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+}
+
+.invoice-form__control[type='number'] {
+    appearance: textfield;
+}
+
+.invoice-form__control[type='number']::-webkit-inner-spin-button,
+.invoice-form__control[type='number']::-webkit-outer-spin-button {
+    margin: 0;
+    appearance: none;
+}
+
+/* ========================================
+   Validation Summary
+======================================== */
+
+.invoice-form-errors {
+    padding: 18px 20px;
+    color: #991b1b;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 14px;
+}
+
+.invoice-form-errors__title {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.invoice-form-errors__list {
+    display: grid;
+    gap: 5px;
+    margin: 10px 0 0;
+    padding-left: 20px;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+/* ========================================
+   Notice
+======================================== */
+
+.invoice-form__notice {
+    padding: 20px 22px;
+    color: #1e3a8a;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 14px;
+}
+
+.invoice-form__notice-title {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.invoice-form__notice-list {
+    display: grid;
+    gap: 7px;
+    margin: 12px 0 0;
+    padding-left: 20px;
+    color: #334155;
+    font-size: 12px;
+    line-height: 1.75;
+}
+
+/* ========================================
+   Actions
+======================================== */
+
+.invoice-form__actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 22px 24px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgb(15 23 42 / 4%);
+}
+
+.invoice-form__actions .button {
+    min-width: 150px;
+}
+
+.invoice-form__actions .button:disabled,
+.invoice-form__actions .button[aria-disabled='true'] {
+    color: #94a3b8;
+    cursor: not-allowed;
+    background: #e2e8f0;
+    border-color: #e2e8f0;
+    box-shadow: none;
+    opacity: 1;
+}
+
+/* ========================================
+   Responsive
+======================================== */
+
+@media (max-width: 900px) {
+    .invoice-form__grid--three-columns {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .invoice-form__grid--three-columns .invoice-form__field:last-child {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 700px) {
+    .invoice-form {
+        gap: 18px;
+    }
+
+    .invoice-form__section {
+        padding: 22px;
+        border-radius: 16px;
+    }
+
+    .invoice-form__grid--two-columns,
+    .invoice-form__grid--three-columns {
+        grid-template-columns: 1fr;
+    }
+
+    .invoice-form__grid--three-columns .invoice-form__field:last-child {
+        grid-column: auto;
+    }
+
+    .invoice-form__actions {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        padding: 18px;
+    }
+
+    .invoice-form__actions .button {
+        width: 100%;
+        min-width: 0;
+    }
+}
+
+@media (max-width: 430px) {
+    .invoice-form__section {
+        padding: 18px;
+    }
+
+    .invoice-form__section-heading {
+        gap: 11px;
+        margin-bottom: 20px;
+    }
+
+    .invoice-form__section-number {
+        width: 38px;
+        height: 38px;
+    }
+
+    .invoice-form__section-title {
+        font-size: 16px;
+    }
+
+    .invoice-form__control {
+        font-size: 16px;
+    }
+
+    .invoice-form__actions {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ========================================
+   Reduced Motion
+======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+    .invoice-form__control {
+        transition: none;
+    }
+}

@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Customer;
 use App\Models\Invoice;
+use App\Models\Project;
 use Illuminate\Http\Request;
 
 class InvoiceController extends Controller
@@ -34,9 +36,40 @@ class InvoiceController extends Controller
     /**
      * Show the form for creating a new resource.
      */
+    /**
+     * 請求書の新規作成画面を表示します。
+     */
     public function create()
     {
-        //
+        $this->authorize('create', Invoice::class);
+
+        $userId = auth()->id();
+
+        $projects = Project::query()
+            ->where('user_id', $userId)
+            ->select([
+                'id',
+                'customer_id',
+                'title',
+                'client_name',
+            ])
+            ->orderBy('title')
+            ->get();
+
+        $customers = Customer::query()
+            ->where('user_id', $userId)
+            ->select([
+                'id',
+                'name',
+                'contact_name',
+            ])
+            ->orderBy('name')
+            ->get();
+
+        return view('invoices.create', [
+            'projects' => $projects,
+            'customers' => $customers,
+        ]);
     }
 
     /**

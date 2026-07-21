@@ -1,0 +1,531 @@
+/* ========================================
+   Invoice Create Page
+======================================== */
+
+.invoice-form-page {
+    display: grid;
+    gap: 24px;
+    width: 100%;
+    min-width: 0;
+}
+
+/* ========================================
+   Page Header
+======================================== */
+
+.invoice-form-page__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 26px 28px;
+    background:
+        linear-gradient(
+            135deg,
+            rgb(239 246 255 / 96%),
+            rgb(255 255 255 / 100%)
+        );
+    border: 1px solid #bfdbfe;
+    border-radius: 18px;
+    box-shadow: 0 10px 30px rgb(15 23 42 / 5%);
+}
+
+.invoice-form-page__eyebrow {
+    margin: 0 0 6px;
+    color: #2563eb;
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.invoice-form-page__title {
+    margin: 0;
+    color: #0f172a;
+    font-size: clamp(22px, 2.2vw, 30px);
+    line-height: 1.3;
+}
+
+.invoice-form-page__description {
+    max-width: 620px;
+    margin: 9px 0 0;
+    color: #475569;
+    font-size: 14px;
+    line-height: 1.75;
+}
+
+.invoice-form-page__status {
+    display: grid;
+    flex: 0 0 auto;
+    justify-items: end;
+    gap: 7px;
+    min-width: 180px;
+}
+
+.invoice-form-page__status-text {
+    color: #64748b;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.5;
+    text-align: right;
+}
+
+/* ========================================
+   Requirements
+======================================== */
+
+.invoice-form-requirements {
+    padding: 36px;
+    text-align: center;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 18px;
+    box-shadow: 0 10px 30px rgb(15 23 42 / 5%);
+}
+
+.invoice-form-requirements::before {
+    display: grid;
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 20px;
+    color: #b45309;
+    font-size: 26px;
+    font-weight: 900;
+    content: '!';
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-radius: 18px;
+    place-items: center;
+}
+
+.invoice-form-requirements__title {
+    margin: 0;
+    color: #0f172a;
+    font-size: 20px;
+    line-height: 1.45;
+}
+
+.invoice-form-requirements__text {
+    max-width: 560px;
+    margin: 10px auto 0;
+    color: #475569;
+    font-size: 14px;
+    line-height: 1.8;
+}
+
+.invoice-form-requirements__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+/* ========================================
+   Amount Section
+======================================== */
+
+.invoice-form__section--amount {
+    overflow: hidden;
+}
+
+.invoice-form__amount-layout {
+    display: grid;
+    grid-template-columns:
+        minmax(0, 1fr)
+        minmax(320px, 420px);
+    gap: 28px;
+    align-items: stretch;
+}
+
+.invoice-form__amount-input-panel {
+    display: grid;
+    align-content: start;
+    gap: 24px;
+    min-width: 0;
+    padding: 26px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+}
+
+.invoice-form__amount-input-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.invoice-form__amount-input-eyebrow {
+    margin: 0 0 4px;
+    color: #2563eb;
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.invoice-form__amount-input-title {
+    margin: 0;
+    color: #0f172a;
+    font-size: 17px;
+    line-height: 1.4;
+}
+
+.invoice-form__tax-rate-badge {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    min-height: 30px;
+    box-sizing: border-box;
+    padding: 0 11px;
+    color: #1d4ed8;
+    font-size: 11px;
+    font-weight: 900;
+    white-space: nowrap;
+    background: #dbeafe;
+    border: 1px solid #bfdbfe;
+    border-radius: 999px;
+}
+
+.invoice-form__subtotal-control {
+    position: relative;
+}
+
+.invoice-form__subtotal-prefix {
+    position: absolute;
+    top: 50%;
+    left: 18px;
+    z-index: 1;
+    color: #2563eb;
+    font-size: 20px;
+    font-weight: 900;
+    pointer-events: none;
+    transform: translateY(-50%);
+}
+
+.invoice-form__subtotal-input {
+    min-height: 62px;
+    padding-right: 18px;
+    padding-left: 48px;
+    color: #0f172a;
+    font-size: 24px;
+    font-weight: 900;
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+    letter-spacing: 0.01em;
+    background: #ffffff;
+}
+
+.invoice-form__subtotal-input::placeholder {
+    color: #94a3b8;
+    font-weight: 700;
+}
+
+.invoice-form__amount-help {
+    color: #475569;
+    font-size: 12px;
+}
+
+.invoice-form__tax-explanation {
+    display: flex;
+    align-items: flex-start;
+    gap: 13px;
+    padding: 16px;
+    color: #334155;
+    background: #ffffff;
+    border: 1px solid #dbeafe;
+    border-radius: 13px;
+}
+
+.invoice-form__tax-explanation-icon {
+    display: grid;
+    flex: 0 0 auto;
+    width: 36px;
+    height: 36px;
+    color: #1d4ed8;
+    font-size: 14px;
+    font-weight: 900;
+    background: #eff6ff;
+    border-radius: 10px;
+    place-items: center;
+}
+
+.invoice-form__tax-explanation strong {
+    display: block;
+    color: #1e3a8a;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.invoice-form__tax-explanation p {
+    margin: 4px 0 0;
+    color: #64748b;
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+/* ========================================
+   Payment Summary
+======================================== */
+
+.invoice-form__calculation {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    overflow: hidden;
+    color: #ffffff;
+    background:
+        linear-gradient(
+            145deg,
+            #0f172a,
+            #172554
+        );
+    border: 1px solid #1e3a8a;
+    border-radius: 16px;
+    box-shadow: 0 18px 40px rgb(15 23 42 / 18%);
+}
+
+.invoice-form__calculation-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 24px 24px 20px;
+    border-bottom: 1px solid rgb(255 255 255 / 12%);
+}
+
+.invoice-form__calculation-eyebrow {
+    margin: 0 0 5px;
+    color: #93c5fd;
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.invoice-form__calculation-title {
+    margin: 0;
+    color: #ffffff;
+    font-size: 18px;
+    line-height: 1.4;
+}
+
+.invoice-form__calculation-icon {
+    display: grid;
+    flex: 0 0 auto;
+    width: 42px;
+    height: 42px;
+    color: #ffffff;
+    font-size: 19px;
+    font-weight: 900;
+    background: rgb(59 130 246 / 28%);
+    border: 1px solid rgb(147 197 253 / 30%);
+    border-radius: 12px;
+    place-items: center;
+}
+
+.invoice-form__calculation-body {
+    display: grid;
+    gap: 0;
+    padding: 12px 24px 6px;
+}
+
+.invoice-form__calculation-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 13px 0;
+    color: #cbd5e1;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.invoice-form__calculation-row strong {
+    color: #f8fafc;
+    font-size: 15px;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.invoice-form__calculation-divider {
+    height: 1px;
+    margin: 5px 0;
+    background: rgb(255 255 255 / 15%);
+}
+
+.invoice-form__calculation-row--total {
+    align-items: flex-end;
+    padding-top: 17px;
+    padding-bottom: 16px;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 900;
+}
+
+.invoice-form__calculation-row--total strong {
+    color: #60a5fa;
+    font-size: clamp(24px, 2.5vw, 32px);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+}
+
+.invoice-form__calculation-note {
+    margin: auto 24px 22px;
+    padding-top: 16px;
+    color: #94a3b8;
+    font-size: 11px;
+    line-height: 1.7;
+    border-top: 1px solid rgb(255 255 255 / 10%);
+}
+
+.invoice-form__calculation-error {
+    margin: 0 24px 12px;
+    padding: 10px 12px;
+    color: #fecaca;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1.6;
+    background: rgb(127 29 29 / 38%);
+    border: 1px solid rgb(248 113 113 / 30%);
+    border-radius: 9px;
+}
+
+/* ========================================
+   Responsive
+======================================== */
+
+@media (max-width: 1100px) {
+    .invoice-form__amount-layout {
+        grid-template-columns:
+            minmax(0, 1fr)
+            minmax(300px, 360px);
+        gap: 20px;
+    }
+
+    .invoice-form__amount-input-panel {
+        padding: 22px;
+    }
+}
+
+@media (max-width: 900px) {
+    .invoice-form-page__header {
+        padding: 24px;
+    }
+
+    .invoice-form__amount-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .invoice-form__calculation {
+        min-height: 0;
+    }
+}
+
+@media (max-width: 700px) {
+    .invoice-form-page {
+        gap: 18px;
+    }
+
+    .invoice-form-page__header {
+        display: grid;
+        gap: 18px;
+        padding: 22px;
+        border-radius: 16px;
+    }
+
+    .invoice-form-page__status {
+        justify-items: start;
+        min-width: 0;
+    }
+
+    .invoice-form-page__status-text {
+        text-align: left;
+    }
+
+    .invoice-form-requirements {
+        padding: 30px 22px;
+        border-radius: 16px;
+    }
+
+    .invoice-form__amount-input-panel {
+        padding: 20px;
+    }
+
+    .invoice-form__calculation-header {
+        padding: 21px 20px 18px;
+    }
+
+    .invoice-form__calculation-body {
+        padding-right: 20px;
+        padding-left: 20px;
+    }
+
+    .invoice-form__calculation-note {
+        margin-right: 20px;
+        margin-left: 20px;
+    }
+}
+
+@media (max-width: 430px) {
+    .invoice-form-page__header {
+        padding: 20px;
+    }
+
+    .invoice-form-page__title {
+        font-size: 21px;
+    }
+
+    .invoice-form-page__description {
+        font-size: 13px;
+    }
+
+    .invoice-form-requirements__actions {
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+
+    .invoice-form-requirements__actions .button {
+        width: 100%;
+    }
+
+    .invoice-form__amount-input-header {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .invoice-form__subtotal-input {
+        min-height: 58px;
+        font-size: 21px;
+    }
+
+    .invoice-form__calculation-row {
+        gap: 12px;
+    }
+
+    .invoice-form__calculation-row--total {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 7px;
+    }
+
+    .invoice-form__calculation-row--total strong {
+        font-size: 27px;
+    }
+}
+
+/* ========================================
+   Reduced Motion
+======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+    .invoice-form__calculation {
+        scroll-behavior: auto;
+    }
+}

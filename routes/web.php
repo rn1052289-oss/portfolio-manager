@@ -144,6 +144,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('invoices', InvoiceController::class)
         ->only([
             'index',
+            'create',
         ]);
 
     /*
