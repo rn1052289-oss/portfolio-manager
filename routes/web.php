@@ -149,6 +149,7 @@ Route::middleware('auth')->group(function () {
             'show',
             'edit',
             'update',
+            'destroy',
         ]);
 
     /*

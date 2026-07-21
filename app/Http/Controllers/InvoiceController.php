@@ -152,7 +152,7 @@ final class InvoiceController extends Controller
         $invoice->load([
             'project:id,title',
             'customer:id,name',
-        ]);
+        ])->loadCount('payments');
 
         return view('invoices.show', [
             'invoice' => $invoice,
@@ -273,11 +273,63 @@ final class InvoiceController extends Controller
     }
 
     /**
-     * 請求書を削除します。
+     * 下書き請求書を削除します。
      */
-    public function destroy(Invoice $invoice)
+    public function destroy(Invoice $invoice): RedirectResponse
     {
-        //
+        /*
+         * 所有者本人かつ下書きかをPolicyで確認します。
+         */
+        $this->authorize('delete', $invoice);
+
+        $result = DB::transaction(function () use ($invoice): string {
+            /*
+             * 編集・送信・決済開始などとの競合を避けるため、
+             * 削除対象の請求書を排他ロックして再取得します。
+             */
+            $lockedInvoice = Invoice::query()
+                ->whereKey($invoice->id)
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            /*
+             * 最初の認可後にステータスが変わった可能性を考慮し、
+             * ロック取得後にもう一度削除権限を確認します。
+             */
+            $this->authorize('delete', $lockedInvoice);
+
+            /*
+             * Paymentが存在する請求書を削除すると、
+             * payments.invoice_idがnullになり、
+             * 決済履歴と請求書の対応が切れてしまいます。
+             *
+             * 監査性を保つため、1件でも決済履歴があれば
+             * 下書きであっても削除を拒否します。
+             */
+            if ($lockedInvoice->payments()->exists()) {
+                return 'has_payments';
+            }
+
+            $lockedInvoice->delete();
+
+            return 'deleted';
+        });
+
+        if ($result === 'has_payments') {
+            return redirect()
+                ->route('invoices.show', $invoice)
+                ->with(
+                    'error',
+                    '決済履歴が紐づいている請求書は削除できません。'
+                );
+        }
+
+        return redirect()
+            ->route('invoices.index')
+            ->with(
+                'success',
+                '請求書を削除しました。'
+            );
     }
 
     /**

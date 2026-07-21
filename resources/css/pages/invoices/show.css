@@ -10,6 +10,30 @@
 }
 
 /* ========================================
+   Flash Message
+======================================== */
+
+.invoice-detail-flash {
+    padding: 15px 18px;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.7;
+    border-radius: 12px;
+}
+
+.invoice-detail-flash--success {
+    color: #047857;
+    background: #ecfdf5;
+    border: 1px solid #a7f3d0;
+}
+
+.invoice-detail-flash--error {
+    color: #991b1b;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+}
+
+/* ========================================
    Hero
 ======================================== */
 
@@ -634,6 +658,115 @@
 }
 
 /* ========================================
+   Danger Zone
+======================================== */
+
+.invoice-detail-danger-card {
+    overflow: hidden;
+    background: #ffffff;
+    border: 1px solid #fecaca;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgb(127 29 29 / 5%);
+}
+
+.invoice-detail-danger-card__header {
+    padding: 18px 20px;
+    background: #fff7f7;
+    border-bottom: 1px solid #fecaca;
+}
+
+.invoice-detail-danger-card__eyebrow {
+    margin: 0 0 4px;
+    color: #dc2626;
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.invoice-detail-danger-card__title {
+    margin: 0;
+    color: #991b1b;
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+.invoice-detail-danger-card__body {
+    display: grid;
+    gap: 16px;
+    padding: 18px 20px 20px;
+}
+
+.invoice-detail-danger-card__description {
+    margin: 0;
+    color: #64748b;
+    font-size: 11px;
+    line-height: 1.75;
+}
+
+.invoice-detail-delete-form {
+    margin: 0;
+}
+
+.invoice-detail-delete-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 44px;
+    box-sizing: border-box;
+    padding: 10px 16px;
+    color: #ffffff;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 900;
+    line-height: 1.4;
+    cursor: pointer;
+    background: #dc2626;
+    border: 1px solid #dc2626;
+    border-radius: 10px;
+    box-shadow: 0 7px 16px rgb(220 38 38 / 18%);
+    transition:
+        background-color 160ms ease,
+        border-color 160ms ease,
+        box-shadow 160ms ease,
+        transform 160ms ease;
+}
+
+.invoice-detail-delete-button:hover {
+    background: #b91c1c;
+    border-color: #b91c1c;
+    box-shadow: 0 9px 20px rgb(185 28 28 / 24%);
+    transform: translateY(-1px);
+}
+
+.invoice-detail-delete-button:focus-visible {
+    outline: 3px solid rgb(220 38 38 / 24%);
+    outline-offset: 3px;
+}
+
+.invoice-detail-danger-card__blocked {
+    padding: 14px 16px;
+    color: #991b1b;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 10px;
+}
+
+.invoice-detail-danger-card__blocked strong {
+    display: block;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.invoice-detail-danger-card__blocked p {
+    margin: 5px 0 0;
+    color: #7f1d1d;
+    font-size: 11px;
+    line-height: 1.7;
+}
+
+/* ========================================
    Responsive
 ======================================== */
 
@@ -682,7 +815,8 @@
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
-    .invoice-detail-summary {
+    .invoice-detail-summary,
+    .invoice-detail-danger-card {
         grid-column: 1 / -1;
     }
 }
@@ -733,7 +867,8 @@
         grid-template-columns: 1fr;
     }
 
-    .invoice-detail-summary {
+    .invoice-detail-summary,
+    .invoice-detail-danger-card {
         grid-column: auto;
     }
 }
@@ -819,6 +954,16 @@
         margin-right: 20px;
         margin-left: 20px;
     }
+
+    .invoice-detail-side-list__item {
+        gap: 12px;
+    }
+
+    .invoice-detail-danger-card__header,
+    .invoice-detail-danger-card__body {
+        padding-right: 18px;
+        padding-left: 18px;
+    }
 }
 
 /* ========================================
@@ -826,11 +971,13 @@
 ======================================== */
 
 @media (prefers-reduced-motion: reduce) {
-    .invoice-detail-related-link {
+    .invoice-detail-related-link,
+    .invoice-detail-delete-button {
         transition: none;
     }
 
-    .invoice-detail-related-link:hover {
+    .invoice-detail-related-link:hover,
+    .invoice-detail-delete-button:hover {
         transform: none;
     }
 }

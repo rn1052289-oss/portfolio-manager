@@ -52,9 +52,23 @@
 
         $updatedAt = $invoice->updated_at?->format('Y年n月j日 H:i')
             ?? '未記録';
+
+        $paymentsCount = (int) ($invoice->payments_count ?? 0);
     @endphp
 
     <section class="invoice-detail-page" aria-labelledby="invoice-detail-title">
+        @if (session('success'))
+            <div class="invoice-detail-flash invoice-detail-flash--success" role="status">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        @if (session('error'))
+            <div class="invoice-detail-flash invoice-detail-flash--error" role="alert">
+                {{ session('error') }}
+            </div>
+        @endif
+
         <header class="invoice-detail-hero">
             <div class="invoice-detail-hero__content">
                 <div class="invoice-detail-hero__meta">
@@ -123,12 +137,9 @@
 
                                 <dd class="invoice-detail-definition__value">
                                     @if ($invoice->project)
-                                                                    <a href="{{ route(
-                                            'projects.show',
-                                            $invoice->project
-                                        ) }}" class="invoice-detail-link">
-                                                                        {{ $invoice->project->title }}
-                                                                    </a>
+                                        <a href="{{ route('projects.show', $invoice->project) }}" class="invoice-detail-link">
+                                            {{ $invoice->project->title }}
+                                        </a>
                                     @else
                                         <span class="invoice-detail-empty">
                                             案件情報なし
@@ -188,7 +199,7 @@
                                 </span>
 
                                 <strong class="invoice-detail-billing__name">
-                                    {{ $invoice->billing_name }}
+                                    {{ $invoice->billing_name ?: '未登録' }}
                                 </strong>
 
                                 @if ($invoice->billing_contact_name)
@@ -380,33 +391,27 @@
 
                     <div class="invoice-detail-related-links">
                         @if ($invoice->project)
-                                            <a href="{{ route(
-                                'projects.show',
-                                $invoice->project
-                            ) }}" class="invoice-detail-related-link">
-                                                <span>
-                                                    関連案件を確認
-                                                </span>
+                            <a href="{{ route('projects.show', $invoice->project) }}" class="invoice-detail-related-link">
+                                <span>
+                                    関連案件を確認
+                                </span>
 
-                                                <span aria-hidden="true">
-                                                    →
-                                                </span>
-                                            </a>
+                                <span aria-hidden="true">
+                                    →
+                                </span>
+                            </a>
                         @endif
 
                         @if ($invoice->customer)
-                                            <a href="{{ route(
-                                'customers.show',
-                                $invoice->customer
-                            ) }}" class="invoice-detail-related-link">
-                                                <span>
-                                                    顧客詳細を確認
-                                                </span>
+                            <a href="{{ route('customers.show', $invoice->customer) }}" class="invoice-detail-related-link">
+                                <span>
+                                    顧客詳細を確認
+                                </span>
 
-                                                <span aria-hidden="true">
-                                                    →
-                                                </span>
-                                            </a>
+                                <span aria-hidden="true">
+                                    →
+                                </span>
+                            </a>
                         @endif
                     </div>
                 </section>
@@ -448,9 +453,88 @@
                                 {{ number_format($invoice->send_count) }}回
                             </dd>
                         </div>
+
+                        <div class="invoice-detail-side-list__item">
+                            <dt>
+                                決済履歴
+                            </dt>
+
+                            <dd>
+                                {{ number_format($paymentsCount) }}件
+                            </dd>
+                        </div>
                     </dl>
                 </section>
+
+                @can('delete', $invoice)
+                    <section class="invoice-detail-danger-card" aria-labelledby="invoice-delete-title">
+                        <header class="invoice-detail-danger-card__header">
+                            <div>
+                                <p class="invoice-detail-danger-card__eyebrow">
+                                    Danger Zone
+                                </p>
+
+                                <h3 id="invoice-delete-title" class="invoice-detail-danger-card__title">
+                                    下書きの削除
+                                </h3>
+                            </div>
+                        </header>
+
+                        <div class="invoice-detail-danger-card__body">
+                            @if ($paymentsCount === 0)
+                                <p class="invoice-detail-danger-card__description">
+                                    この操作を実行すると、請求書を元に戻すことはできません。
+                                    削除できるのは未送信の下書きだけです。
+                                </p>
+
+                                <form method="POST" action="{{ route('invoices.destroy', $invoice) }}"
+                                    class="invoice-detail-delete-form" data-invoice-delete-form
+                                    data-confirm-message="請求書「{{ $invoice->title }}」を削除します。この操作は元に戻せません。よろしいですか？">
+                                    @csrf
+                                    @method('DELETE')
+
+                                    <button type="submit" class="invoice-detail-delete-button">
+                                        この下書きを削除
+                                    </button>
+                                </form>
+                            @else
+                                <div class="invoice-detail-danger-card__blocked" role="status">
+                                    <strong>
+                                        この請求書は削除できません
+                                    </strong>
+
+                                    <p>
+                                        決済履歴が
+                                        {{ number_format($paymentsCount) }}件
+                                        紐づいているため、請求書を保存する必要があります。
+                                    </p>
+                                </div>
+                            @endif
+                        </div>
+                    </section>
+                @endcan
             </aside>
         </div>
     </section>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const deleteForms = document.querySelectorAll(
+                '[data-invoice-delete-form]'
+            );
+
+            deleteForms.forEach((form) => {
+                form.addEventListener('submit', (event) => {
+                    const message = form.dataset.confirmMessage
+                        ?? 'この請求書を削除します。よろしいですか？';
+
+                    const confirmed = window.confirm(message);
+
+                    if (!confirmed) {
+                        event.preventDefault();
+                    }
+                });
+            });
+        });
+    </script>
 @endsection
