@@ -99,13 +99,8 @@
                 </div>
             </div>
         @else
-            {{--
-            保存ルートは次の工程で追加します。
 
-            storeルート追加後は、actionを次へ変更します。
-            action="{{ route('invoices.store') }}"
-            --}}
-            <form method="POST" action="{{ url('/invoices') }}" class="invoice-form" novalidate data-invoice-form>
+            <form method="POST" action="{{ route('invoices.store') }}" class="invoice-form" novalidate data-invoice-form>
                 @csrf
 
                 <div class="invoice-form__section">
@@ -536,7 +531,7 @@
                         キャンセル
                     </a>
 
-                    <button type="submit" class="button button--primary" disabled aria-disabled="true" title="保存処理は次の工程で有効化します">
+                    <button type="submit" class="button button--primary">
                         請求書を保存
                     </button>
                 </div>

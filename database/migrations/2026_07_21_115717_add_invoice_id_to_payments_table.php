@@ -6,7 +6,8 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
+return new class extends Migration
+{
     /**
      * paymentsテーブルへ請求書IDを追加します。
      */
@@ -31,9 +32,26 @@ return new class extends Migration {
      */
     public function down(): void
     {
+        /*
+         * 複合インデックスが外部キー制約に使用されているため、
+         * 必ず外部キーを先に削除します。
+         */
         Schema::table('payments', function (Blueprint $table): void {
-            $table->dropIndex('payments_invoice_id_created_at_index');
-            $table->dropConstrainedForeignId('invoice_id');
+            $table->dropForeign([
+                'invoice_id',
+            ]);
+        });
+
+        Schema::table('payments', function (Blueprint $table): void {
+            $table->dropIndex(
+                'payments_invoice_id_created_at_index'
+            );
+        });
+
+        Schema::table('payments', function (Blueprint $table): void {
+            $table->dropColumn(
+                'invoice_id'
+            );
         });
     }
 };
