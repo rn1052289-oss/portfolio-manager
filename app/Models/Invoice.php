@@ -8,6 +8,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
+
+/**
+ * @property Carbon|null $issued_at
+ * @property Carbon|null $due_date
+ * @property Carbon|null $sent_at
+ * @property Carbon|null $paid_at
+ * @property Carbon|null $canceled_at
+ **/
 
 final class Invoice extends Model
 {
