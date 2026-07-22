@@ -33,6 +33,12 @@
 
         $dueDate = $invoice->due_date?->format('Y年n月j日')
             ?? '未設定';
+
+        $currency = strtolower($invoice->currency);
+
+        $formattedAmount = $currency === 'jpy'
+            ? '¥' . number_format((int) $invoice->total_amount)
+            : strtoupper($currency) . ' ' . number_format((int) $invoice->total_amount);
     @endphp
 
     <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="
@@ -206,10 +212,84 @@
                                             font-weight: 800;
                                             text-align: right;
                                         ">
-                                        ¥{{ number_format((int) $invoice->total_amount) }}
+                                        {{ $formattedAmount }}
                                     </td>
                                 </tr>
                             </table>
+
+                            @if (!empty($paymentUrl))
+                                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="
+                                            width: 100%;
+                                            margin-top: 24px;
+                                            background-color: #eff6ff;
+                                            border: 1px solid #bfdbfe;
+                                            border-radius: 12px;
+                                        ">
+                                    <tr>
+                                        <td style="
+                                                    padding: 22px 20px;
+                                                    text-align: center;
+                                                ">
+                                            <p style="
+                                                        margin: 0;
+                                                        color: #1e3a8a;
+                                                        font-size: 15px;
+                                                        font-weight: 700;
+                                                        line-height: 1.6;
+                                                    ">
+                                                オンラインでお支払いいただけます
+                                            </p>
+
+                                            <p style="
+                                                        margin: 8px 0 0;
+                                                        color: #475569;
+                                                        font-size: 12px;
+                                                        line-height: 1.8;
+                                                    ">
+                                                以下のボタンから、Stripeの安全な決済フォームを使用した
+                                                オンライン支払い画面へ移動できます。
+                                            </p>
+
+                                            <table role="presentation" cellspacing="0" cellpadding="0" border="0"
+                                                align="center" style="margin: 18px auto 0;">
+                                                <tr>
+                                                    <td align="center" bgcolor="#2563eb" style="
+                                                                background-color: #2563eb;
+                                                                border-radius: 8px;
+                                                            ">
+                                                        <a href="{{ $paymentUrl }}" target="_blank"
+                                                            rel="noopener noreferrer" style="
+                                                                    display: inline-block;
+                                                                    min-width: 220px;
+                                                                    padding: 14px 24px;
+                                                                    color: #ffffff;
+                                                                    font-size: 14px;
+                                                                    font-weight: 700;
+                                                                    line-height: 1.4;
+                                                                    text-align: center;
+                                                                    text-decoration: none;
+                                                                    background-color: #2563eb;
+                                                                    border: 1px solid #2563eb;
+                                                                    border-radius: 8px;
+                                                                ">
+                                                            オンラインで支払う
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                            </table>
+
+                                            <p style="
+                                                        margin: 14px 0 0;
+                                                        color: #64748b;
+                                                        font-size: 11px;
+                                                        line-height: 1.7;
+                                                    ">
+                                                支払期限：{{ $dueDate }}
+                                            </p>
+                                        </td>
+                                    </tr>
+                                </table>
+                            @endif
 
                             <div style="
                                     margin-top: 24px;
@@ -217,8 +297,8 @@
                                     color: #475569;
                                     font-size: 12px;
                                     line-height: 1.8;
-                                    background-color: #eff6ff;
-                                    border: 1px solid #bfdbfe;
+                                    background-color: #f8fafc;
+                                    border: 1px solid #e2e8f0;
                                     border-radius: 10px;
                                 ">
                                 詳細な請求内容と振込先は、添付されているPDFをご確認ください。

@@ -94,7 +94,29 @@ final class InvoiceMailController extends Controller
                         ->downloadFileName($lockedInvoice);
 
                     /*
-                     * Mailableは件名・本文・添付だけを担当し、
+                     * 初回送信時点ではInvoiceがdraftのため、
+                     * メール送信後にsentへ更新されることを前提として
+                     * 公開支払いURLを生成します。
+                     *
+                     * 再送時はsent・overdueだけに支払いURLを付与し、
+                     * paid・canceledには付与しません。
+                     */
+                    $paymentUrl = in_array(
+                        $lockedInvoice->status,
+                        [
+                            Invoice::STATUS_DRAFT,
+                            Invoice::STATUS_SENT,
+                            Invoice::STATUS_OVERDUE,
+                        ],
+                        true
+                    )
+                        ? route('invoice-payments.show', [
+                            'publicToken' => $lockedInvoice->public_token,
+                        ])
+                        : null;
+
+                    /*
+                     * Mailableは件名・本文・添付・メール表示用データだけを担当し、
                      * Invoiceの更新はController側で行います。
                      */
                     Mail::to($validated['recipient_email'])
@@ -104,7 +126,8 @@ final class InvoiceMailController extends Controller
                                 mailSubject: $validated['subject'],
                                 messageBody: $validated['body'],
                                 pdfPath: $pdfPath,
-                                pdfFileName: $pdfFileName
+                                pdfFileName: $pdfFileName,
+                                paymentUrl: $paymentUrl
                             )
                         );
 

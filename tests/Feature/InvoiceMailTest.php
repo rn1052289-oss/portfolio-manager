@@ -299,6 +299,163 @@ final class InvoiceMailTest extends TestCase
         );
     }
 
+    public function test_sendable_invoice_statuses_include_online_payment_link(): void
+    {
+        Mail::fake();
+        Storage::fake('local');
+
+        $sendableStatuses = [
+            Invoice::STATUS_DRAFT,
+            Invoice::STATUS_SENT,
+            Invoice::STATUS_OVERDUE,
+        ];
+
+        foreach ($sendableStatuses as $status) {
+            /*
+             * customersテーブルのユニーク制約との競合を避けるため、
+             * ステータスごとに別ユーザーを作成します。
+             */
+            $user = User::factory()->create();
+
+            $invoice = $this->createInvoice(
+                $user,
+                [
+                    'status' => $status,
+                    'sent_at' => $status === Invoice::STATUS_DRAFT
+                        ? null
+                        : now()->subDay(),
+                    'last_sent_to' => $status === Invoice::STATUS_DRAFT
+                        ? null
+                        : 'old@example.com',
+                    'send_count' => $status === Invoice::STATUS_DRAFT
+                        ? 0
+                        : 1,
+                ]
+            );
+
+            $expectedPaymentUrl = route(
+                'invoice-payments.show',
+                [
+                    'publicToken' => $invoice->public_token,
+                ]
+            );
+
+            $this
+                ->actingAs($user)
+                ->post(
+                    route('invoices.mail.store', $invoice),
+                    $this->validPayload()
+                )
+                ->assertRedirect(
+                    route('invoices.show', $invoice)
+                );
+
+            Mail::assertSent(
+                InvoiceMail::class,
+                function (InvoiceMail $mail) use ($invoice, $expectedPaymentUrl): bool {
+                    /*
+                     * ループ内で過去に送信した別請求書のMailableは、
+                     * 本文検証を行わずに対象外とします。
+                     */
+                    if (! $mail->invoice->is($invoice)) {
+                        return false;
+                    }
+
+                    $this->assertSame(
+                        $expectedPaymentUrl,
+                        $mail->paymentUrl
+                    );
+
+                    $mail->assertSeeInHtml(
+                        'オンラインで支払う'
+                    );
+
+                    $mail->assertSeeInHtml(
+                        $expectedPaymentUrl
+                    );
+
+                    $mail->assertSeeInText(
+                        'オンラインでのお支払い'
+                    );
+
+                    $mail->assertSeeInText(
+                        $expectedPaymentUrl
+                    );
+
+                    $mail->assertDontSeeInHtml(
+                        'client_secret'
+                    );
+
+                    $mail->assertDontSeeInText(
+                        'client_secret'
+                    );
+
+                    return true;
+                }
+            );
+        }
+
+        Mail::assertSent(
+            InvoiceMail::class,
+            3
+        );
+    }
+
+    public function test_invoice_mail_without_payment_url_hides_payment_cta(): void
+    {
+        Storage::fake('local');
+
+        $invoice = $this->createInvoice(
+            null,
+            [
+                'status' => Invoice::STATUS_PAID,
+                'paid_at' => now(),
+            ]
+        );
+
+        $pdfPath = sprintf(
+            'private/invoices/%d/test-invoice.pdf',
+            $invoice->user_id
+        );
+
+        Storage::disk('local')->put(
+            $pdfPath,
+            '%PDF-1.4 test'
+        );
+
+        $unexpectedPaymentUrl = route(
+            'invoice-payments.show',
+            [
+                'publicToken' => $invoice->public_token,
+            ]
+        );
+
+        $mail = new InvoiceMail(
+            invoice: $invoice,
+            mailSubject: '請求書のご案内',
+            messageBody: '請求書をお送りします。',
+            pdfPath: $pdfPath,
+            pdfFileName: 'test-invoice.pdf',
+            paymentUrl: null
+        );
+
+        $mail->assertDontSeeInHtml(
+            'オンラインで支払う'
+        );
+
+        $mail->assertDontSeeInHtml(
+            $unexpectedPaymentUrl
+        );
+
+        $mail->assertDontSeeInText(
+            'オンラインでのお支払い'
+        );
+
+        $mail->assertDontSeeInText(
+            $unexpectedPaymentUrl
+        );
+    }
+
     public function test_paid_and_canceled_invoices_cannot_be_sent(): void
     {
         Mail::fake();

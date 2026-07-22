@@ -27,7 +27,8 @@ final class InvoiceMail extends Mailable
         public readonly string $mailSubject,
         public readonly string $messageBody,
         public readonly string $pdfPath,
-        public readonly string $pdfFileName
+        public readonly string $pdfFileName,
+        public readonly ?string $paymentUrl
     ) {}
 
     /**
@@ -41,15 +42,17 @@ final class InvoiceMail extends Mailable
     }
 
     /**
-     * メール本文に使用するBladeとデータを設定します。
+     * HTMLメールとテキストメールに使用するBladeを設定します。
      */
     public function content(): Content
     {
         return new Content(
             view: 'mail.invoice',
+            text: 'mail.invoice-text',
             with: [
                 'invoice' => $this->invoice,
                 'messageBody' => $this->messageBody,
+                'paymentUrl' => $this->paymentUrl,
             ]
         );
     }
