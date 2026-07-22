@@ -3,7 +3,7 @@
 @section('title', '請求書詳細 | ClientWork Manager')
 @section('page-label', 'Invoice Details')
 @section('page-title', '請求書詳細')
-@section('page-description', '請求内容、請求先、発行日、支払期限を確認できます。')
+@section('page-description', '請求内容、請求先、発行日、支払期限、入金日時を確認できます。')
 
 @section('page-actions')
     <div class="invoice-page-actions">
@@ -60,6 +60,9 @@
 
         $dueDate = $invoice->due_date?->format('Y年n月j日')
             ?? '未設定';
+
+        $paidAt = $invoice->paid_at?->format('Y年n月j日 H:i')
+            ?? '未入金';
 
         $createdAt = $invoice->created_at?->format('Y年n月j日 H:i')
             ?? '未記録';
@@ -403,6 +406,24 @@
 
                             <dd>
                                 {{ $dueDate }}
+                            </dd>
+                        </div>
+
+                        <div class="invoice-detail-side-list__item">
+                            <dt>
+                                入金日時
+                            </dt>
+
+                            <dd>
+                                @if ($invoice->paid_at)
+                                    <time datetime="{{ $invoice->paid_at->toIso8601String() }}">
+                                        {{ $paidAt }}
+                                    </time>
+                                @else
+                                    <span class="invoice-detail-empty">
+                                        未入金
+                                    </span>
+                                @endif
                             </dd>
                         </div>
 

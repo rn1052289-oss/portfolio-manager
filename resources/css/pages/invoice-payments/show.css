@@ -1,0 +1,780 @@
+/*
+|--------------------------------------------------------------------------
+| Public Invoice Payment Page
+|--------------------------------------------------------------------------
+|
+| ログイン不要の顧客向け請求書確認・決済ページです。
+| 管理画面のレイアウトに依存しないよう、すべてのスタイルを
+| invoice-payment-page配下へ限定しています。
+|
+*/
+
+.invoice-payment-page {
+    min-height: 100%;
+    margin: 0;
+    color: #172033;
+    background:
+        radial-gradient(
+            circle at top left,
+            rgba(37, 99, 235, 0.08),
+            transparent 32rem
+        ),
+        #f5f7fb;
+    font-family:
+        Inter,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        "Hiragino Kaku Gothic ProN",
+        "Hiragino Sans",
+        "Yu Gothic",
+        Meiryo,
+        sans-serif;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+}
+
+.invoice-payment-page *,
+.invoice-payment-page *::before,
+.invoice-payment-page *::after {
+    box-sizing: border-box;
+}
+
+.invoice-payment {
+    min-height: 100vh;
+    padding: 64px 24px;
+}
+
+.invoice-payment__container {
+    width: min(100%, 720px);
+    margin-inline: auto;
+}
+
+.invoice-payment__header {
+    margin-bottom: 28px;
+    text-align: center;
+}
+
+.invoice-payment__service-name {
+    margin: 0 0 8px;
+    color: #2563eb;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.invoice-payment__heading {
+    margin: 0;
+    color: #111827;
+    font-size: clamp(1.75rem, 4vw, 2.25rem);
+    font-weight: 750;
+    line-height: 1.25;
+    letter-spacing: -0.03em;
+}
+
+.invoice-payment__description {
+    margin: 10px 0 0;
+    color: #64748b;
+    font-size: 0.9375rem;
+}
+
+.invoice-payment-card {
+    overflow: hidden;
+    padding: 36px;
+    border: 1px solid #e5eaf2;
+    border-radius: 20px;
+    background: #ffffff;
+    box-shadow:
+        0 20px 50px rgba(15, 23, 42, 0.08),
+        0 3px 10px rgba(15, 23, 42, 0.04);
+}
+
+.invoice-payment-card__top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid #e8edf4;
+}
+
+.invoice-payment-card__issuer-label {
+    margin: 0 0 5px;
+    color: #7c8799;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.invoice-payment-card__issuer {
+    margin: 0;
+    color: #172033;
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+}
+
+.invoice-payment-status {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    min-height: 32px;
+    padding: 6px 12px;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 1.3;
+    white-space: nowrap;
+}
+
+.invoice-payment-status.is-payable {
+    border-color: #bfdbfe;
+    color: #1d4ed8;
+    background: #eff6ff;
+}
+
+.invoice-payment-status.is-overdue {
+    border-color: #fed7aa;
+    color: #c2410c;
+    background: #fff7ed;
+}
+
+.invoice-payment-status.is-paid {
+    border-color: #bbf7d0;
+    color: #15803d;
+    background: #f0fdf4;
+}
+
+.invoice-payment-status.is-canceled {
+    border-color: #e2e8f0;
+    color: #64748b;
+    background: #f8fafc;
+}
+
+.invoice-payment-details {
+    margin: 0;
+    padding: 28px 0;
+}
+
+.invoice-payment-details__row {
+    display: grid;
+    grid-template-columns: minmax(120px, 0.4fr) minmax(0, 1fr);
+    gap: 24px;
+    padding: 12px 0;
+}
+
+.invoice-payment-details__row:first-child {
+    padding-top: 0;
+}
+
+.invoice-payment-details__row:last-child {
+    padding-bottom: 0;
+}
+
+.invoice-payment-details__row dt {
+    color: #788497;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.invoice-payment-details__row dd {
+    min-width: 0;
+    margin: 0;
+    color: #263246;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    text-align: right;
+    overflow-wrap: anywhere;
+}
+
+.invoice-payment-amount {
+    padding: 28px;
+    border: 1px solid #dbe6f6;
+    border-radius: 16px;
+    background:
+        linear-gradient(
+            135deg,
+            rgba(239, 246, 255, 0.98),
+            rgba(248, 250, 252, 0.98)
+        );
+    text-align: center;
+}
+
+.invoice-payment-amount__label {
+    margin: 0 0 4px;
+    color: #64748b;
+    font-size: 0.8125rem;
+    font-weight: 700;
+}
+
+.invoice-payment-amount__value {
+    margin: 0;
+    color: #172033;
+    font-size: clamp(2rem, 8vw, 2.75rem);
+    font-weight: 800;
+    line-height: 1.25;
+    letter-spacing: -0.04em;
+}
+
+.invoice-payment-amount__tax {
+    margin: 6px 0 0;
+    color: #8490a3;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.invoice-payment-message {
+    margin-top: 28px;
+}
+
+.invoice-payment-message__title {
+    margin: 0;
+    color: #172033;
+    font-size: 1.125rem;
+    font-weight: 700;
+    line-height: 1.45;
+}
+
+.invoice-payment-message__text {
+    margin: 8px 0 0;
+    color: #64748b;
+    font-size: 0.875rem;
+}
+
+.invoice-payment-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 150px;
+    margin-top: 20px;
+    padding: 24px;
+    border: 1px dashed #b8c4d6;
+    border-radius: 14px;
+    color: #7b8799;
+    background: #f8fafc;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+.invoice-payment-result {
+    margin-top: 28px;
+    padding: 24px;
+    border: 1px solid;
+    border-radius: 16px;
+}
+
+.invoice-payment-result.is-success {
+    border-color: #bbf7d0;
+    background: #f0fdf4;
+}
+
+.invoice-payment-result.is-canceled {
+    border-color: #e2e8f0;
+    background: #f8fafc;
+}
+
+.invoice-payment-result__title {
+    margin: 0;
+    font-size: 1.0625rem;
+    font-weight: 700;
+    line-height: 1.5;
+}
+
+.invoice-payment-result.is-success .invoice-payment-result__title {
+    color: #166534;
+}
+
+.invoice-payment-result.is-canceled .invoice-payment-result__title {
+    color: #475569;
+}
+
+.invoice-payment-result__text {
+    margin: 8px 0 0;
+    color: #5f6d80;
+    font-size: 0.875rem;
+}
+
+.invoice-payment-result__date {
+    margin: 14px 0 0;
+    color: #166534;
+    font-size: 0.8125rem;
+    font-weight: 700;
+}
+
+.invoice-payment__footer {
+    padding: 24px 16px 0;
+    color: #8994a5;
+    font-size: 0.75rem;
+    text-align: center;
+}
+
+.invoice-payment__footer p {
+    margin: 0;
+}
+
+/*
+|--------------------------------------------------------------------------
+| Payment Start Action
+|--------------------------------------------------------------------------
+*/
+
+.invoice-payment-flash {
+    margin-bottom: 18px;
+    padding: 14px 16px;
+    border: 1px solid;
+    border-radius: 12px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: 1.6;
+}
+
+.invoice-payment-flash--success {
+    border-color: #bbf7d0;
+    color: #166534;
+    background: #f0fdf4;
+}
+
+.invoice-payment-flash--error {
+    border-color: #fecaca;
+    color: #b91c1c;
+    background: #fef2f2;
+}
+
+.invoice-payment-start-form {
+    margin-top: 22px;
+}
+
+.invoice-payment-start-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 52px;
+    padding: 13px 22px;
+    border: 1px solid #2563eb;
+    border-radius: 12px;
+    color: #ffffff;
+    background: #2563eb;
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.2);
+    font: inherit;
+    font-size: 0.9375rem;
+    font-weight: 700;
+    line-height: 1.4;
+    text-align: center;
+    cursor: pointer;
+    transition:
+        background-color 160ms ease,
+        border-color 160ms ease,
+        box-shadow 160ms ease,
+        transform 160ms ease;
+}
+
+.invoice-payment-start-button:hover {
+    border-color: #1d4ed8;
+    background: #1d4ed8;
+    box-shadow: 0 10px 24px rgba(37, 99, 235, 0.26);
+    transform: translateY(-1px);
+}
+
+.invoice-payment-start-button:focus-visible {
+    outline: 3px solid rgba(37, 99, 235, 0.3);
+    outline-offset: 3px;
+}
+
+.invoice-payment-start-button:active {
+    transform: translateY(0);
+}
+
+.invoice-payment-start-button:disabled {
+    border-color: #94a3b8;
+    background: #94a3b8;
+    box-shadow: none;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.invoice-payment-security-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-top: 18px;
+    padding: 14px 16px;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    color: #64748b;
+    background: #f8fafc;
+}
+
+.invoice-payment-security-note__icon {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    color: #2563eb;
+}
+
+.invoice-payment-security-note__icon svg {
+    width: 20px;
+    height: 20px;
+}
+
+.invoice-payment-security-note p {
+    margin: 0;
+    font-size: 0.8125rem;
+    line-height: 1.65;
+}
+
+/*
+|--------------------------------------------------------------------------
+| Stripe Payment Element
+|--------------------------------------------------------------------------
+*/
+
+.invoice-payment-inline-error {
+    margin-top: 20px;
+    padding: 14px 16px;
+    border: 1px solid #fecaca;
+    border-radius: 12px;
+    color: #b91c1c;
+    background: #fef2f2;
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: 1.65;
+}
+
+.invoice-payment-checkout {
+    margin-top: 24px;
+    padding: 24px;
+    border: 1px solid #dbe4f0;
+    border-radius: 16px;
+    background: #ffffff;
+    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.06);
+}
+
+.invoice-payment-checkout__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 18px;
+    margin-bottom: 10px;
+}
+
+.invoice-payment-checkout__eyebrow {
+    margin: 0 0 4px;
+    color: #2563eb;
+    font-size: 0.6875rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+}
+
+.invoice-payment-checkout__title {
+    margin: 0;
+    color: #172033;
+    font-size: 1.125rem;
+    font-weight: 750;
+    line-height: 1.4;
+}
+
+.invoice-payment-checkout__status {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    min-height: 30px;
+    padding: 5px 11px;
+    border: 1px solid #bfdbfe;
+    border-radius: 999px;
+    color: #1d4ed8;
+    background: #eff6ff;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    line-height: 1.3;
+    white-space: nowrap;
+}
+
+.invoice-payment-checkout__description {
+    margin: 0;
+    color: #64748b;
+    font-size: 0.8125rem;
+    line-height: 1.7;
+}
+
+.invoice-payment-checkout__form {
+    margin-top: 20px;
+}
+
+.invoice-payment-checkout__element {
+    min-height: 120px;
+    padding: 18px;
+    border: 1px solid #dbe4f0;
+    border-radius: 12px;
+    background: #ffffff;
+}
+
+.invoice-payment-checkout__note {
+    margin: 12px 0 0;
+    color: #718096;
+    font-size: 0.75rem;
+    line-height: 1.6;
+}
+
+.invoice-payment-checkout__error {
+    margin-top: 14px;
+    padding: 12px 14px;
+    border: 1px solid #fecaca;
+    border-radius: 10px;
+    color: #b91c1c;
+    background: #fef2f2;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    line-height: 1.6;
+}
+
+.invoice-payment-checkout__submit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    min-height: 52px;
+    margin-top: 20px;
+    padding: 13px 22px;
+    border: 1px solid #2563eb;
+    border-radius: 12px;
+    color: #ffffff;
+    background: #2563eb;
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.2);
+    font: inherit;
+    font-size: 0.9375rem;
+    font-weight: 700;
+    line-height: 1.4;
+    cursor: pointer;
+    transition:
+        background-color 160ms ease,
+        border-color 160ms ease,
+        box-shadow 160ms ease,
+        transform 160ms ease,
+        opacity 160ms ease;
+}
+
+.invoice-payment-checkout__submit:hover:not(:disabled) {
+    border-color: #1d4ed8;
+    background: #1d4ed8;
+    box-shadow: 0 10px 24px rgba(37, 99, 235, 0.26);
+    transform: translateY(-1px);
+}
+
+.invoice-payment-checkout__submit:focus-visible {
+    outline: 3px solid rgba(37, 99, 235, 0.3);
+    outline-offset: 3px;
+}
+
+.invoice-payment-checkout__submit:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.invoice-payment-checkout__submit:disabled {
+    border-color: #94a3b8;
+    background: #94a3b8;
+    box-shadow: none;
+    cursor: not-allowed;
+    opacity: 0.8;
+}
+
+.invoice-payment-checkout__spinner {
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(255, 255, 255, 0.45);
+    border-top-color: #ffffff;
+    border-radius: 50%;
+    animation: invoice-payment-spinner 700ms linear infinite;
+}
+
+.invoice-payment-processing {
+    margin-top: 22px;
+    padding: 20px;
+    border: 1px solid #bfdbfe;
+    border-radius: 14px;
+    background: #eff6ff;
+}
+
+.invoice-payment-processing__title {
+    margin: 0;
+    color: #1e40af;
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1.5;
+}
+
+.invoice-payment-processing__text {
+    margin: 8px 0 0;
+    color: #1d4ed8;
+    font-size: 0.875rem;
+    font-weight: 700;
+}
+
+.invoice-payment-processing__note {
+    margin: 8px 0 0;
+    color: #52657d;
+    font-size: 0.8125rem;
+    line-height: 1.65;
+}
+
+@keyframes invoice-payment-spinner {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/*
+|--------------------------------------------------------------------------
+| Tablet
+|--------------------------------------------------------------------------
+*/
+
+@media (max-width: 767px) {
+    .invoice-payment {
+        padding: 40px 18px;
+    }
+
+    .invoice-payment-card {
+        padding: 28px;
+        border-radius: 18px;
+    }
+
+    .invoice-payment-card__top {
+        gap: 16px;
+    }
+
+    .invoice-payment-details__row {
+        grid-template-columns: minmax(100px, 0.45fr) minmax(0, 1fr);
+        gap: 18px;
+    }
+
+    .invoice-payment-amount {
+        padding: 24px 20px;
+    }
+}
+
+/*
+|--------------------------------------------------------------------------
+| Smartphone
+|--------------------------------------------------------------------------
+*/
+
+@media (max-width: 479px) {
+    .invoice-payment {
+        padding: 24px 12px 36px;
+    }
+
+    .invoice-payment__header {
+        margin-bottom: 20px;
+        padding-inline: 8px;
+    }
+
+    .invoice-payment__description {
+        font-size: 0.875rem;
+    }
+
+    .invoice-payment-card {
+        padding: 22px 18px;
+        border-radius: 16px;
+        box-shadow:
+            0 14px 34px rgba(15, 23, 42, 0.08),
+            0 2px 8px rgba(15, 23, 42, 0.04);
+    }
+
+    .invoice-payment-card__top {
+        flex-direction: column;
+        gap: 14px;
+        padding-bottom: 22px;
+    }
+
+    .invoice-payment-status {
+        align-self: flex-start;
+    }
+
+    .invoice-payment-details {
+        padding: 22px 0;
+    }
+
+    .invoice-payment-details__row {
+        display: block;
+        padding: 10px 0;
+    }
+
+    .invoice-payment-details__row dt {
+        margin-bottom: 3px;
+        font-size: 0.75rem;
+    }
+
+    .invoice-payment-details__row dd {
+        font-size: 0.875rem;
+        text-align: left;
+    }
+
+    .invoice-payment-amount {
+        padding: 22px 16px;
+        border-radius: 14px;
+    }
+
+    .invoice-payment-message,
+    .invoice-payment-result {
+        margin-top: 22px;
+    }
+
+    .invoice-payment-placeholder {
+        min-height: 130px;
+        padding: 20px 16px;
+    }
+
+    .invoice-payment-result {
+        padding: 20px 18px;
+        border-radius: 14px;
+    }
+
+    .invoice-payment__footer {
+        padding-top: 20px;
+    }
+
+    .invoice-payment-inline-error {
+    margin-top: 18px;
+    padding: 12px 14px;
+}
+
+.invoice-payment-checkout {
+    margin-top: 20px;
+    padding: 18px 14px;
+    border-radius: 14px;
+}
+
+.invoice-payment-checkout__header {
+    flex-direction: column;
+    gap: 10px;
+}
+
+.invoice-payment-checkout__status {
+    align-self: flex-start;
+}
+
+.invoice-payment-checkout__element {
+    padding: 14px 12px;
+    border-radius: 10px;
+}
+
+.invoice-payment-checkout__submit {
+    min-height: 50px;
+    padding-inline: 16px;
+}
+
+.invoice-payment-processing {
+    margin-top: 18px;
+    padding: 17px 15px;
+}
+}

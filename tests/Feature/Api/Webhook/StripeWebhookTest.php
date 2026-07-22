@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature\Api\Webhook;
 
 use App\Contracts\Stripe\StripeServiceInterface;
+use App\Models\Invoice;
 use App\Models\Payment;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -62,6 +63,13 @@ final class StripeWebhookTest extends TestCase
 
         $payment->refresh();
 
+        /*
+         * 請求書に紐づかない既存の案件決済では、
+         * Invoice同期処理を行わないことを確認する。
+         */
+        $this->assertNull($payment->invoice_id);
+        $this->assertDatabaseCount('invoices', 0);
+
         $this->assertSame(
             Payment::STATUS_SUCCEEDED,
             $payment->status,
@@ -70,6 +78,274 @@ final class StripeWebhookTest extends TestCase
         $this->assertNotNull($payment->paid_at);
         $this->assertNull($payment->canceled_at);
         $this->assertNull($payment->failure_message);
+    }
+
+    /**
+     * 請求書に紐づくPaymentIntentが成功すると、
+     * PaymentとInvoiceが同じ支払い完了日時で同期される。
+     */
+    public function test_succeeded_invoice_payment_marks_invoice_as_paid(): void
+    {
+        [$invoice, $payment] = $this->createInvoicePayment(
+            invoiceStatus: Invoice::STATUS_SENT,
+            paymentStatus: Payment::STATUS_REQUIRES_PAYMENT_METHOD,
+        );
+
+        $this->bindFakePaymentIntent(
+            payment: $payment,
+            status: Payment::STATUS_SUCCEEDED,
+        );
+
+        $response = $this->postSignedWebhook(
+            eventId: 'evt_invoice_payment_success_test',
+            eventType: 'payment_intent.succeeded',
+            objectId: $payment->stripe_payment_intent_id,
+        );
+
+        $response
+            ->assertOk()
+            ->assertJsonPath(
+                'message',
+                '決済状態を同期しました。',
+            );
+
+        $payment->refresh();
+        $invoice->refresh();
+
+        $this->assertSame(
+            Payment::STATUS_SUCCEEDED,
+            $payment->status,
+        );
+
+        $this->assertNotNull($payment->paid_at);
+        $this->assertNull($payment->canceled_at);
+        $this->assertNull($payment->failure_message);
+
+        $this->assertSame(
+            Invoice::STATUS_PAID,
+            $invoice->status,
+        );
+
+        $this->assertNotNull($invoice->paid_at);
+
+        /*
+         * Invoiceの入金日時には、Paymentの入金日時が
+         * そのまま使用されていることを確認する。
+         */
+        $this->assertSame(
+            $payment->paid_at?->toIso8601String(),
+            $invoice->paid_at?->toIso8601String(),
+        );
+    }
+
+    /**
+     * 請求書決済の成功Webhookが重複しても、
+     * PaymentとInvoiceの支払い完了日時は上書きされない。
+     */
+    public function test_duplicate_succeeded_invoice_payment_preserves_paid_at(): void
+    {
+        [$invoice, $payment] = $this->createInvoicePayment(
+            invoiceStatus: Invoice::STATUS_SENT,
+            paymentStatus: Payment::STATUS_REQUIRES_PAYMENT_METHOD,
+        );
+
+        $this->bindFakePaymentIntent(
+            payment: $payment,
+            status: Payment::STATUS_SUCCEEDED,
+        );
+
+        /*
+         * 同一イベントとして扱えるよう、
+         * 同じ本文と署名を2回送信する。
+         */
+        $payload = $this->stripeEventPayload(
+            eventId: 'evt_duplicate_invoice_payment_test',
+            eventType: 'payment_intent.succeeded',
+            objectId: $payment->stripe_payment_intent_id,
+        );
+
+        $signature = $this->signatureHeader(
+            payload: $payload,
+            secret: self::WEBHOOK_SECRET,
+        );
+
+        $firstResponse = $this->postRawWebhook(
+            payload: $payload,
+            signature: $signature,
+        );
+
+        $firstResponse
+            ->assertOk()
+            ->assertJsonPath(
+                'message',
+                '決済状態を同期しました。',
+            );
+
+        $payment->refresh();
+        $invoice->refresh();
+
+        $firstPaymentPaidAt = $payment->paid_at?->toIso8601String();
+        $firstInvoicePaidAt = $invoice->paid_at?->toIso8601String();
+
+        $this->assertNotNull($firstPaymentPaidAt);
+        $this->assertNotNull($firstInvoicePaidAt);
+
+        $this->assertSame(
+            $firstPaymentPaidAt,
+            $firstInvoicePaidAt,
+        );
+
+        $secondResponse = $this->postRawWebhook(
+            payload: $payload,
+            signature: $signature,
+        );
+
+        $secondResponse
+            ->assertOk()
+            ->assertJsonPath(
+                'message',
+                '決済状態を同期しました。',
+            );
+
+        $payment->refresh();
+        $invoice->refresh();
+
+        $this->assertSame(
+            Payment::STATUS_SUCCEEDED,
+            $payment->status,
+        );
+
+        $this->assertSame(
+            Invoice::STATUS_PAID,
+            $invoice->status,
+        );
+
+        /*
+         * 2回目のWebhookで支払い完了日時が
+         * 新しい時刻へ上書きされていないことを確認する。
+         */
+        $this->assertSame(
+            $firstPaymentPaidAt,
+            $payment->paid_at?->toIso8601String(),
+        );
+
+        $this->assertSame(
+            $firstInvoicePaidAt,
+            $invoice->paid_at?->toIso8601String(),
+        );
+
+        $this->assertSame(
+            $payment->paid_at?->toIso8601String(),
+            $invoice->paid_at?->toIso8601String(),
+        );
+
+        $this->assertDatabaseCount('payments', 1);
+    }
+
+    /**
+     * 請求書決済が処理中の場合、
+     * Paymentはprocessingへ同期されるがInvoiceはpaidにならない。
+     */
+    public function test_processing_invoice_payment_does_not_mark_invoice_as_paid(): void
+    {
+        [$invoice, $payment] = $this->createInvoicePayment(
+            invoiceStatus: Invoice::STATUS_SENT,
+            paymentStatus: Payment::STATUS_REQUIRES_CONFIRMATION,
+        );
+
+        $this->bindFakePaymentIntent(
+            payment: $payment,
+            status: Payment::STATUS_PROCESSING,
+        );
+
+        $response = $this->postSignedWebhook(
+            eventId: 'evt_invoice_payment_processing_test',
+            eventType: 'payment_intent.processing',
+            objectId: $payment->stripe_payment_intent_id,
+        );
+
+        $response
+            ->assertOk()
+            ->assertJsonPath(
+                'message',
+                '決済状態を同期しました。',
+            );
+
+        $payment->refresh();
+        $invoice->refresh();
+
+        $this->assertSame(
+            Payment::STATUS_PROCESSING,
+            $payment->status,
+        );
+
+        $this->assertNull($payment->paid_at);
+        $this->assertNull($payment->canceled_at);
+        $this->assertNull($payment->failure_message);
+
+        /*
+         * processingは入金確定ではないため、
+         * Invoiceは送信済みのまま維持する。
+         */
+        $this->assertSame(
+            Invoice::STATUS_SENT,
+            $invoice->status,
+        );
+
+        $this->assertNull($invoice->paid_at);
+    }
+
+    /**
+     * 請求書決済がキャンセルされた場合、
+     * Paymentはcanceledへ同期されるがInvoiceはpaidにならない。
+     */
+    public function test_canceled_invoice_payment_does_not_mark_invoice_as_paid(): void
+    {
+        [$invoice, $payment] = $this->createInvoicePayment(
+            invoiceStatus: Invoice::STATUS_SENT,
+            paymentStatus: Payment::STATUS_PROCESSING,
+        );
+
+        $this->bindFakePaymentIntent(
+            payment: $payment,
+            status: Payment::STATUS_CANCELED,
+        );
+
+        $response = $this->postSignedWebhook(
+            eventId: 'evt_invoice_payment_canceled_test',
+            eventType: 'payment_intent.canceled',
+            objectId: $payment->stripe_payment_intent_id,
+        );
+
+        $response
+            ->assertOk()
+            ->assertJsonPath(
+                'message',
+                '決済状態を同期しました。',
+            );
+
+        $payment->refresh();
+        $invoice->refresh();
+
+        $this->assertSame(
+            Payment::STATUS_CANCELED,
+            $payment->status,
+        );
+
+        $this->assertNotNull($payment->canceled_at);
+        $this->assertNull($payment->paid_at);
+        $this->assertNull($payment->failure_message);
+
+        /*
+         * canceledは入金成功ではないため、
+         * Invoiceは送信済みのまま維持する。
+         */
+        $this->assertSame(
+            Invoice::STATUS_SENT,
+            $invoice->status,
+        );
+
+        $this->assertNull($invoice->paid_at);
     }
 
     /**
@@ -387,6 +663,52 @@ final class StripeWebhookTest extends TestCase
     }
 
     /**
+     * Webhookテスト用のInvoiceとPaymentを作成する。
+     *
+     * @return array{0: Invoice, 1: Payment}
+     */
+    private function createInvoicePayment(
+        string $invoiceStatus,
+        string $paymentStatus,
+    ): array {
+        $invoice = Invoice::factory()
+            ->sent()
+            ->create([
+                'status' => $invoiceStatus,
+                'total_amount' => 100000,
+                'currency' => 'jpy',
+                'paid_at' => null,
+                'canceled_at' => null,
+            ]);
+
+        /*
+         * invoiceリレーションからPaymentインスタンスを作成する。
+         * この時点でinvoice_idは自動的に設定される。
+         */
+        $payment = $invoice->payments()->make([
+            'project_id' => $invoice->project_id,
+            'stripe_payment_intent_id' => 'pi_invoice_webhook_'.Str::uuid(),
+            'idempotency_key' => (string) Str::uuid(),
+            'amount' => $invoice->total_amount,
+            'currency' => $invoice->currency,
+            'status' => $paymentStatus,
+            'description' => '請求書Webhook Featureテスト用決済',
+            'failure_message' => null,
+            'paid_at' => null,
+            'canceled_at' => null,
+        ]);
+
+        /*
+         * user_idはPaymentモデルのマスアサインメント設定に
+         * 影響されないよう、直接代入する。
+         */
+        $payment->user_id = $invoice->user_id;
+        $payment->save();
+
+        return [$invoice, $payment];
+    }
+
+    /**
      * Webhookテスト用のPaymentを作成する。
      */
     private function createPayment(string $status): Payment
@@ -531,6 +853,307 @@ final class StripeWebhookTest extends TestCase
             't=%d,v1=%s',
             $timestamp,
             $signature,
+        );
+    }
+
+    /**
+     * PaymentとInvoiceの金額が一致しない場合、
+     * 請求書への入金反映を拒否してトランザクションをロールバックする。
+     */
+    public function test_invoice_payment_amount_mismatch_is_rejected(): void
+    {
+        [$invoice, $payment] = $this->createInvoicePayment(
+            invoiceStatus: Invoice::STATUS_SENT,
+            paymentStatus: Payment::STATUS_REQUIRES_PAYMENT_METHOD,
+        );
+
+        /*
+         * Payment作成後にInvoiceの金額だけを変更し、
+         * データ不整合が発生した状態を再現する。
+         */
+        $invoice->forceFill([
+            'total_amount' => $payment->amount + 1000,
+        ])->save();
+
+        $this->bindFakePaymentIntent(
+            payment: $payment,
+            status: Payment::STATUS_SUCCEEDED,
+        );
+
+        /*
+         * LogicExceptionをLaravelの例外ハンドラーで500へ変換せず、
+         * Serviceが異常を検出したことを直接確認する。
+         */
+        $this->withoutExceptionHandling();
+
+        try {
+            $this->postSignedWebhook(
+                eventId: 'evt_invoice_payment_amount_mismatch_test',
+                eventType: 'payment_intent.succeeded',
+                objectId: $payment->stripe_payment_intent_id,
+            );
+
+            $this->fail(
+                'PaymentとInvoiceの金額不一致で例外が発生しませんでした。'
+            );
+        } catch (\LogicException $exception) {
+            $this->assertSame(
+                'PaymentとInvoiceの金額が一致しません。',
+                $exception->getMessage(),
+            );
+        }
+
+        $payment->refresh();
+        $invoice->refresh();
+
+        /*
+         * Invoice同期で例外が発生したため、
+         * 先に行われたPayment同期もロールバックされる。
+         */
+        $this->assertSame(
+            Payment::STATUS_REQUIRES_PAYMENT_METHOD,
+            $payment->status,
+        );
+
+        $this->assertNull($payment->paid_at);
+        $this->assertNull($payment->canceled_at);
+
+        $this->assertSame(
+            Invoice::STATUS_SENT,
+            $invoice->status,
+        );
+
+        $this->assertNull($invoice->paid_at);
+    }
+
+    /**
+     * PaymentとInvoiceの通貨が一致しない場合、
+     * 請求書への入金反映を拒否してトランザクションをロールバックする。
+     */
+    public function test_invoice_payment_currency_mismatch_is_rejected(): void
+    {
+        [$invoice, $payment] = $this->createInvoicePayment(
+            invoiceStatus: Invoice::STATUS_SENT,
+            paymentStatus: Payment::STATUS_REQUIRES_PAYMENT_METHOD,
+        );
+
+        /*
+         * Paymentはjpyのまま、Invoiceだけusdへ変更し、
+         * 通貨の不整合が発生した状態を再現する。
+         */
+        $invoice->forceFill([
+            'currency' => 'usd',
+        ])->save();
+
+        $this->bindFakePaymentIntent(
+            payment: $payment,
+            status: Payment::STATUS_SUCCEEDED,
+        );
+
+        /*
+         * LogicExceptionを直接確認するため、
+         * Laravelの例外ハンドラーを無効にする。
+         */
+        $this->withoutExceptionHandling();
+
+        try {
+            $this->postSignedWebhook(
+                eventId: 'evt_invoice_payment_currency_mismatch_test',
+                eventType: 'payment_intent.succeeded',
+                objectId: $payment->stripe_payment_intent_id,
+            );
+
+            $this->fail(
+                'PaymentとInvoiceの通貨不一致で例外が発生しませんでした。'
+            );
+        } catch (\LogicException $exception) {
+            $this->assertSame(
+                'PaymentとInvoiceの通貨が一致しません。',
+                $exception->getMessage(),
+            );
+        }
+
+        $payment->refresh();
+        $invoice->refresh();
+
+        /*
+         * Invoice同期時の例外によって、
+         * Paymentのsucceeded更新も取り消される。
+         */
+        $this->assertSame(
+            Payment::STATUS_REQUIRES_PAYMENT_METHOD,
+            $payment->status,
+        );
+
+        $this->assertSame(
+            'jpy',
+            $payment->currency,
+        );
+
+        $this->assertNull($payment->paid_at);
+        $this->assertNull($payment->canceled_at);
+
+        $this->assertSame(
+            Invoice::STATUS_SENT,
+            $invoice->status,
+        );
+
+        $this->assertSame(
+            'usd',
+            $invoice->currency,
+        );
+
+        $this->assertNull($invoice->paid_at);
+    }
+
+    /**
+     * draftのInvoiceへ成功決済が紐づいた場合、
+     * 異常状態として検出し、入金反映を行わない。
+     */
+    public function test_succeeded_payment_for_draft_invoice_is_rejected(): void
+    {
+        [$invoice, $payment] = $this->createInvoicePayment(
+            invoiceStatus: Invoice::STATUS_SENT,
+            paymentStatus: Payment::STATUS_REQUIRES_PAYMENT_METHOD,
+        );
+
+        /*
+         * 通常の公開決済フローではdraftから決済を開始できない。
+         * ここではDBの不整合や実装ミスを想定し、
+         * Payment作成後にInvoiceをdraftへ戻す。
+         */
+        $invoice->forceFill([
+            'status' => Invoice::STATUS_DRAFT,
+            'paid_at' => null,
+        ])->save();
+
+        $this->bindFakePaymentIntent(
+            payment: $payment,
+            status: Payment::STATUS_SUCCEEDED,
+        );
+
+        $this->withoutExceptionHandling();
+
+        try {
+            $this->postSignedWebhook(
+                eventId: 'evt_draft_invoice_payment_success_test',
+                eventType: 'payment_intent.succeeded',
+                objectId: $payment->stripe_payment_intent_id,
+            );
+
+            $this->fail(
+                'draftのInvoiceへの成功反映で例外が発生しませんでした。'
+            );
+        } catch (\LogicException $exception) {
+            $this->assertSame(
+                '支払い成功を反映できない請求書ステータスです。',
+                $exception->getMessage(),
+            );
+        }
+
+        $payment->refresh();
+        $invoice->refresh();
+
+        /*
+         * Invoice同期時の例外によって、
+         * 先に実行されたPayment同期もロールバックされる。
+         */
+        $this->assertSame(
+            Payment::STATUS_REQUIRES_PAYMENT_METHOD,
+            $payment->status,
+        );
+
+        $this->assertNull($payment->paid_at);
+        $this->assertNull($payment->canceled_at);
+
+        $this->assertSame(
+            Invoice::STATUS_DRAFT,
+            $invoice->status,
+        );
+
+        $this->assertNull($invoice->paid_at);
+    }
+
+    /**
+     * canceledのInvoiceへ成功決済が紐づいた場合、
+     * 異常状態として検出し、入金反映を行わない。
+     */
+    public function test_succeeded_payment_for_canceled_invoice_is_rejected(): void
+    {
+        [$invoice, $payment] = $this->createInvoicePayment(
+            invoiceStatus: Invoice::STATUS_SENT,
+            paymentStatus: Payment::STATUS_REQUIRES_PAYMENT_METHOD,
+        );
+
+        /*
+         * Payment作成後に事業者が請求書を取り消した状況や、
+         * データ不整合が発生した状態を再現する。
+         */
+        $invoice->forceFill([
+            'status' => Invoice::STATUS_CANCELED,
+            'paid_at' => null,
+            'canceled_at' => now(),
+        ])->save();
+
+        $originalCanceledAt = $invoice->canceled_at?->toIso8601String();
+
+        $this->assertNotNull($originalCanceledAt);
+
+        $this->bindFakePaymentIntent(
+            payment: $payment,
+            status: Payment::STATUS_SUCCEEDED,
+        );
+
+        /*
+         * Serviceが投げるLogicExceptionを直接確認する。
+         */
+        $this->withoutExceptionHandling();
+
+        try {
+            $this->postSignedWebhook(
+                eventId: 'evt_canceled_invoice_payment_success_test',
+                eventType: 'payment_intent.succeeded',
+                objectId: $payment->stripe_payment_intent_id,
+            );
+
+            $this->fail(
+                'canceledのInvoiceへの成功反映で例外が発生しませんでした。'
+            );
+        } catch (\LogicException $exception) {
+            $this->assertSame(
+                '支払い成功を反映できない請求書ステータスです。',
+                $exception->getMessage(),
+            );
+        }
+
+        $payment->refresh();
+        $invoice->refresh();
+
+        /*
+         * Invoice同期時に例外が発生したため、
+         * Paymentのsucceeded更新もロールバックされる。
+         */
+        $this->assertSame(
+            Payment::STATUS_REQUIRES_PAYMENT_METHOD,
+            $payment->status,
+        );
+
+        $this->assertNull($payment->paid_at);
+        $this->assertNull($payment->canceled_at);
+
+        /*
+         * 取り消し済みのInvoiceは変更せず維持する。
+         */
+        $this->assertSame(
+            Invoice::STATUS_CANCELED,
+            $invoice->status,
+        );
+
+        $this->assertNull($invoice->paid_at);
+
+        $this->assertSame(
+            $originalCanceledAt,
+            $invoice->canceled_at?->toIso8601String(),
         );
     }
 }

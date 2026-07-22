@@ -21,6 +21,7 @@
 @import './pages/invoices/create.css';
 @import './pages/invoices/show.css';
 @import "./pages/invoices/send.css";
+@import "./pages/invoice-payments/show.css";
 
 :root {
     --color-bg: #f4f7fb;

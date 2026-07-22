@@ -131,7 +131,9 @@
 
                         <tbody>
                             @foreach ($invoices as $invoice)
-                                            <tr>
+                                            <tr class="invoice-table__clickable-row" tabindex="0" role="link"
+                                                aria-label="請求書 {{ $invoice->invoice_number }} の詳細を開く" data-invoice-navigation
+                                                data-invoice-url="{{ route('invoices.show', $invoice) }}">
                                                 <td>
                                                     <div class="invoice-table__primary">
                                                         <span class="invoice-table__document-icon" aria-hidden="true">
@@ -225,7 +227,9 @@
             ====================================== --}}
             <div class="invoice-card-list">
                 @foreach ($invoices as $invoice)
-                    <article class="invoice-card">
+                    <article class="invoice-card invoice-card--clickable" tabindex="0" role="link"
+                        aria-label="請求書 {{ $invoice->invoice_number }} の詳細を開く" data-invoice-navigation
+                        data-invoice-url="{{ route('invoices.show', $invoice) }}">
                         <header class="invoice-card__header">
                             <div class="invoice-card__identity">
                                 <span class="invoice-card__document-icon" aria-hidden="true">
@@ -333,6 +337,7 @@
 
                             <span class="invoice-card__created-at">
                                 登録日
+
                                 <time datetime="{{ $invoice->created_at->toDateString() }}">
                                     {{ $invoice->created_at->format('Y/m/d') }}
                                 </time>
@@ -462,4 +467,112 @@
             @endif
         @endif
     </section>
+
+    <style>
+        .invoice-table__clickable-row,
+        .invoice-card--clickable {
+            cursor: pointer;
+        }
+
+        .invoice-table__clickable-row:focus-visible {
+            position: relative;
+            z-index: 1;
+            outline: 3px solid rgb(37 99 235 / 24%);
+            outline-offset: -3px;
+        }
+
+        .invoice-card--clickable:focus-visible {
+            outline: 3px solid rgb(37 99 235 / 24%);
+            outline-offset: 3px;
+        }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const navigationElements = document.querySelectorAll(
+                '[data-invoice-navigation]'
+            );
+
+            const interactiveSelector = [
+                'a',
+                'button',
+                'input',
+                'select',
+                'textarea',
+                'label',
+                'summary',
+                '[role="button"]',
+                '[data-navigation-ignore]',
+            ].join(',');
+
+            const openInvoice = (element, event = null) => {
+                const url = element.dataset.invoiceUrl;
+
+                if (!url) {
+                    return;
+                }
+
+                if (
+                    event instanceof MouseEvent
+                    && event.target instanceof Element
+                    && event.target.closest(interactiveSelector)
+                ) {
+                    return;
+                }
+
+                if (
+                    event instanceof MouseEvent
+                    && event.button !== 0
+                ) {
+                    return;
+                }
+
+                if (
+                    event instanceof MouseEvent
+                    && (
+                        event.metaKey
+                        || event.ctrlKey
+                        || event.shiftKey
+                        || event.altKey
+                    )
+                ) {
+                    window.open(
+                        url,
+                        '_blank',
+                        'noopener,noreferrer'
+                    );
+
+                    return;
+                }
+
+                window.location.assign(url);
+            };
+
+            navigationElements.forEach((element) => {
+                element.addEventListener('click', (event) => {
+                    openInvoice(element, event);
+                });
+
+                element.addEventListener('keydown', (event) => {
+                    if (
+                        event.target instanceof Element
+                        && event.target.closest(interactiveSelector)
+                    ) {
+                        return;
+                    }
+
+                    if (
+                        event.key !== 'Enter'
+                        && event.key !== ' '
+                    ) {
+                        return;
+                    }
+
+                    event.preventDefault();
+
+                    openInvoice(element);
+                });
+            });
+        });
+    </script>
 @endsection

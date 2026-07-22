@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Api\Webhook;
 use App\Contracts\Stripe\StripeServiceInterface;
 use App\Http\Controllers\Controller;
 use App\Models\Payment;
+use App\Services\Stripe\InvoicePaymentStatusSynchronizer;
 use App\Services\Stripe\PaymentIntentSynchronizer;
 use App\Services\Stripe\StripeWebhookVerifier;
 use Illuminate\Http\JsonResponse;
@@ -41,6 +42,7 @@ final class StripeWebhookController extends Controller
         StripeWebhookVerifier $webhookVerifier,
         StripeServiceInterface $stripeService,
         PaymentIntentSynchronizer $paymentIntentSynchronizer,
+        InvoicePaymentStatusSynchronizer $invoicePaymentStatusSynchronizer,
     ): JsonResponse {
         try {
             /*
@@ -196,14 +198,16 @@ final class StripeWebhookController extends Controller
         }
 
         /*
+         * PaymentとInvoiceを同じトランザクション内で同期する。
+         *
          * 同じWebhookがほぼ同時に届いても、
-         * paid_atやcanceled_atを安全に維持できるように行ロックを使う。
+         * PaymentとInvoiceの行ロックにより安全に更新する。
          *
          * Stripe API通信はトランザクションの外で完了させ、
          * DBロックを長時間保持しない。
          */
         $payment = DB::transaction(
-            function () use ($paymentIntentId, $paymentIntent, $paymentIntentSynchronizer): Payment {
+            function () use ($paymentIntentId, $paymentIntent, $paymentIntentSynchronizer, $invoicePaymentStatusSynchronizer): Payment {
                 $lockedPayment = Payment::query()
                     ->where(
                         'stripe_payment_intent_id',
@@ -212,10 +216,16 @@ final class StripeWebhookController extends Controller
                     ->lockForUpdate()
                     ->firstOrFail();
 
-                return $paymentIntentSynchronizer->sync(
+                $syncedPayment = $paymentIntentSynchronizer->sync(
                     payment: $lockedPayment,
                     paymentIntent: $paymentIntent,
                 );
+
+                $invoicePaymentStatusSynchronizer->sync(
+                    payment: $syncedPayment,
+                );
+
+                return $syncedPayment;
             }
         );
 

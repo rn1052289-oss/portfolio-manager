@@ -14,7 +14,38 @@ final class FakeStripeService implements StripeServiceInterface
     private ?PaymentIntent $paymentIntentToReturn = null;
 
     /**
-     * Fakeが返すPaymentIntentを設定する。
+     * PaymentIntent作成時に渡された引数です。
+     *
+     * @var array<int, array{
+     *     amount: int,
+     *     currency: string,
+     *     description: string|null,
+     *     metadata: array<string, string>,
+     *     idempotency_key: string
+     * }>
+     */
+    private array $createPaymentIntentCalls = [];
+
+    /**
+     * PaymentIntent取得時に指定されたStripe IDです。
+     *
+     * @var array<int, string>
+     */
+    private array $retrievePaymentIntentIds = [];
+
+    /**
+     * PaymentIntent確定時に渡された引数です。
+     *
+     * @var array<int, array{
+     *     payment_intent_id: string,
+     *     payment_method: string,
+     *     idempotency_key: string
+     * }>
+     */
+    private array $confirmPaymentIntentCalls = [];
+
+    /**
+     * Fakeが返すPaymentIntentを設定します。
      */
     public function returnPaymentIntent(
         PaymentIntent $paymentIntent,
@@ -25,7 +56,47 @@ final class FakeStripeService implements StripeServiceInterface
     }
 
     /**
-     * Stripe残高取得は、現在のFeatureテストでは使用しない。
+     * PaymentIntent作成時の呼び出し履歴を返します。
+     *
+     * @return array<int, array{
+     *     amount: int,
+     *     currency: string,
+     *     description: string|null,
+     *     metadata: array<string, string>,
+     *     idempotency_key: string
+     * }>
+     */
+    public function createPaymentIntentCalls(): array
+    {
+        return $this->createPaymentIntentCalls;
+    }
+
+    /**
+     * PaymentIntent取得時に指定されたStripe IDを返します。
+     *
+     * @return array<int, string>
+     */
+    public function retrievePaymentIntentIds(): array
+    {
+        return $this->retrievePaymentIntentIds;
+    }
+
+    /**
+     * PaymentIntent確定時の呼び出し履歴を返します。
+     *
+     * @return array<int, array{
+     *     payment_intent_id: string,
+     *     payment_method: string,
+     *     idempotency_key: string
+     * }>
+     */
+    public function confirmPaymentIntentCalls(): array
+    {
+        return $this->confirmPaymentIntentCalls;
+    }
+
+    /**
+     * Stripe残高取得は、現在のFeatureテストでは使用しません。
      */
     public function retrieveBalance(): Balance
     {
@@ -35,7 +106,7 @@ final class FakeStripeService implements StripeServiceInterface
     }
 
     /**
-     * PaymentIntent作成時に、事前設定したFakeの結果を返す。
+     * PaymentIntent作成時に、事前設定したFakeの結果を返します。
      *
      * @param  array<string, string>  $metadata
      */
@@ -46,20 +117,30 @@ final class FakeStripeService implements StripeServiceInterface
         array $metadata,
         string $idempotencyKey,
     ): PaymentIntent {
+        $this->createPaymentIntentCalls[] = [
+            'amount' => $amount,
+            'currency' => $currency,
+            'description' => $description,
+            'metadata' => $metadata,
+            'idempotency_key' => $idempotencyKey,
+        ];
+
         return $this->paymentIntent();
     }
 
     /**
-     * PaymentIntent取得時に、事前設定したFakeの結果を返す。
+     * PaymentIntent取得時に、事前設定したFakeの結果を返します。
      */
     public function retrievePaymentIntent(
         string $paymentIntentId,
     ): PaymentIntent {
+        $this->retrievePaymentIntentIds[] = $paymentIntentId;
+
         $paymentIntent = $this->paymentIntent();
 
         /*
          * Laravel側に保存されたStripe IDと、
-         * Fakeへ設定したPaymentIntentのIDが一致するか確認する。
+         * Fakeへ設定したPaymentIntentのIDが一致するか確認します。
          */
         if ($paymentIntent->id !== $paymentIntentId) {
             throw new LogicException(
@@ -71,18 +152,24 @@ final class FakeStripeService implements StripeServiceInterface
     }
 
     /**
-     * PaymentIntent確定時に、事前設定したFakeの結果を返す。
+     * PaymentIntent確定時に、事前設定したFakeの結果を返します。
      */
     public function confirmPaymentIntent(
         string $paymentIntentId,
         string $paymentMethod,
         string $idempotencyKey,
     ): PaymentIntent {
+        $this->confirmPaymentIntentCalls[] = [
+            'payment_intent_id' => $paymentIntentId,
+            'payment_method' => $paymentMethod,
+            'idempotency_key' => $idempotencyKey,
+        ];
+
         return $this->paymentIntent();
     }
 
     /**
-     * 設定済みのPaymentIntentを取得する。
+     * 設定済みのPaymentIntentを取得します。
      */
     private function paymentIntent(): PaymentIntent
     {

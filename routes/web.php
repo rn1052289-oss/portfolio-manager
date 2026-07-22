@@ -5,8 +5,9 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\CustomerCsvExportController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InvoiceController;
-use App\Http\Controllers\InvoicePdfController;
 use App\Http\Controllers\InvoiceMailController;
+use App\Http\Controllers\InvoicePaymentController;
+use App\Http\Controllers\InvoicePdfController;
 use App\Http\Controllers\PaymentCheckoutController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProjectController;
@@ -20,6 +21,38 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+/*
+|--------------------------------------------------------------------------
+| Public Invoice Payments
+|--------------------------------------------------------------------------
+|
+| 顧客がログインせずに請求書を確認・支払い準備する公開ルートです。
+| 数値IDではなく、推測困難なpublic_tokenを使用します。
+|
+*/
+
+Route::get(
+    '/invoice-payments/{publicToken}',
+    [InvoicePaymentController::class, 'show']
+)
+    ->whereUuid('publicToken')
+    ->name('invoice-payments.show');
+
+Route::get(
+    '/invoice-payments/{publicToken}/result',
+    [InvoicePaymentController::class, 'result']
+)
+    ->whereUuid('publicToken')
+    ->name('invoice-payments.result');
+
+Route::post(
+    '/invoice-payments/{publicToken}',
+    [InvoicePaymentController::class, 'store']
+)
+    ->whereUuid('publicToken')
+    ->middleware('throttle:5,1')
+    ->name('invoice-payments.store');
 
 Route::middleware('auth')->group(function () {
     /*
