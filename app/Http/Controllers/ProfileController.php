@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UpdateBusinessProfileRequest;
 use App\Models\Task;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
 class ProfileController extends Controller
@@ -13,6 +15,7 @@ class ProfileController extends Controller
     public function show(): View
     {
         $user = auth()->user();
+        $user->load('businessProfile');
 
         $totalProjectsCount = $user
             ->projects()
@@ -54,5 +57,33 @@ class ProfileController extends Controller
             'incompleteTasksCount',
             'recentProjects'
         ));
+    }
+
+    /**
+     * ログインユーザーの事業者プロフィールを保存します。
+     */
+    public function updateBusinessProfile(
+        UpdateBusinessProfileRequest $request
+    ): RedirectResponse {
+        $user = $request->user();
+
+        /*
+         * 初回保存時は新規作成し、
+         * 既に存在する場合は同じレコードを更新します。
+         *
+         * リレーション経由で処理するため、
+         * user_idをリクエストから受け取りません。
+         */
+        $user->businessProfile()->updateOrCreate(
+            [],
+            $request->validated()
+        );
+
+        return redirect()
+            ->route('profile.show')
+            ->with(
+                'status',
+                'business-profile-updated'
+            );
     }
 }

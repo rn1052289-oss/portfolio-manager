@@ -38,6 +38,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'show'])
         ->name('profile.show');
 
+    Route::put(
+        '/profile/business-profile',
+        [ProfileController::class, 'updateBusinessProfile']
+    )->name('profile.business-profile.update');
+
     /*
     |--------------------------------------------------------------------------
     | Projects
