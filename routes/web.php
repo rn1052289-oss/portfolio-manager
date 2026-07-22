@@ -6,6 +6,7 @@ use App\Http\Controllers\CustomerCsvExportController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\InvoicePdfController;
+use App\Http\Controllers\InvoiceMailController;
 use App\Http\Controllers\PaymentCheckoutController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProjectController;
@@ -142,6 +143,7 @@ Route::middleware('auth')->group(function () {
     });
 
     /*
+/*
 |--------------------------------------------------------------------------
 | Invoices
 |--------------------------------------------------------------------------
@@ -156,6 +158,17 @@ Route::middleware('auth')->group(function () {
 
             Route::get('/download', 'download')
                 ->name('download');
+        });
+
+    Route::controller(InvoiceMailController::class)
+        ->prefix('invoices/{invoice}/mail')
+        ->name('invoices.mail.')
+        ->group(function (): void {
+            Route::get('/', 'create')
+                ->name('create');
+
+            Route::post('/', 'store')
+                ->name('store');
         });
 
     Route::resource('invoices', InvoiceController::class)

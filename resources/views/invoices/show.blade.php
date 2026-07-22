@@ -7,8 +7,14 @@
 
 @section('page-actions')
     <div class="invoice-page-actions">
+        @can('send', $invoice)
+            <a href="{{ route('invoices.mail.create', $invoice) }}" class="button button--primary invoice-page-actions__send">
+                メールで送信
+            </a>
+        @endcan
+
         @can('update', $invoice)
-            <a href="{{ route('invoices.edit', $invoice) }}" class="button button--primary invoice-page-actions__edit">
+            <a href="{{ route('invoices.edit', $invoice) }}" class="button button--secondary invoice-page-actions__edit">
                 請求書を編集
             </a>
         @endcan

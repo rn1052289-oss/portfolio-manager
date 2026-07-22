@@ -924,8 +924,9 @@
         font-size: 12px;
     }
 
+    .invoice-page-actions__send,
     .invoice-page-actions__edit {
-        grid-column: 1 / -1;
+    grid-column: 1 / -1;
     }
 
     .invoice-detail-page {
