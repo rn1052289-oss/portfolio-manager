@@ -3,10 +3,12 @@
 
 <head>
     <meta charset="UTF-8">
+
     <meta
         name="viewport"
         content="width=device-width, initial-scale=1.0"
     >
+
     <meta
         name="csrf-token"
         content="{{ csrf_token() }}"
@@ -26,6 +28,8 @@
             || request()->routeIs('payments.*');
 
         $isTasksActive = request()->routeIs('projects.tasks.*');
+
+        $isInvoicesActive = request()->routeIs('invoices.*');
     @endphp
 
     {{-- Mobile Topbar --}}
@@ -71,6 +75,7 @@
                         cy="8"
                         r="4"
                     ></circle>
+
                     <path d="M4.5 21a7.5 7.5 0 0 1 15 0"></path>
                 </svg>
             </summary>
@@ -109,6 +114,7 @@
                             cy="8"
                             r="4"
                         ></circle>
+
                         <path d="M4.5 21a7.5 7.5 0 0 1 15 0"></path>
                     </svg>
 
@@ -264,37 +270,67 @@
                 </div>
 
                 <a
-    href="{{ route('customers.index') }}"
-    class="admin-sidebar__link {{ request()->routeIs('customers.*') ? 'is-active' : '' }}"
-    @if (request()->routeIs('customers.*'))
-        aria-current="page"
-    @endif
->
-    <svg
-        class="admin-sidebar__link-icon"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="1.8"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        aria-hidden="true"
-    >
-        <path d="M4 21v-9a2 2 0 0 1 2-2h4"></path>
-        <path d="M14 5h4a2 2 0 0 1 2 2v16"></path>
-        <path d="M8 10V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v16"></path>
-        <path d="M3 21h18"></path>
-        <path d="M11 7h2"></path>
-        <path d="M11 11h2"></path>
-        <path d="M11 15h2"></path>
-        <path d="M17 9h1"></path>
-        <path d="M17 13h1"></path>
-    </svg>
+                    href="{{ route('customers.index') }}"
+                    class="admin-sidebar__link {{ request()->routeIs('customers.*') ? 'is-active' : '' }}"
+                    @if (request()->routeIs('customers.*'))
+                        aria-current="page"
+                    @endif
+                >
+                    <svg
+                        class="admin-sidebar__link-icon"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        aria-hidden="true"
+                    >
+                        <path d="M4 21v-9a2 2 0 0 1 2-2h4"></path>
+                        <path d="M14 5h4a2 2 0 0 1 2 2v16"></path>
+                        <path d="M8 10V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v16"></path>
+                        <path d="M3 21h18"></path>
+                        <path d="M11 7h2"></path>
+                        <path d="M11 11h2"></path>
+                        <path d="M11 15h2"></path>
+                        <path d="M17 9h1"></path>
+                        <path d="M17 13h1"></path>
+                    </svg>
 
-    <span class="admin-sidebar__link-label">
-        Customers
-    </span>
-</a>
+                    <span class="admin-sidebar__link-label">
+                        Customers
+                    </span>
+                </a>
+
+                {{-- Invoice Management --}}
+                <a
+                    href="{{ route('invoices.index') }}"
+                    class="admin-sidebar__link {{ $isInvoicesActive ? 'is-active' : '' }}"
+                    @if ($isInvoicesActive)
+                        aria-current="page"
+                    @endif
+                >
+                    <svg
+                        class="admin-sidebar__link-icon"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        aria-hidden="true"
+                    >
+                        <path d="M6 2.75h9l3 3V21.25H6z"></path>
+                        <path d="M15 2.75v3h3"></path>
+                        <path d="M9 10h6"></path>
+                        <path d="M9 14h6"></path>
+                        <path d="M9 18h3"></path>
+                    </svg>
+
+                    <span class="admin-sidebar__link-label">
+                        Invoices
+                    </span>
+                </a>
 
                 <a
                     href="{{ route('categories.index') }}"
@@ -314,6 +350,7 @@
                         aria-hidden="true"
                     >
                         <path d="M20.5 13.5 13.5 20.5a2.1 2.1 0 0 1-3 0l-7-7A2 2 0 0 1 3 12V5a2 2 0 0 1 2-2h7a2 2 0 0 1 1.5.5l7 7a2.1 2.1 0 0 1 0 3Z"></path>
+
                         <circle
                             cx="8.5"
                             cy="8.5"
@@ -344,6 +381,7 @@
                         aria-hidden="true"
                     >
                         <path d="M21 12.5 12.5 21a2 2 0 0 1-2.8 0L3 14.3A2 2 0 0 1 3 11.5L11.5 3H18a3 3 0 0 1 3 3v6.5Z"></path>
+
                         <circle
                             cx="16"
                             cy="8"
@@ -357,37 +395,37 @@
                 </a>
 
                 <div class="admin-sidebar__account">
-    <a
-        href="{{ route('profile.show') }}"
-        class="admin-sidebar__link {{ request()->routeIs('profile.*') ? 'is-active' : '' }}"
-        @if (request()->routeIs('profile.*'))
-            aria-current="page"
-        @endif
-    >
-        <svg
-            class="admin-sidebar__link-icon"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.8"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            aria-hidden="true"
-        >
-            <circle
-                cx="12"
-                cy="8"
-                r="4"
-            ></circle>
+                    <a
+                        href="{{ route('profile.show') }}"
+                        class="admin-sidebar__link {{ request()->routeIs('profile.*') ? 'is-active' : '' }}"
+                        @if (request()->routeIs('profile.*'))
+                            aria-current="page"
+                        @endif
+                    >
+                        <svg
+                            class="admin-sidebar__link-icon"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.8"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            aria-hidden="true"
+                        >
+                            <circle
+                                cx="12"
+                                cy="8"
+                                r="4"
+                            ></circle>
 
-            <path d="M4.5 21a7.5 7.5 0 0 1 15 0"></path>
-        </svg>
+                            <path d="M4.5 21a7.5 7.5 0 0 1 15 0"></path>
+                        </svg>
 
-        <span class="admin-sidebar__link-label">
-            Profile
-        </span>
-    </a>
-</div>
+                        <span class="admin-sidebar__link-label">
+                            Profile
+                        </span>
+                    </a>
+                </div>
             </nav>
         </aside>
 
@@ -539,6 +577,7 @@
                     height="7"
                     rx="2"
                 ></rect>
+
                 <rect
                     x="14"
                     y="3"
@@ -546,6 +585,7 @@
                     height="7"
                     rx="2"
                 ></rect>
+
                 <rect
                     x="3"
                     y="14"
@@ -553,6 +593,7 @@
                     height="7"
                     rx="2"
                 ></rect>
+
                 <rect
                     x="14"
                     y="14"
@@ -585,6 +626,7 @@
                 aria-hidden="true"
             >
                 <path d="M20.5 13.5 13.5 20.5a2.1 2.1 0 0 1-3 0l-7-7A2 2 0 0 1 3 12V5a2 2 0 0 1 2-2h7a2 2 0 0 1 1.5.5l7 7a2.1 2.1 0 0 1 0 3z"></path>
+
                 <circle
                     cx="8.5"
                     cy="8.5"
