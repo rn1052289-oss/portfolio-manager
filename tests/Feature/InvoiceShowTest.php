@@ -88,6 +88,103 @@ final class InvoiceShowTest extends TestCase
     }
 
     /**
+     * 詳細画面にはパンくずとPDF操作への導線が表示されます。
+     */
+    public function test_invoice_show_page_displays_breadcrumb_and_pdf_actions(): void
+    {
+        $user = User::factory()->create();
+
+        $customer = Customer::factory()
+            ->for($user)
+            ->create();
+
+        $project = Project::factory()
+            ->for($user)
+            ->for($customer)
+            ->create();
+
+        $invoice = Invoice::factory()
+            ->for($user)
+            ->for($project)
+            ->for($customer)
+            ->create();
+
+        $response = $this
+            ->actingAs($user)
+            ->get(route('invoices.show', $invoice));
+
+        $response
+            ->assertOk()
+
+            /*
+             * パンくずの表示順を確認します。
+             */
+            ->assertSeeTextInOrder([
+                '請求書一覧',
+                '請求書詳細',
+            ])
+
+            /*
+             * パンくずから請求書一覧へ移動できます。
+             */
+            ->assertSee(
+                'href="'.route('invoices.index').'"',
+                false
+            )
+
+            /*
+             * 現在のページがパンくずで明示されています。
+             */
+            ->assertSee(
+                'aria-current="page"',
+                false
+            )
+
+            /*
+             * PDFプレビューへのリンクを確認します。
+             */
+            ->assertSeeText('PDFをプレビュー')
+            ->assertSee(
+                'href="'.route(
+                    'invoices.pdf.preview',
+                    $invoice
+                ).'"',
+                false
+            )
+
+            /*
+             * プレビューは新しいタブで開きます。
+             */
+            ->assertSee(
+                'target="_blank"',
+                false
+            )
+            ->assertSee(
+                'rel="noopener"',
+                false
+            )
+
+            /*
+             * PDFダウンロードへのリンクを確認します。
+             */
+            ->assertSeeText('PDFをダウンロード')
+            ->assertSee(
+                'href="'.route(
+                    'invoices.pdf.download',
+                    $invoice
+                ).'"',
+                false
+            )
+
+            /*
+             * 旧来の戻るボタンが残っていないことを確認します。
+             */
+            ->assertDontSeeText(
+                '← 請求書一覧へ戻る'
+            );
+    }
+
+    /**
      * 他ユーザーは請求書詳細を表示できません。
      */
     public function test_user_cannot_view_another_users_invoice(): void

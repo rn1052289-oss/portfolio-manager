@@ -6,15 +6,23 @@
 @section('page-description', '請求内容、請求先、発行日、支払期限を確認できます。')
 
 @section('page-actions')
-    @can('update', $invoice)
-        <a href="{{ route('invoices.edit', $invoice) }}" class="button button--primary">
-            請求書を編集
-        </a>
-    @endcan
+    <div class="invoice-page-actions">
+        @can('update', $invoice)
+            <a href="{{ route('invoices.edit', $invoice) }}" class="button button--primary invoice-page-actions__edit">
+                請求書を編集
+            </a>
+        @endcan
 
-    <a href="{{ route('invoices.index') }}" class="button button--secondary">
-        ← 請求書一覧へ戻る
-    </a>
+        <a href="{{ route('invoices.pdf.preview', $invoice) }}"
+            class="button button--secondary invoice-page-actions__preview" target="_blank" rel="noopener">
+            PDFをプレビュー
+        </a>
+
+        <a href="{{ route('invoices.pdf.download', $invoice) }}"
+            class="button button--secondary invoice-page-actions__download">
+            PDFをダウンロード
+        </a>
+    </div>
 @endsection
 
 @section('content')
@@ -57,6 +65,27 @@
     @endphp
 
     <section class="invoice-detail-page" aria-labelledby="invoice-detail-title">
+        <nav class="invoice-breadcrumb" aria-label="パンくずリスト">
+            <ol class="invoice-breadcrumb__list">
+                <li class="invoice-breadcrumb__item">
+                    <a href="{{ route('invoices.index') }}" class="invoice-breadcrumb__link">
+                        請求書一覧
+                    </a>
+                </li>
+
+                <li class="invoice-breadcrumb__separator" aria-hidden="true">
+                    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="m7 4 6 6-6 6"></path>
+                    </svg>
+                </li>
+
+                <li class="invoice-breadcrumb__item invoice-breadcrumb__item--current" aria-current="page">
+                    請求書詳細
+                </li>
+            </ol>
+        </nav>
+
         @if (session('success'))
             <div class="invoice-detail-flash invoice-detail-flash--success" role="status">
                 {{ session('success') }}
@@ -236,7 +265,8 @@
 
                                     <dd class="invoice-detail-contact-list__value">
                                         @if ($invoice->billing_phone)
-                                            <a href="tel:{{ $invoice->billing_phone }}" class="invoice-detail-link">
+                                            <a href="tel:{{ preg_replace('/[^0-9+]/', '', $invoice->billing_phone) }}"
+                                                class="invoice-detail-link">
                                                 {{ $invoice->billing_phone }}
                                             </a>
                                         @else
