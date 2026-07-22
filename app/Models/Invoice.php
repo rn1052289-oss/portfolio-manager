@@ -13,11 +13,11 @@ use Illuminate\Support\Carbon;
 /**
  * @property Carbon|null $issued_at
  * @property Carbon|null $due_date
+ * @property Carbon|null $transaction_date
  * @property Carbon|null $sent_at
  * @property Carbon|null $paid_at
  * @property Carbon|null $canceled_at
- **/
-
+ */
 final class Invoice extends Model
 {
     use HasFactory;
@@ -31,6 +31,16 @@ final class Invoice extends Model
     public const STATUS_OVERDUE = 'overdue';
 
     public const STATUS_CANCELED = 'canceled';
+
+    /**
+     * 現在の標準税率です。
+     */
+    public const DEFAULT_TAX_RATE = 10;
+
+    /**
+     * 消費税の端数を切り捨てます。
+     */
+    public const TAX_ROUNDING_FLOOR = 'floor';
 
     /**
      * 使用可能な請求書ステータスです。
@@ -67,6 +77,30 @@ final class Invoice extends Model
         'billing_phone',
         'billing_postal_code',
         'billing_address',
+
+        /*
+         * 請求書作成・更新時点の発行者情報です。
+         */
+        'issuer_business_name',
+        'issuer_representative_name',
+        'issuer_email',
+        'issuer_phone',
+        'issuer_postal_code',
+        'issuer_address',
+        'issuer_registration_number',
+        'issuer_bank_name',
+        'issuer_bank_branch_name',
+        'issuer_bank_account_type',
+        'issuer_bank_account_number',
+        'issuer_bank_account_holder',
+
+        /*
+         * 取引日・税率・端数処理方法です。
+         */
+        'transaction_date',
+        'tax_rate',
+        'tax_rounding_method',
+
         'status',
         'issued_at',
         'due_date',
@@ -87,11 +121,22 @@ final class Invoice extends Model
         'subtotal' => 'integer',
         'tax_amount' => 'integer',
         'total_amount' => 'integer',
+        'tax_rate' => 'integer',
+
         'issued_at' => 'date',
         'due_date' => 'date',
+        'transaction_date' => 'date',
+
         'sent_at' => 'datetime',
         'paid_at' => 'datetime',
         'canceled_at' => 'datetime',
+
+        /*
+         * 請求書に保存した口座番号も、
+         * DBへ平文保存しないよう暗号化します。
+         */
+        'issuer_bank_account_number' => 'encrypted',
+
         'send_count' => 'integer',
     ];
 

@@ -300,6 +300,242 @@ final class InvoiceStoreTest extends TestCase
     }
 
     /**
+     * 事業者プロフィールを請求書作成時点の発行者情報として保存し、
+     * 税情報と取引日もシステム側で設定します。
+     */
+    public function test_store_snapshots_business_profile_and_tax_information(): void
+    {
+        $user = User::factory()->create();
+
+        $businessProfile = $user
+            ->businessProfile()
+            ->create([
+                'business_name' => 'スナップショット前の屋号',
+                'representative_name' => '請求 山田',
+                'email' => 'issuer@example.com',
+                'phone' => '03-1111-2222',
+                'postal_code' => '100-0001',
+                'address' => '東京都千代田区千代田1-1',
+                'invoice_registration_number' => 'T1234567890123',
+                'bank_name' => 'スナップショット銀行',
+                'bank_branch_name' => '中央支店',
+                'bank_account_type' => '普通',
+                'bank_account_number' => '1234567',
+                'bank_account_holder' => 'セイキュウ ヤマダ',
+            ]);
+
+        $customer = Customer::factory()
+            ->for($user)
+            ->create();
+
+        $project = Project::factory()
+            ->for($user)
+            ->for($customer)
+            ->create();
+
+        $response = $this
+            ->actingAs($user)
+            ->post(
+                route('invoices.store'),
+                $this->validPayload(
+                    $project,
+                    $customer
+                )
+            );
+
+        $response
+            ->assertRedirect(route('invoices.index'))
+            ->assertSessionHasNoErrors();
+
+        /*
+         * 請求書作成後に事業者プロフィールを変更します。
+         *
+         * Invoiceへ保存したスナップショットが、
+         * 後から変化しないことを確認します。
+         */
+        $businessProfile->update([
+            'business_name' => '変更後の屋号',
+            'bank_name' => '変更後銀行',
+            'bank_account_number' => '7654321',
+        ]);
+
+        $invoice = Invoice::query()
+            ->sole();
+
+        $this->assertSame(
+            'スナップショット前の屋号',
+            $invoice->issuer_business_name
+        );
+
+        $this->assertSame(
+            '請求 山田',
+            $invoice->issuer_representative_name
+        );
+
+        $this->assertSame(
+            'issuer@example.com',
+            $invoice->issuer_email
+        );
+
+        $this->assertSame(
+            '03-1111-2222',
+            $invoice->issuer_phone
+        );
+
+        $this->assertSame(
+            '100-0001',
+            $invoice->issuer_postal_code
+        );
+
+        $this->assertSame(
+            '東京都千代田区千代田1-1',
+            $invoice->issuer_address
+        );
+
+        $this->assertSame(
+            'T1234567890123',
+            $invoice->issuer_registration_number
+        );
+
+        $this->assertSame(
+            'スナップショット銀行',
+            $invoice->issuer_bank_name
+        );
+
+        $this->assertSame(
+            '中央支店',
+            $invoice->issuer_bank_branch_name
+        );
+
+        $this->assertSame(
+            '普通',
+            $invoice->issuer_bank_account_type
+        );
+
+        $this->assertSame(
+            '1234567',
+            $invoice->issuer_bank_account_number
+        );
+
+        $this->assertSame(
+            'セイキュウ ヤマダ',
+            $invoice->issuer_bank_account_holder
+        );
+
+        /*
+         * 現在の仕様では、取引日は発行日と同じ日付です。
+         */
+        $this->assertSame(
+            '2026-07-21',
+            $invoice->getRawOriginal('transaction_date')
+        );
+
+        $this->assertSame(
+            Invoice::DEFAULT_TAX_RATE,
+            $invoice->tax_rate
+        );
+
+        $this->assertSame(
+            Invoice::TAX_ROUNDING_FLOOR,
+            $invoice->tax_rounding_method
+        );
+
+        /*
+         * Model経由では復号された口座番号を取得できますが、
+         * DBの生値は平文と異なる暗号文である必要があります。
+         */
+        $rawAccountNumber = $invoice->getRawOriginal(
+            'issuer_bank_account_number'
+        );
+
+        $this->assertIsString(
+            $rawAccountNumber
+        );
+
+        $this->assertNotSame(
+            '1234567',
+            $rawAccountNumber
+        );
+
+        $this->assertGreaterThan(
+            strlen('1234567'),
+            strlen($rawAccountNumber)
+        );
+    }
+
+    /**
+     * 発行者スナップショットや税設定などのシステム項目は、
+     * リクエストから直接指定できません。
+     */
+    public function test_store_rejects_system_managed_issuer_and_tax_fields(): void
+    {
+        $user = User::factory()->create();
+
+        $customer = Customer::factory()
+            ->for($user)
+            ->create();
+
+        $project = Project::factory()
+            ->for($user)
+            ->for($customer)
+            ->create();
+
+        $systemManagedFields = [
+            'issuer_business_name' => '改ざんされた屋号',
+            'issuer_representative_name' => '改ざんされた代表者',
+            'issuer_email' => 'attacker@example.com',
+            'issuer_phone' => '090-9999-9999',
+            'issuer_postal_code' => '999-9999',
+            'issuer_address' => '改ざんされた住所',
+            'issuer_registration_number' => 'T9999999999999',
+            'issuer_bank_name' => '改ざん銀行',
+            'issuer_bank_branch_name' => '改ざん支店',
+            'issuer_bank_account_type' => '当座',
+            'issuer_bank_account_number' => '9999999',
+            'issuer_bank_account_holder' => 'カイザン メイギ',
+            'transaction_date' => '2020-01-01',
+            'tax_rate' => 0,
+            'tax_rounding_method' => 'ceil',
+        ];
+
+        $payload = array_merge(
+            $this->validPayload(
+                $project,
+                $customer
+            ),
+            $systemManagedFields
+        );
+
+        $response = $this
+            ->actingAs($user)
+            ->from(route('invoices.create'))
+            ->post(
+                route('invoices.store'),
+                $payload
+            );
+
+        $response
+            ->assertRedirect(route('invoices.create'))
+            ->assertSessionHasErrors(
+                array_keys($systemManagedFields)
+            );
+
+        $this->assertDatabaseCount(
+            'invoices',
+            0
+        );
+
+        /*
+         * バリデーションで拒否されたため、
+         * 請求書番号の連番も消費されません。
+         */
+        $this->assertDatabaseCount(
+            'invoice_number_sequences',
+            0
+        );
+    }
+
+    /**
      * 同じユーザー・同じ発行月では、
      * 請求書番号が0001から順番に発行されます。
      */

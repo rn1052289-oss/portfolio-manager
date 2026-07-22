@@ -114,6 +114,33 @@ final class StoreInvoiceRequest extends FormRequest
             'billing_address' => ['prohibited'],
 
             /*
+             * 発行者情報と振込先はBusinessProfileから取得し、
+             * 請求書作成時点のスナップショットとして保存します。
+             *
+             * ブラウザから直接送信された値は使用しません。
+             */
+            'issuer_business_name' => ['prohibited'],
+            'issuer_representative_name' => ['prohibited'],
+            'issuer_email' => ['prohibited'],
+            'issuer_phone' => ['prohibited'],
+            'issuer_postal_code' => ['prohibited'],
+            'issuer_address' => ['prohibited'],
+            'issuer_registration_number' => ['prohibited'],
+            'issuer_bank_name' => ['prohibited'],
+            'issuer_bank_branch_name' => ['prohibited'],
+            'issuer_bank_account_type' => ['prohibited'],
+            'issuer_bank_account_number' => ['prohibited'],
+            'issuer_bank_account_holder' => ['prohibited'],
+
+            /*
+             * 取引日・税率・端数処理方法は、
+             * Controller側で現在の請求書仕様に基づいて設定します。
+             */
+            'transaction_date' => ['prohibited'],
+            'tax_rate' => ['prohibited'],
+            'tax_rounding_method' => ['prohibited'],
+
+            /*
              * システムが管理する値です。
              */
             'sent_at' => ['prohibited'],

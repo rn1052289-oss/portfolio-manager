@@ -104,8 +104,8 @@ final class UpdateInvoiceRequest extends FormRequest
             'status' => ['prohibited'],
 
             /*
-             * 請求先情報はCustomerから再取得して、
-             * Service側でスナップショットを更新します。
+             * 請求先情報はCustomerから再取得し、
+             * Controller側でスナップショットを更新します。
              */
             'billing_name' => ['prohibited'],
             'billing_contact_name' => ['prohibited'],
@@ -113,6 +113,32 @@ final class UpdateInvoiceRequest extends FormRequest
             'billing_phone' => ['prohibited'],
             'billing_postal_code' => ['prohibited'],
             'billing_address' => ['prohibited'],
+
+            /*
+             * 発行者情報と振込先はBusinessProfileから再取得し、
+             * 下書き更新時点のスナップショットへ更新します。
+             *
+             * リクエストから直接変更することは禁止します。
+             */
+            'issuer_business_name' => ['prohibited'],
+            'issuer_representative_name' => ['prohibited'],
+            'issuer_email' => ['prohibited'],
+            'issuer_phone' => ['prohibited'],
+            'issuer_postal_code' => ['prohibited'],
+            'issuer_address' => ['prohibited'],
+            'issuer_registration_number' => ['prohibited'],
+            'issuer_bank_name' => ['prohibited'],
+            'issuer_bank_branch_name' => ['prohibited'],
+            'issuer_bank_account_type' => ['prohibited'],
+            'issuer_bank_account_number' => ['prohibited'],
+            'issuer_bank_account_holder' => ['prohibited'],
+
+            /*
+             * 取引日・税率・端数処理方法もシステムが決定します。
+             */
+            'transaction_date' => ['prohibited'],
+            'tax_rate' => ['prohibited'],
+            'tax_rounding_method' => ['prohibited'],
 
             /*
              * システム管理項目です。

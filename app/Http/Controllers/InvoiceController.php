@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreInvoiceRequest;
 use App\Http\Requests\UpdateInvoiceRequest;
+use App\Models\BusinessProfile;
 use App\Models\Customer;
 use App\Models\Invoice;
 use App\Models\Project;
@@ -68,7 +69,7 @@ final class InvoiceController extends Controller
          * 小計からサーバー側で再計算します。
          */
         $subtotal = (int) $validated['subtotal'];
-        $taxAmount = intdiv($subtotal, 10);
+        $taxAmount = $this->calculateTaxAmount($subtotal);
         $totalAmount = $subtotal + $taxAmount;
 
         DB::transaction(function () use ($validated, $userId, $subtotal, $taxAmount, $totalAmount, $invoiceNumberGenerator): void {
@@ -79,6 +80,17 @@ final class InvoiceController extends Controller
             $customer = Customer::query()
                 ->where('user_id', $userId)
                 ->findOrFail((int) $validated['customer_id']);
+
+            /*
+             * 発行者情報はログインユーザーに紐づく
+             * BusinessProfileから取得します。
+             *
+             * リクエストから発行者情報を受け取らないため、
+             * 他ユーザーの情報や改ざん値を保存できません。
+             */
+            $businessProfile = BusinessProfile::query()
+                ->where('user_id', $userId)
+                ->first();
 
             $issuedAt = Carbon::parse($validated['issued_at']);
 
@@ -110,6 +122,27 @@ final class InvoiceController extends Controller
                  * 顧客情報を請求書作成時点の内容として保存します。
                  */
                 ...$this->customerSnapshot($customer),
+
+                /*
+                 * 発行者情報と振込先を請求書作成時点の内容として
+                 * Invoiceへスナップショット保存します。
+                 */
+                ...$this->issuerSnapshot($businessProfile),
+
+                /*
+                 * 現時点では取引日を発行日と同じ日にします。
+                 *
+                 * 将来、納品日や役務提供日をフォームから
+                 * 個別に指定できるよう拡張できます。
+                 */
+                'transaction_date' => $issuedAt->toDateString(),
+
+                /*
+                 * 税率と端数処理も請求書へ保存し、
+                 * どの計算仕様を使用したか残します。
+                 */
+                'tax_rate' => Invoice::DEFAULT_TAX_RATE,
+                'tax_rounding_method' => Invoice::TAX_ROUNDING_FLOOR,
 
                 'status' => Invoice::STATUS_DRAFT,
 
@@ -192,7 +225,7 @@ final class InvoiceController extends Controller
          * 小計からサーバー側で再計算します。
          */
         $subtotal = (int) $validated['subtotal'];
-        $taxAmount = intdiv($subtotal, 10);
+        $taxAmount = $this->calculateTaxAmount($subtotal);
         $totalAmount = $subtotal + $taxAmount;
 
         DB::transaction(function () use ($invoice, $validated, $userId, $subtotal, $taxAmount, $totalAmount, $invoiceNumberGenerator): void {
@@ -218,6 +251,14 @@ final class InvoiceController extends Controller
             $customer = Customer::query()
                 ->where('user_id', $userId)
                 ->findOrFail((int) $validated['customer_id']);
+
+            /*
+             * 下書き請求書の更新時点に登録されている
+             * 発行者情報を取得します。
+             */
+            $businessProfile = BusinessProfile::query()
+                ->where('user_id', $userId)
+                ->first();
 
             $issuedAt = Carbon::parse($validated['issued_at']);
 
@@ -256,6 +297,17 @@ final class InvoiceController extends Controller
                  * 請求先スナップショットを更新します。
                  */
                 ...$this->customerSnapshot($customer),
+
+                /*
+                 * 下書き請求書の更新時は、
+                 * 現在の事業者プロフィールで発行者情報と
+                 * 振込先スナップショットを更新します。
+                 */
+                ...$this->issuerSnapshot($businessProfile),
+
+                'transaction_date' => $issuedAt->toDateString(),
+                'tax_rate' => Invoice::DEFAULT_TAX_RATE,
+                'tax_rounding_method' => Invoice::TAX_ROUNDING_FLOOR,
 
                 'issued_at' => $issuedAt->toDateString(),
                 'due_date' => $validated['due_date'],
@@ -384,5 +436,62 @@ final class InvoiceController extends Controller
             'billing_postal_code' => $customer->postal_code,
             'billing_address' => $customer->address,
         ];
+    }
+
+    /**
+     * BusinessProfileから発行者スナップショットを作成します。
+     *
+     * BusinessProfileが未登録の場合はnullを保存します。
+     * PDF生成時には必要な発行者情報が揃っているか、
+     * 別の処理で確認します。
+     *
+     * @return array<string, string|null>
+     */
+    private function issuerSnapshot(
+        ?BusinessProfile $businessProfile
+    ): array {
+        return [
+            'issuer_business_name' => $businessProfile?->business_name,
+
+            'issuer_representative_name' => $businessProfile?->representative_name,
+
+            'issuer_email' => $businessProfile?->email,
+
+            'issuer_phone' => $businessProfile?->phone,
+
+            'issuer_postal_code' => $businessProfile?->postal_code,
+
+            'issuer_address' => $businessProfile?->address,
+
+            'issuer_registration_number' => $businessProfile?->invoice_registration_number,
+
+            'issuer_bank_name' => $businessProfile?->bank_name,
+
+            'issuer_bank_branch_name' => $businessProfile?->bank_branch_name,
+
+            'issuer_bank_account_type' => $businessProfile?->bank_account_type,
+
+            /*
+             * Model経由で取得しているため、
+             * BusinessProfile側で復号された値です。
+             *
+             * Invoiceへ保存するときはInvoiceモデルの
+             * encrypted castにより再暗号化されます。
+             */
+            'issuer_bank_account_number' => $businessProfile?->bank_account_number,
+
+            'issuer_bank_account_holder' => $businessProfile?->bank_account_holder,
+        ];
+    }
+
+    /**
+     * 現在の税率と端数処理方法で消費税を計算します。
+     */
+    private function calculateTaxAmount(int $subtotal): int
+    {
+        return intdiv(
+            $subtotal * Invoice::DEFAULT_TAX_RATE,
+            100
+        );
     }
 }
