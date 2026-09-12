@@ -12,7 +12,9 @@
 
         <div class="page-section__header">
             <div class="project-page-heading">
-                <p class="section-label">Projects</p>
+                <p class="section-label">
+                    Projects
+                </p>
 
                 <h1 class="section-title">
                     案件一覧
@@ -74,15 +76,11 @@
                     </option>
 
                     @foreach ($categories as $category)
-                        @if ((string) $selectedCategoryId === (string) $category->id)
-                            <option value="{{ $category->id }}" selected>
-                                {{ $category->name }}
-                            </option>
-                        @else
-                            <option value="{{ $category->id }}">
-                                {{ $category->name }}
-                            </option>
-                        @endif
+                        <option value="{{ $category->id }}" @selected(
+                            (string) $selectedCategoryId === (string) $category->id
+                        )>
+                            {{ $category->name }}
+                        </option>
                     @endforeach
                 </select>
             </div>
@@ -98,15 +96,11 @@
                     </option>
 
                     @foreach ($tags as $tag)
-                        @if ((string) $selectedTagId === (string) $tag->id)
-                            <option value="{{ $tag->id }}" selected>
-                                {{ $tag->name }}
-                            </option>
-                        @else
-                            <option value="{{ $tag->id }}">
-                                {{ $tag->name }}
-                            </option>
-                        @endif
+                        <option value="{{ $tag->id }}" @selected(
+                            (string) $selectedTagId === (string) $tag->id
+                        )>
+                            {{ $tag->name }}
+                        </option>
                     @endforeach
                 </select>
             </div>
@@ -121,45 +115,21 @@
                         すべて
                     </option>
 
-                    @if ($selectedStatus === 'not_started')
-                        <option value="not_started" selected>
-                            未着手
-                        </option>
-                    @else
-                        <option value="not_started">
-                            未着手
-                        </option>
-                    @endif
+                    <option value="not_started" @selected($selectedStatus === 'not_started')>
+                        未着手
+                    </option>
 
-                    @if ($selectedStatus === 'in_progress')
-                        <option value="in_progress" selected>
-                            進行中
-                        </option>
-                    @else
-                        <option value="in_progress">
-                            進行中
-                        </option>
-                    @endif
+                    <option value="in_progress" @selected($selectedStatus === 'in_progress')>
+                        進行中
+                    </option>
 
-                    @if ($selectedStatus === 'completed')
-                        <option value="completed" selected>
-                            完了
-                        </option>
-                    @else
-                        <option value="completed">
-                            完了
-                        </option>
-                    @endif
+                    <option value="completed" @selected($selectedStatus === 'completed')>
+                        完了
+                    </option>
 
-                    @if ($selectedStatus === 'paused')
-                        <option value="paused" selected>
-                            保留
-                        </option>
-                    @else
-                        <option value="paused">
-                            保留
-                        </option>
-                    @endif
+                    <option value="paused" @selected($selectedStatus === 'paused')>
+                        保留
+                    </option>
                 </select>
             </div>
 
@@ -169,65 +139,29 @@
                 </label>
 
                 <select id="sort" name="sort">
-                    @if ($selectedSort === 'latest')
-                        <option value="latest" selected>
-                            新しい順
-                        </option>
-                    @else
-                        <option value="latest">
-                            新しい順
-                        </option>
-                    @endif
+                    <option value="latest" @selected($selectedSort === 'latest')>
+                        新しい順
+                    </option>
 
-                    @if ($selectedSort === 'deadline_asc')
-                        <option value="deadline_asc" selected>
-                            納期が近い順
-                        </option>
-                    @else
-                        <option value="deadline_asc">
-                            納期が近い順
-                        </option>
-                    @endif
+                    <option value="deadline_asc" @selected($selectedSort === 'deadline_asc')>
+                        納期が近い順
+                    </option>
 
-                    @if ($selectedSort === 'deadline_desc')
-                        <option value="deadline_desc" selected>
-                            納期が遠い順
-                        </option>
-                    @else
-                        <option value="deadline_desc">
-                            納期が遠い順
-                        </option>
-                    @endif
+                    <option value="deadline_desc" @selected($selectedSort === 'deadline_desc')>
+                        納期が遠い順
+                    </option>
 
-                    @if ($selectedSort === 'oldest')
-                        <option value="oldest" selected>
-                            古い順
-                        </option>
-                    @else
-                        <option value="oldest">
-                            古い順
-                        </option>
-                    @endif
+                    <option value="oldest" @selected($selectedSort === 'oldest')>
+                        古い順
+                    </option>
 
-                    @if ($selectedSort === 'budget_desc')
-                        <option value="budget_desc" selected>
-                            予算が高い順
-                        </option>
-                    @else
-                        <option value="budget_desc">
-                            予算が高い順
-                        </option>
-                    @endif
+                    <option value="budget_desc" @selected($selectedSort === 'budget_desc')>
+                        予算が高い順
+                    </option>
 
-                    @if ($selectedSort === 'budget_asc')
-                        <option value="budget_asc" selected>
-                            予算が低い順
-                        </option>
-                    @else
-                        <option value="budget_asc">
-                            予算が低い順
-                        </option>
-                    @endif
+                    <option value="budget_asc" @selected($selectedSort === 'budget_asc')>
+                        予算が低い順
+                    </option>
                 </select>
             </div>
 
@@ -294,12 +228,6 @@
                     'medium' => '中',
                     'low' => '低',
                 ];
-
-                $priorityClasses = [
-                    'high' => 'high',
-                    'medium' => 'middle',
-                    'low' => 'low',
-                ];
             @endphp
 
             <div class="project-table-wrap">
@@ -320,126 +248,163 @@
 
                     <tbody>
                         @foreach ($projects as $project)
-                            @php
-                                $deadlineText = $project->deadline
-                                    ? \Illuminate\Support\Carbon::parse($project->deadline)->format('Y/m/d')
-                                    : '未設定';
+                                    @php
+                                        $deadlineText = $project->deadline
+                                            ? \Illuminate\Support\Carbon::parse(
+                                                $project->deadline
+                                            )->format('Y/m/d')
+                                            : '未設定';
 
-                                $priorityLabel = $priorityLabels[$project->priority]
-                                    ?? $project->priority;
+                                        $statusLabel = $statusLabels[$project->status]
+                                            ?? $project->status;
 
-                                $priorityClass = $priorityClasses[$project->priority]
-                                    ?? 'middle';
-                            @endphp
+                                        $priorityLabel = $priorityLabels[$project->priority]
+                                            ?? $project->priority;
+                                    @endphp
 
-                            <tr>
-                                <td>
-                                    <div class="project-name">
-                                        <x-projects.cover-image :project="$project" variant="table" />
+                                    <tr>
+                                        <td>
+                                            <div class="project-name">
+                                                <x-projects.cover-image :project="$project" variant="table" />
 
-                                        <div>
-                                            <strong>
-                                                {{ $project->title }}
-                                            </strong>
+                                                <div class="project-name__body">
+                                                    <a href="{{ route('projects.show', $project) }}" class="project-name__link">
+                                                        {{ $project->title }}
+                                                    </a>
 
-                                            <p>
-                                                WEB-{{ str_pad($project->id, 4, '0', STR_PAD_LEFT) }}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </td>
-
-                                <td>
-                                    <span class="project-client-name">
-                                        {{ $project->client_name }}
-                                    </span>
-                                </td>
-
-                                <td>
-                                    <span class="status-badge status-badge--{{ $project->status }}">
-                                        {{ $statusLabels[$project->status] ?? $project->status }}
-                                    </span>
-                                </td>
-
-                                <td>
-                                    <span class="priority-badge priority-badge--{{ $priorityClass }}">
-                                        {{ $priorityLabel }}
-                                    </span>
-                                </td>
-
-                                <td>
-                                    <strong class="project-deadline">
-                                        {{ $deadlineText }}
-                                    </strong>
-                                </td>
-
-                                <td>
-                                    <span class="project-category">
-                                        {{ $project->category?->name ?? '未分類' }}
-                                    </span>
-                                </td>
-
-                                <td>
-                                    <div class="project-tags-mini">
-                                        @forelse ($project->tags as $tag)
-                                            <span>
-                                                {{ $tag->name }}
-                                            </span>
-                                        @empty
-                                            <span class="project-tags-mini__empty">
-                                                未設定
-                                            </span>
-                                        @endforelse
-                                    </div>
-                                </td>
-
-                                <td>
-                                    <a href="{{ route('projects.tasks.index', $project) }}" class="project-task-count-link"
-                                        aria-label="{{ $project->title }}のタスク管理を開く">
-                                        {{ $project->tasks_count }}件
-                                    </a>
-                                </td>
-
-                                <td class="project-table__action-cell">
-                                    <div class="project-row-menu">
-                                        <details class="project-action-menu">
-                                            <summary class="project-action-menu__trigger" aria-label="操作メニューを開く">
-                                                <span></span>
-                                                <span></span>
-                                                <span></span>
-                                            </summary>
-
-                                            <div class="project-action-menu__content">
-                                                <a href="{{ route('projects.show', $project) }}" class="project-action-menu__link">
-                                                    詳細を見る
-                                                </a>
-
-                                                <a href="{{ route('projects.tasks.index', $project) }}"
-                                                    class="project-action-menu__link">
-                                                    タスク管理
-                                                </a>
-
-                                                <a href="{{ route('projects.edit', $project) }}" class="project-action-menu__link">
-                                                    編集する
-                                                </a>
-
-                                                <form action="{{ route('projects.destroy', $project) }}" method="POST"
-                                                    class="project-action-menu__form"
-                                                    onsubmit="return confirm('この案件を削除しますか？この操作は取り消せません。');">
-                                                    @csrf
-
-                                                    <input type="hidden" name="_method" value="DELETE">
-
-                                                    <button type="submit"
-                                                        class="project-action-menu__button project-action-menu__button--danger">
-                                                        削除する
-                                                    </button>
-                                                </form>
+                                                    <p class="project-name__code">
+                                                        WEB-{{ str_pad(
+                                $project->id,
+                                4,
+                                '0',
+                                STR_PAD_LEFT
+                            ) }}
+                                                    </p>
+                                                </div>
                                             </div>
-                                        </details>
-                                    </div>
-                                </td>
-                            </tr>
+                                        </td>
+
+                                        <td>
+                                            <span class="project-client-name">
+                                                {{ $project->client_name }}
+                                            </span>
+                                        </td>
+
+                                        <td>
+                                            <span class="project-status project-status--{{ $project->status }}">
+                                                <span class="project-status__dot" aria-hidden="true"></span>
+
+                                                <span class="project-status__label">
+                                                    {{ $statusLabel }}
+                                                </span>
+                                            </span>
+                                        </td>
+
+                                        <td>
+                                            <span class="project-priority project-priority--{{ $project->priority }}">
+                                                <span class="project-priority__marker" aria-hidden="true"></span>
+
+                                                <span class="project-priority__label">
+                                                    {{ $priorityLabel }}
+                                                </span>
+                                            </span>
+                                        </td>
+
+                                        <td>
+                                            <strong class="project-deadline">
+                                                {{ $deadlineText }}
+                                            </strong>
+                                        </td>
+
+                                        <td>
+                                            <span class="project-category">
+                                                {{ $project->category?->name ?? '未分類' }}
+                                            </span>
+                                        </td>
+
+                                        <td>
+                                            <div class="project-tags-mini">
+                                                @forelse ($project->tags as $tag)
+                                                    <span>
+                                                        {{ $tag->name }}
+                                                    </span>
+                                                @empty
+                                                    <span class="project-tags-mini__empty">
+                                                        未設定
+                                                    </span>
+                                                @endforelse
+                                            </div>
+                                        </td>
+
+                                        <td>
+                                            <a href="{{ route(
+                                'projects.tasks.index',
+                                $project
+                            ) }}" class="project-task-count-link"
+                                                aria-label="{{ $project->title }}のタスク管理を開く">
+                                                {{ $project->tasks_count }}件
+                                            </a>
+                                        </td>
+
+                                        <td class="project-table__action-cell">
+                                            <div class="project-action-menu" data-project-action-menu>
+                                                <button type="button" class="project-action-menu__trigger"
+                                                    aria-label="{{ $project->title }}の操作メニューを開く" aria-haspopup="true" aria-expanded="false"
+                                                    aria-controls="project-actions-{{ $project->id }}" data-project-action-trigger>
+                                                    <svg class="project-action-menu__icon" viewBox="0 0 24 24" fill="currentColor"
+                                                        aria-hidden="true">
+                                                        <circle cx="12" cy="5" r="1.8"></circle>
+
+                                                        <circle cx="12" cy="12" r="1.8"></circle>
+
+                                                        <circle cx="12" cy="19" r="1.8"></circle>
+                                                    </svg>
+                                                </button>
+
+                                                <div id="project-actions-{{ $project->id }}" class="project-action-menu__content"
+                                                    data-project-action-content hidden>
+                                                    <a href="{{ route(
+                                'projects.show',
+                                $project
+                            ) }}" class="project-action-menu__link">
+                                                        詳細を見る
+                                                    </a>
+
+                                                    <a href="{{ route(
+                                'projects.tasks.index',
+                                $project
+                            ) }}" class="project-action-menu__link">
+                                                        タスク管理
+                                                    </a>
+
+                                                    <a href="{{ route(
+                                'projects.edit',
+                                $project
+                            ) }}" class="project-action-menu__link">
+                                                        編集する
+                                                    </a>
+
+                                                    <div class="project-action-menu__divider"></div>
+
+                                                    <form action="{{ route(
+                                'projects.destroy',
+                                $project
+                            ) }}" method="POST" class="project-action-menu__form" onsubmit="return confirm(
+                                                                        'この案件を削除しますか？この操作は取り消せません。'
+                                                                    );">
+                                                        @csrf
+
+                                                        @method('DELETE')
+
+                                                        <button type="submit"
+                                                            class="project-action-menu__button project-action-menu__button--danger">
+                                                            削除する
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
                         @endforeach
                     </tbody>
                 </table>
@@ -449,14 +414,16 @@
                 @foreach ($projects as $project)
                     @php
                         $deadlineText = $project->deadline
-                            ? \Illuminate\Support\Carbon::parse($project->deadline)->format('Y/m/d')
+                            ? \Illuminate\Support\Carbon::parse(
+                                $project->deadline
+                            )->format('Y/m/d')
                             : '未設定';
+
+                        $statusLabel = $statusLabels[$project->status]
+                            ?? $project->status;
 
                         $priorityLabel = $priorityLabels[$project->priority]
                             ?? $project->priority;
-
-                        $priorityClass = $priorityClasses[$project->priority]
-                            ?? 'middle';
                     @endphp
 
                     <article class="project-card">
@@ -467,7 +434,12 @@
                                 <div class="project-card__header">
                                     <div>
                                         <h2 class="project-card__title">
-                                            {{ $project->title }}
+                                            <a href="{{ route(
+                        'projects.show',
+                        $project
+                    ) }}" class="project-card__title-link">
+                                                {{ $project->title }}
+                                            </a>
                                         </h2>
 
                                         <p class="project-card__client">
@@ -475,29 +447,44 @@
                                         </p>
                                     </div>
 
-                                    <a href="{{ route('projects.show', $project) }}" class="project-card__arrow" aria-label="案件詳細へ">
+                                    <a href="{{ route(
+                        'projects.show',
+                        $project
+                    ) }}" class="project-card__arrow" aria-label="{{ $project->title }}の詳細を見る">
                                         ›
                                     </a>
                                 </div>
 
-                                <div class="project-card__badges">
-                                    <span class="status-badge status-badge--{{ $project->status }}">
-                                        {{ $statusLabels[$project->status] ?? $project->status }}
+                                <div class="project-card__status-row">
+                                    <span class="project-status project-status--{{ $project->status }}">
+                                        <span class="project-status__dot" aria-hidden="true"></span>
+
+                                        <span class="project-status__label">
+                                            {{ $statusLabel }}
+                                        </span>
                                     </span>
 
-                                    <span class="priority-badge priority-badge--{{ $priorityClass }}">
-                                        {{ $priorityLabel }}
+                                    <span class="project-priority project-priority--{{ $project->priority }}">
+                                        <span class="project-priority__marker" aria-hidden="true"></span>
+
+                                        <span class="project-priority__label">
+                                            優先度 {{ $priorityLabel }}
+                                        </span>
                                     </span>
                                 </div>
 
                                 <dl class="project-card__meta">
                                     <div>
                                         <dt>納期</dt>
-                                        <dd>{{ $deadlineText }}</dd>
+
+                                        <dd>
+                                            {{ $deadlineText }}
+                                        </dd>
                                     </div>
 
                                     <div>
                                         <dt>カテゴリ</dt>
+
                                         <dd>
                                             {{ $project->category?->name ?? '未分類' }}
                                         </dd>
@@ -507,7 +494,10 @@
                                         <dt>タスク</dt>
 
                                         <dd>
-                                            <a href="{{ route('projects.tasks.index', $project) }}" class="project-task-count-link"
+                                            <a href="{{ route(
+                        'projects.tasks.index',
+                        $project
+                    ) }}" class="project-task-count-link"
                                                 aria-label="{{ $project->title }}のタスク管理を開く">
                                                 {{ $project->tasks_count }}件
                                             </a>
@@ -530,19 +520,29 @@
                         </div>
 
                         <div class="project-card__actions">
-                            <a href="{{ route('projects.show', $project) }}" class="button button--secondary">
+                            <a href="{{ route(
+                        'projects.show',
+                        $project
+                    ) }}" class="button button--secondary">
                                 詳細
                             </a>
 
-                            <a href="{{ route('projects.edit', $project) }}" class="button button--secondary">
+                            <a href="{{ route(
+                        'projects.edit',
+                        $project
+                    ) }}" class="button button--secondary">
                                 編集
                             </a>
 
-                            <form action="{{ route('projects.destroy', $project) }}" method="POST" class="project-card-delete-form"
-                                onsubmit="return confirm('この案件を削除しますか？この操作は取り消せません。');">
+                            <form action="{{ route(
+                        'projects.destroy',
+                        $project
+                    ) }}" method="POST" class="project-card-delete-form" onsubmit="return confirm(
+                                                'この案件を削除しますか？この操作は取り消せません。'
+                                            );">
                                 @csrf
 
-                                <input type="hidden" name="_method" value="DELETE">
+                                @method('DELETE')
 
                                 <button type="submit" class="button button--danger">
                                     削除
@@ -566,7 +566,12 @@
                             </a>
                         @endif
 
-                        @foreach ($projects->getUrlRange(1, $projects->lastPage()) as $page => $url)
+                        @foreach (
+                                $projects->getUrlRange(
+                                    1,
+                                    $projects->lastPage()
+                                ) as $page => $url
+                            )
                             @if ($page === $projects->currentPage())
                                 <span class="project-pagination__button project-pagination__button--current">
                                     {{ $page }}

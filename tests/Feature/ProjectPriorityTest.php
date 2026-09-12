@@ -166,8 +166,8 @@ class ProjectPriorityTest extends TestCase
 
         $response
             ->assertOk()
-            ->assertSee('priority-badge--high', false)
-            ->assertDontSee('priority-badge--low', false);
+            ->assertSee('project-priority--high', false)
+            ->assertDontSee('project-priority--low', false);
     }
 
     /**
