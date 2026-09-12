@@ -1,31 +1,30 @@
 @extends('layouts.app')
 
 @section('title', '請求書詳細 | ClientWork Manager')
-@section('page-label', 'Invoice Details')
+@section('page-label', '請求書')
 @section('page-title', '請求書詳細')
-@section('page-description', '請求内容、請求先、発行日、支払期限、入金日時を確認できます。')
+@section('page-description', '請求内容、請求先、発行日、支払期限、入金状況を確認できます。')
 
 @section('page-actions')
     <div class="invoice-page-actions">
         @can('send', $invoice)
-            <a href="{{ route('invoices.mail.create', $invoice) }}" class="button button--primary invoice-page-actions__send">
+            <a href="{{ route('invoices.mail.create', $invoice) }}" class="button button--primary">
                 メールで送信
             </a>
         @endcan
 
         @can('update', $invoice)
-            <a href="{{ route('invoices.edit', $invoice) }}" class="button button--secondary invoice-page-actions__edit">
+            <a href="{{ route('invoices.edit', $invoice) }}" class="button button--secondary">
                 請求書を編集
             </a>
         @endcan
 
-        <a href="{{ route('invoices.pdf.preview', $invoice) }}"
-            class="button button--secondary invoice-page-actions__preview" target="_blank" rel="noopener">
+        <a href="{{ route('invoices.pdf.preview', $invoice) }}" class="button button--secondary" target="_blank"
+            rel="noopener">
             PDFをプレビュー
         </a>
 
-        <a href="{{ route('invoices.pdf.download', $invoice) }}"
-            class="button button--secondary invoice-page-actions__download">
+        <a href="{{ route('invoices.pdf.download', $invoice) }}" class="button button--secondary">
             PDFをダウンロード
         </a>
     </div>
@@ -76,20 +75,17 @@
     <section class="invoice-detail-page" aria-labelledby="invoice-detail-title">
         <nav class="invoice-breadcrumb" aria-label="パンくずリスト">
             <ol class="invoice-breadcrumb__list">
-                <li class="invoice-breadcrumb__item">
+                <li>
                     <a href="{{ route('invoices.index') }}" class="invoice-breadcrumb__link">
                         請求書一覧
                     </a>
                 </li>
 
                 <li class="invoice-breadcrumb__separator" aria-hidden="true">
-                    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <path d="m7 4 6 6-6 6"></path>
-                    </svg>
+                    ›
                 </li>
 
-                <li class="invoice-breadcrumb__item invoice-breadcrumb__item--current" aria-current="page">
+                <li class="invoice-breadcrumb__current" aria-current="page">
                     請求書詳細
                 </li>
             </ol>
@@ -107,11 +103,11 @@
             </div>
         @endif
 
-        <header class="invoice-detail-hero">
-            <div class="invoice-detail-hero__content">
-                <div class="invoice-detail-hero__meta">
-                    <span class="invoice-detail-hero__label">
-                        Invoice
+        <header class="invoice-overview">
+            <div class="invoice-overview__main">
+                <div class="invoice-overview__top">
+                    <span class="invoice-overview__number">
+                        {{ $invoice->invoice_number }}
                     </span>
 
                     <span class="invoice-detail-status {{ $statusClass }}" aria-label="請求書ステータス：{{ $statusLabel }}">
@@ -119,29 +115,57 @@
                     </span>
                 </div>
 
-                <p class="invoice-detail-hero__number">
-                    {{ $invoice->invoice_number }}
-                </p>
-
-                <h2 id="invoice-detail-title" class="invoice-detail-hero__title">
+                <h2 id="invoice-detail-title" class="invoice-overview__title">
                     {{ $invoice->title }}
                 </h2>
 
-                <p class="invoice-detail-hero__description">
-                    請求書に保存された請求先情報と金額を確認できます。
-                </p>
+                @if ($invoice->project)
+                    <p class="invoice-overview__project-name">
+                        {{ $invoice->project->title }}
+                    </p>
+                @endif
+
+                <dl class="invoice-overview__meta">
+                    <div>
+                        <dt>
+                            案件
+                        </dt>
+
+                        <dd>
+                            @if ($invoice->project)
+                                <a href="{{ route('projects.show', $invoice->project) }}" class="invoice-detail-link">
+                                    {{ $invoice->project->title }}
+                                </a>
+                            @else
+                                <span class="invoice-detail-empty">
+                                    案件情報なし
+                                </span>
+                            @endif
+                        </dd>
+                    </div>
+
+                    <div>
+                        <dt>
+                            顧客
+                        </dt>
+
+                        <dd>
+                            {{ $invoice->billing_name ?: '未登録' }}
+                        </dd>
+                    </div>
+                </dl>
             </div>
 
-            <div class="invoice-detail-hero__amount">
-                <span class="invoice-detail-hero__amount-label">
+            <div class="invoice-overview__amount">
+                <span class="invoice-overview__amount-label">
                     ご請求金額
                 </span>
 
-                <strong class="invoice-detail-hero__amount-value">
+                <strong class="invoice-overview__amount-value">
                     ¥{{ number_format($invoice->total_amount) }}
                 </strong>
 
-                <span class="invoice-detail-hero__currency">
+                <span class="invoice-overview__currency">
                     {{ strtoupper($invoice->currency) }}
                 </span>
             </div>
@@ -149,31 +173,27 @@
 
         <div class="invoice-detail-layout">
             <main class="invoice-detail-main">
-                <article class="invoice-detail-card">
-                    <header class="invoice-detail-card__header">
-                        <div>
-                            <p class="invoice-detail-card__eyebrow">
-                                Billing Details
-                            </p>
+                <article class="invoice-section">
+                    <header class="invoice-section__header">
+                        <h3 class="invoice-section__title">
+                            請求内容
+                        </h3>
 
-                            <h3 class="invoice-detail-card__title">
-                                請求内容
-                            </h3>
-                        </div>
-
-                        <span class="invoice-detail-card__icon" aria-hidden="true">
-                            ¥
-                        </span>
+                        @can('update', $invoice)
+                            <a href="{{ route('invoices.edit', $invoice) }}" class="invoice-section__edit">
+                                編集
+                            </a>
+                        @endcan
                     </header>
 
-                    <div class="invoice-detail-card__body">
-                        <dl class="invoice-detail-definition">
-                            <div class="invoice-detail-definition__row">
-                                <dt class="invoice-detail-definition__term">
+                    <div class="invoice-section__body">
+                        <dl class="invoice-definition">
+                            <div class="invoice-definition__row">
+                                <dt>
                                     案件
                                 </dt>
 
-                                <dd class="invoice-detail-definition__value">
+                                <dd>
                                     @if ($invoice->project)
                                         <a href="{{ route('projects.show', $invoice->project) }}" class="invoice-detail-link">
                                             {{ $invoice->project->title }}
@@ -186,22 +206,22 @@
                                 </dd>
                             </div>
 
-                            <div class="invoice-detail-definition__row">
-                                <dt class="invoice-detail-definition__term">
+                            <div class="invoice-definition__row">
+                                <dt>
                                     請求書タイトル
                                 </dt>
 
-                                <dd class="invoice-detail-definition__value">
+                                <dd>
                                     {{ $invoice->title }}
                                 </dd>
                             </div>
 
-                            <div class="invoice-detail-definition__row invoice-detail-definition__row--block">
-                                <dt class="invoice-detail-definition__term">
-                                    請求内容・補足
+                            <div class="invoice-definition__row">
+                                <dt>
+                                    請求内容・備考
                                 </dt>
 
-                                <dd class="invoice-detail-definition__value invoice-detail-definition__value--description">
+                                <dd>
                                     {!! nl2br(e(
         $invoice->description
         ?: '補足情報はありません。'
@@ -212,140 +232,126 @@
                     </div>
                 </article>
 
-                <article class="invoice-detail-card">
-                    <header class="invoice-detail-card__header">
-                        <div>
-                            <p class="invoice-detail-card__eyebrow">
-                                Billing Address
-                            </p>
-
-                            <h3 class="invoice-detail-card__title">
-                                請求先情報
-                            </h3>
-                        </div>
-
-                        <span class="invoice-detail-card__icon" aria-hidden="true">
-                            宛
-                        </span>
+                <article class="invoice-section">
+                    <header class="invoice-section__header">
+                        <h3 class="invoice-section__title">
+                            請求先情報
+                        </h3>
                     </header>
 
-                    <div class="invoice-detail-card__body">
-                        <div class="invoice-detail-billing">
-                            <div class="invoice-detail-billing__primary">
-                                <span class="invoice-detail-billing__label">
-                                    請求先
-                                </span>
+                    <div class="invoice-section__body">
+                        <dl class="invoice-definition">
+                            <div class="invoice-definition__row">
+                                <dt>
+                                    会社名
+                                </dt>
 
-                                <strong class="invoice-detail-billing__name">
+                                <dd>
                                     {{ $invoice->billing_name ?: '未登録' }}
-                                </strong>
-
-                                @if ($invoice->billing_contact_name)
-                                    <span class="invoice-detail-billing__contact">
-                                        {{ $invoice->billing_contact_name }} 様
-                                    </span>
-                                @endif
+                                </dd>
                             </div>
 
-                            <dl class="invoice-detail-contact-list">
-                                <div class="invoice-detail-contact-list__item">
-                                    <dt class="invoice-detail-contact-list__term">
-                                        メール
-                                    </dt>
+                            <div class="invoice-definition__row">
+                                <dt>
+                                    ご担当者
+                                </dt>
 
-                                    <dd class="invoice-detail-contact-list__value">
-                                        @if ($invoice->billing_email)
-                                            <a href="mailto:{{ $invoice->billing_email }}"
-                                                class="invoice-detail-link invoice-detail-link--wrap">
-                                                {{ $invoice->billing_email }}
-                                            </a>
-                                        @else
-                                            <span class="invoice-detail-empty">
-                                                未登録
+                                <dd>
+                                    @if ($invoice->billing_contact_name)
+                                        {{ $invoice->billing_contact_name }} 様
+                                    @else
+                                        <span class="invoice-detail-empty">
+                                            未登録
+                                        </span>
+                                    @endif
+                                </dd>
+                            </div>
+
+                            <div class="invoice-definition__row">
+                                <dt>
+                                    メール
+                                </dt>
+
+                                <dd>
+                                    @if ($invoice->billing_email)
+                                        <a href="mailto:{{ $invoice->billing_email }}" class="invoice-detail-link">
+                                            {{ $invoice->billing_email }}
+                                        </a>
+                                    @else
+                                        <span class="invoice-detail-empty">
+                                            未登録
+                                        </span>
+                                    @endif
+                                </dd>
+                            </div>
+
+                            <div class="invoice-definition__row">
+                                <dt>
+                                    電話番号
+                                </dt>
+
+                                <dd>
+                                    @if ($invoice->billing_phone)
+                                        <a href="tel:{{ preg_replace('/[^0-9+]/', '', $invoice->billing_phone) }}"
+                                            class="invoice-detail-link">
+                                            {{ $invoice->billing_phone }}
+                                        </a>
+                                    @else
+                                        <span class="invoice-detail-empty">
+                                            未登録
+                                        </span>
+                                    @endif
+                                </dd>
+                            </div>
+
+                            <div class="invoice-definition__row">
+                                <dt>
+                                    住所
+                                </dt>
+
+                                <dd class="invoice-definition__address">
+                                    @if (
+                                            $invoice->billing_postal_code
+                                            || $invoice->billing_address
+                                        )
+                                        @if ($invoice->billing_postal_code)
+                                            <span>
+                                                〒{{ $invoice->billing_postal_code }}
                                             </span>
                                         @endif
-                                    </dd>
-                                </div>
 
-                                <div class="invoice-detail-contact-list__item">
-                                    <dt class="invoice-detail-contact-list__term">
-                                        電話番号
-                                    </dt>
-
-                                    <dd class="invoice-detail-contact-list__value">
-                                        @if ($invoice->billing_phone)
-                                            <a href="tel:{{ preg_replace('/[^0-9+]/', '', $invoice->billing_phone) }}"
-                                                class="invoice-detail-link">
-                                                {{ $invoice->billing_phone }}
-                                            </a>
-                                        @else
-                                            <span class="invoice-detail-empty">
-                                                未登録
+                                        @if ($invoice->billing_address)
+                                            <span>
+                                                {{ $invoice->billing_address }}
                                             </span>
                                         @endif
-                                    </dd>
-                                </div>
+                                    @else
+                                        <span class="invoice-detail-empty">
+                                            未登録
+                                        </span>
+                                    @endif
+                                </dd>
+                            </div>
+                        </dl>
 
-                                <div class="invoice-detail-contact-list__item">
-                                    <dt class="invoice-detail-contact-list__term">
-                                        住所
-                                    </dt>
-
-                                    <dd
-                                        class="invoice-detail-contact-list__value invoice-detail-contact-list__value--address">
-                                        @if (
-                                                $invoice->billing_postal_code
-                                                || $invoice->billing_address
-                                            )
-                                            @if ($invoice->billing_postal_code)
-                                                <span>
-                                                    〒{{ $invoice->billing_postal_code }}
-                                                </span>
-                                            @endif
-
-                                            @if ($invoice->billing_address)
-                                                <span>
-                                                    {{ $invoice->billing_address }}
-                                                </span>
-                                            @endif
-                                        @else
-                                            <span class="invoice-detail-empty">
-                                                未登録
-                                            </span>
-                                        @endif
-                                    </dd>
-                                </div>
-                            </dl>
-
-                            <p class="invoice-detail-billing__note">
-                                請求書作成時点の顧客情報を表示しています。
-                                顧客情報を後から変更しても、この請求先情報は変わりません。
-                            </p>
-                        </div>
+                        <p class="invoice-snapshot-note">
+                            この請求書は作成時点の顧客情報を保存しています。
+                            顧客情報を後から変更しても、この請求先情報は変わりません。
+                        </p>
                     </div>
                 </article>
             </main>
 
             <aside class="invoice-detail-sidebar">
-                <section class="invoice-detail-summary" aria-labelledby="invoice-detail-summary-title">
-                    <header class="invoice-detail-summary__header">
-                        <div>
-                            <p class="invoice-detail-summary__eyebrow">
-                                Payment Summary
-                            </p>
-
-                            <h3 id="invoice-detail-summary-title" class="invoice-detail-summary__title">
-                                金額内訳
-                            </h3>
-                        </div>
-
-                        <span class="invoice-detail-summary__icon" aria-hidden="true">
-                            ¥
-                        </span>
+                <section class="invoice-side-section">
+                    <header class="invoice-side-section__header">
+                        <h3>
+                            金額内訳
+                        </h3>
                     </header>
 
-                    <dl class="invoice-detail-summary__list">
-                        <div class="invoice-detail-summary__row">
+                    <dl class="invoice-amount-list">
+                        <div>
                             <dt>
                                 小計
                             </dt>
@@ -355,9 +361,9 @@
                             </dd>
                         </div>
 
-                        <div class="invoice-detail-summary__row">
+                        <div>
                             <dt>
-                                消費税
+                                消費税（{{ $invoice->tax_rate }}%）
                             </dt>
 
                             <dd>
@@ -365,7 +371,7 @@
                             </dd>
                         </div>
 
-                        <div class="invoice-detail-summary__row invoice-detail-summary__row--total">
+                        <div class="invoice-amount-list__total">
                             <dt>
                                 合計
                             </dt>
@@ -375,21 +381,17 @@
                             </dd>
                         </div>
                     </dl>
-
-                    <p class="invoice-detail-summary__note">
-                        保存時にサーバー側で計算された金額です。
-                    </p>
                 </section>
 
-                <section class="invoice-detail-side-card">
-                    <header class="invoice-detail-side-card__header">
-                        <h3 class="invoice-detail-side-card__title">
+                <section class="invoice-side-section">
+                    <header class="invoice-side-section__header">
+                        <h3>
                             発行・支払情報
                         </h3>
                     </header>
 
-                    <dl class="invoice-detail-side-list">
-                        <div class="invoice-detail-side-list__item">
+                    <dl class="invoice-side-list">
+                        <div>
                             <dt>
                                 発行日
                             </dt>
@@ -399,7 +401,7 @@
                             </dd>
                         </div>
 
-                        <div class="invoice-detail-side-list__item">
+                        <div>
                             <dt>
                                 支払期限
                             </dt>
@@ -409,7 +411,7 @@
                             </dd>
                         </div>
 
-                        <div class="invoice-detail-side-list__item">
+                        <div>
                             <dt>
                                 入金日時
                             </dt>
@@ -427,7 +429,7 @@
                             </dd>
                         </div>
 
-                        <div class="invoice-detail-side-list__item">
+                        <div>
                             <dt>
                                 通貨
                             </dt>
@@ -439,135 +441,113 @@
                     </dl>
                 </section>
 
-                <section class="invoice-detail-side-card">
-                    <header class="invoice-detail-side-card__header">
-                        <h3 class="invoice-detail-side-card__title">
-                            関連情報
+                <section class="invoice-side-section">
+                    <header class="invoice-side-section__header">
+                        <h3>
+                            関連・管理情報
                         </h3>
                     </header>
 
-                    <div class="invoice-detail-related-links">
+                    <div class="invoice-related-links">
                         @if ($invoice->project)
-                            <a href="{{ route('projects.show', $invoice->project) }}" class="invoice-detail-related-link">
+                            <a href="{{ route('projects.show', $invoice->project) }}" class="invoice-related-link">
                                 <span>
                                     関連案件を確認
                                 </span>
 
                                 <span aria-hidden="true">
-                                    →
+                                    ↗
                                 </span>
                             </a>
                         @endif
 
                         @if ($invoice->customer)
-                            <a href="{{ route('customers.show', $invoice->customer) }}" class="invoice-detail-related-link">
+                            <a href="{{ route('customers.show', $invoice->customer) }}" class="invoice-related-link">
                                 <span>
                                     顧客詳細を確認
                                 </span>
 
                                 <span aria-hidden="true">
-                                    →
+                                    ↗
                                 </span>
                             </a>
                         @endif
                     </div>
-                </section>
 
-                <section class="invoice-detail-side-card">
-                    <header class="invoice-detail-side-card__header">
-                        <h3 class="invoice-detail-side-card__title">
+                    <div class="invoice-side-section__subsection">
+                        <h4 class="invoice-side-section__subheading">
                             管理情報
-                        </h3>
-                    </header>
+                        </h4>
 
-                    <dl class="invoice-detail-side-list">
-                        <div class="invoice-detail-side-list__item">
-                            <dt>
-                                作成日時
-                            </dt>
+                        <dl class="invoice-side-list">
+                            <div>
+                                <dt>
+                                    作成日時
+                                </dt>
 
-                            <dd>
-                                {{ $createdAt }}
-                            </dd>
-                        </div>
+                                <dd>
+                                    {{ $createdAt }}
+                                </dd>
+                            </div>
 
-                        <div class="invoice-detail-side-list__item">
-                            <dt>
-                                更新日時
-                            </dt>
+                            <div>
+                                <dt>
+                                    更新日時
+                                </dt>
 
-                            <dd>
-                                {{ $updatedAt }}
-                            </dd>
-                        </div>
+                                <dd>
+                                    {{ $updatedAt }}
+                                </dd>
+                            </div>
 
-                        <div class="invoice-detail-side-list__item">
-                            <dt>
-                                送信回数
-                            </dt>
+                            <div>
+                                <dt>
+                                    送信回数
+                                </dt>
 
-                            <dd>
-                                {{ number_format($invoice->send_count) }}回
-                            </dd>
-                        </div>
+                                <dd>
+                                    {{ number_format($invoice->send_count) }}回
+                                </dd>
+                            </div>
 
-                        <div class="invoice-detail-side-list__item">
-                            <dt>
-                                決済履歴
-                            </dt>
+                            <div>
+                                <dt>
+                                    決済履歴
+                                </dt>
 
-                            <dd>
-                                {{ number_format($paymentsCount) }}件
-                            </dd>
-                        </div>
-                    </dl>
+                                <dd>
+                                    {{ number_format($paymentsCount) }}件
+                                </dd>
+                            </div>
+                        </dl>
+                    </div>
                 </section>
 
                 @can('delete', $invoice)
-                    <section class="invoice-detail-danger-card" aria-labelledby="invoice-delete-title">
-                        <header class="invoice-detail-danger-card__header">
-                            <div>
-                                <p class="invoice-detail-danger-card__eyebrow">
-                                    Danger Zone
-                                </p>
+                    <section class="invoice-delete-section">
+                        <h3>
+                            下書きの削除
+                        </h3>
 
-                                <h3 id="invoice-delete-title" class="invoice-detail-danger-card__title">
-                                    下書きの削除
-                                </h3>
-                            </div>
-                        </header>
+                        @if ($paymentsCount === 0)
+                            <p>
+                                削除した請求書は元に戻せません。
+                            </p>
 
-                        <div class="invoice-detail-danger-card__body">
-                            @if ($paymentsCount === 0)
-                                <p class="invoice-detail-danger-card__description">
-                                    この操作を実行すると、請求書を元に戻すことはできません。
-                                    削除できるのは未送信の下書きだけです。
-                                </p>
+                            <form method="POST" action="{{ route('invoices.destroy', $invoice) }}" data-invoice-delete-form
+                                data-confirm-message="請求書「{{ $invoice->title }}」を削除します。この操作は元に戻せません。よろしいですか？">
+                                @csrf
+                                @method('DELETE')
 
-                                <form method="POST" action="{{ route('invoices.destroy', $invoice) }}"
-                                    class="invoice-detail-delete-form" data-invoice-delete-form
-                                    data-confirm-message="請求書「{{ $invoice->title }}」を削除します。この操作は元に戻せません。よろしいですか？">
-                                    @csrf
-                                    @method('DELETE')
-
-                                    <button type="submit" class="invoice-detail-delete-button">
-                                        この下書きを削除
-                                    </button>
-                                </form>
-                            @else
-                                <div class="invoice-detail-danger-card__blocked" role="status">
-                                    <strong>
-                                        この請求書は削除できません
-                                    </strong>
-
-                                    <p>
-                                        決済履歴が
-                                        {{ number_format($paymentsCount) }}件
-                                        紐づいているため、請求書を保存する必要があります。
-                                    </p>
-                                </div>
-                            @endif
-                        </div>
+                                <button type="submit" class="invoice-delete-button">
+                                    この下書きを削除
+                                </button>
+                            </form>
+                        @else
+                            <p>
+                                決済履歴が存在するため削除できません。
+                            </p>
+                        @endif
                     </section>
                 @endcan
             </aside>
@@ -582,12 +562,11 @@
 
             deleteForms.forEach((form) => {
                 form.addEventListener('submit', (event) => {
-                    const message = form.dataset.confirmMessage
+                    const message =
+                        form.dataset.confirmMessage
                         ?? 'この請求書を削除します。よろしいですか？';
 
-                    const confirmed = window.confirm(message);
-
-                    if (!confirmed) {
+                    if (!window.confirm(message)) {
                         event.preventDefault();
                     }
                 });
