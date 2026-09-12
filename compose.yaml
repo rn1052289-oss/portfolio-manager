@@ -51,6 +51,20 @@ services:
       retries: 3
       timeout: 5s
 
+  phpmyadmin:
+    image: "phpmyadmin:latest"
+    ports:
+      - "${FORWARD_PHPMYADMIN_PORT:-8080}:80"
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      UPLOAD_LIMIT: 64M
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - sail
+
   mailpit:
     image: "axllent/mailpit:latest"
     ports:
