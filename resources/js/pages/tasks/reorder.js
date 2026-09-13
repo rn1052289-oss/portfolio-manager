@@ -142,11 +142,6 @@ if (taskList) {
                         'success',
                         '保存しました'
                     );
-
-                    console.log(
-                        'タスクの並び順を保存しました。',
-                        responseBody
-                    );
                 } catch (error) {
                     restoreTaskOrder(previousTaskIds);
 
